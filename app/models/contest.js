@@ -1,0 +1,100 @@
+'use strict'
+/**
+ * Module Dependencies
+ */
+const moment = require('moment')
+
+const mongoose = require('mongoose'),
+  Schema = mongoose.Schema;
+
+const Contest =  new Schema({
+  contestName: String,
+  contestInfo: String,
+  contestType: Number, // 1: more or less, 2: VS , 3: Fantasy points
+  sport: Number,//1: Cricket,2: football
+  type: Number, // 1: runs, 2: wickets, 3: goal, 4:fantasy points
+  typeName: String,
+  value: Number,
+  limit: Number, // max: 2
+  open: {type:Boolean,default:true},
+  matchId: Number,
+  playerId: String,
+  playerInfo: Object,
+  playerIds: [
+    {
+      playerId: String,
+      playerName: String,
+      pic: String,
+      team: String
+    }
+  ],
+  teamOne: [
+    {
+      userId: String,
+      amount: Number
+    }
+  ],
+ 
+teamTwo: [
+    {
+      userId: String,
+      amount: Number
+    }
+  ],
+   
+teamThree: [
+ 
+    {
+      userId: String,
+      amount: Number
+    }
+  ],
+   
+teamFour: [
+ 
+    {
+      userId: String,
+      amount: Number
+    }
+  ],
+ 
+teamFive: [
+ 
+    {
+      userId: String,
+      amount: Number
+    }
+  ],
+  
+teamSix: [
+ 
+    {
+      userId: String,
+      amount: Number
+    }
+  ],
+  
+teamSeven: [
+    {
+      userId: String,
+      amount: Number
+    }
+  ],
+   
+teamEight:[
+    {
+      userId: String,
+      amount: Number
+    }
+  ],
+   
+  totalAmount: Object,
+  info: Object,
+  finalTotal: Number,
+  profit:Number,
+  status:String
+},{strict:false})
+
+
+
+mongoose.model('Contest', Contest);

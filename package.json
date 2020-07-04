@@ -1,0 +1,57 @@
+{
+  "name": "user",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fantasyesportco/sportUsers.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fantasyesportco/sportUsers/issues"
+  },
+  "homepage": "https://github.com/fantasyesportco/sportUsers#readme",
+  "dependencies": {
+    "amqplib": "^0.5.5",
+    "axios": "^0.19.2",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "chalk": "^3.0.0",
+    "connect-redis": "^4.0.4",
+    "cookie-parser": "^1.4.4",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.0",
+    "express-status-monitor": "^1.3.2",
+    "express-validator": "^6.4.0",
+    "i18n": "^0.8.5",
+    "i18n-express": "^1.1.3",
+    "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.15",
+    "log-symbols": "^3.0.0",
+    "moment": "^2.25.3",
+    "mongoose": "^5.9.1",
+    "morgan": "^1.9.1",
+    "mqtt": "^3.0.0",
+    "nodemailer": "^6.4.3",
+    "nodemon": "^2.0.2",
+    "passport": "^0.4.1",
+    "passport-custom": "^1.1.1",
+    "passport-jwt": "^4.0.0",
+    "passport-local": "^1.0.0",
+    "pm2": "^4.2.3",
+    "randomatic": "^3.1.1",
+    "razorpay": "^2.0.6",
+    "redis": "^3.0.2",
+    "swagger-ui-express": "^4.1.4",
+    "uniqid": "^5.2.0",
+    "winston": "^3.2.1",
+    "worker-farm": "^1.7.0"
+  }
+}
