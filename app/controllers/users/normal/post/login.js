@@ -30,73 +30,81 @@ const login = async (req, res) => {
 
   switch (req.body.loginType) {
     case 2:
-      User.findOne({$or:[{facebookId: req.body.facebookId},{email: req.body.email}] }, function (err, user) {
+      User.findOne({ $or: [{ facebookId: req.body.facebookId }, { email: req.body.email }] }, function (err, user) {
         if (err) { return done(err); }
         if (user === null) {
-            const userModel = new User({
-              email: req.body.email,
-              fullName: req.body.fullName,
-              refCode: randomize('AAAA0'),
-              profilePic: req.body.profilePic,
-              userName: randomize('aaaaaaaaaa'),
-              wallet: {
-                  balance: 0,
-                  bonus: 0.5
-              },
-              totalRefers: 0,
-              facebookId: req.body.facebookId,
-              status : 1
-            })
-
-            userModel.save((err, resp) => {
-              if (err)
-                  reject(err)
-              else {
-                  userId = resp._id;
-                  const token = jwt.sign({ id: userId }, 'secret');
-
-                  res.send({ message: "Login success", token })
-              }
+          const userModel = new User({
+            email: req.body.email,
+            fullName: req.body.fullName,
+            refCode: randomize('AAAA0'),
+            profilePic: req.body.profilePic,
+            userName: randomize('aaaaaaaaaa'),
+            wallet: {
+              balance: 0,
+              bonus: 0.5
+            },
+            totalRefers: 0,
+            facebookId: req.body.facebookId,
+            status: 1
           })
-        }else{
-          const token = jwt.sign({ id: user._id }, 'secret');
-          User.updateOne({email: req.body.email},{profilePic: req.body.profilePic,}).then().catch();
-          res.send({ message: "Login success", token })
+
+          userModel.save((err, resp) => {
+            if (err)
+              reject(err)
+            else {
+              userId = resp._id;
+              const token = jwt.sign({ id: user._id }, process.env.Access_key, { expiresIn: process.env.ACCESSTOKEN.toString() + 's', subject: 'user' });
+
+              const refToken = jwt.sign({ id: user._id }, 'ref', { expiresIn: '86400s', subject: 'user' });
+
+              res.send({ message: "Login success", token, refToken: refToken })
+            }
+          })
+        } else {
+          const token = jwt.sign({ id: user._id }, process.env.Access_key, { expiresIn: process.env.ACCESSTOKEN.toString() + 's', subject: 'user' });
+          const refToken = jwt.sign({ id: user._id }, 'ref', { expiresIn: '86400s', subject: 'user' });
+          User.updateOne({ email: req.body.email }, { profilePic: req.body.profilePic, }).then().catch();
+          res.send({ message: "Login success", token, refToken: refToken })
         }
       });
       break;
     case 3:
-      User.findOne({$or:[{googleId: req.body.googleId},{email: req.body.email}]}, function (err, user) {
+      User.findOne({ $or: [{ googleId: req.body.googleId }, { email: req.body.email }] }, function (err, user) {
         if (err) { return done(err); }
         if (user === null) {
-            const userModel = new User({
-              email: req.body.email,
-              fullName: req.body.fullName,
-              refCode: randomize('AAAA0'),
-              userName: randomize('aaaaaaaaaa'),
-              profilePic: req.body.profilePic,
-              wallet: {
-                  balance: 0,
-                  bonus: 0.5
-              },
-              totalRefers: 0,
-              googleId: req.body.googleId,
-              status : 1
-            })
-
-            userModel.save((err, resp) => {
-              if (err)
-                  reject(err)
-              else {
-                  userId = resp._id;
-                  const token = jwt.sign({ id: userId }, 'secret');
-                  res.send({ message: "Login success", token });
-              }
+          const userModel = new User({
+            email: req.body.email,
+            fullName: req.body.fullName,
+            refCode: randomize('AAAA0'),
+            userName: randomize('aaaaaaaaaa'),
+            profilePic: req.body.profilePic,
+            wallet: {
+              balance: 0,
+              bonus: 0.5
+            },
+            totalRefers: 0,
+            googleId: req.body.googleId,
+            status: 1
           })
-        }else{
-          const token = jwt.sign({ id: user._id }, 'secret');
-          User.updateOne({email: req.body.email},{profilePic: req.body.profilePic,}).then().catch();
-          res.send({ message: "Login success", token })
+
+          userModel.save((err, resp) => {
+            if (err)
+              reject(err)
+            else {
+              userId = resp._id;
+
+              const token = jwt.sign({ id: user._id }, process.env.Access_key, { expiresIn: process.env.ACCESSTOKEN.toString() + 's', subject: 'user' });
+              const refToken = jwt.sign({ id: user._id }, 'ref', { expiresIn: '86400s', subject: 'user' });
+
+              res.send({ message: "Login success", token, refToken: refToken })
+            }
+          })
+        } else {
+          const token = jwt.sign({ id: user._id }, process.env.Access_key, { expiresIn: process.env.ACCESSTOKEN.toString() + 's', subject: 'user' });
+          User.updateOne({ email: req.body.email }, { profilePic: req.body.profilePic, }).then().catch();
+          const refToken = jwt.sign({ id: user._id }, 'ref', { expiresIn: '86400s', subject: 'user' });
+
+          res.send({ message: "Login success", token, refToken: refToken })
         }
       });
       break;
@@ -111,12 +119,14 @@ const login = async (req, res) => {
           res.status(401)
           return res.send({ message: 'Incorrect email or password.' });
         }
-    
-    
-        const token = jwt.sign({ id: user._id }, 'secret');
-    
-    
-        res.send({ message: "Login success", token })
+
+
+        const token = jwt.sign({ id: user._id }, process.env.Access_key, { expiresIn: process.env.ACCESSTOKEN.toString() + 's', subject: 'user' });
+
+
+        const refToken = jwt.sign({ id: user._id }, 'ref', { expiresIn: '86400s', subject: 'user' });
+
+        res.send({ message: "Login success", token, refToken: refToken })
       });
       break;
   }

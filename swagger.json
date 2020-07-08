@@ -9,7 +9,7 @@
             "url": "https://opensource.org/licenses/MIT"
         }
     },
-    "host": "13.127.246.73:3008",
+    "host": "localhost:3009",
     "basePath": "/api/v1",
     "tags": [
         {
@@ -171,6 +171,32 @@
                     }
                 }
             }
+        },
+        "/users/refreshToken": {
+            "parameters": [
+                {
+                    "name": "Authorization",
+                    "in": "header",
+                    "required": true,
+                    "description": "JWT token for auth(eg:- JWT tokenToSend)",
+                    "type": "string"
+                }
+            ],
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get user",
+                "responses": {
+                    "200": {
+                        "description": "User is found",
+                        "schema": {
+                            "$ref": "#/definitions/profile"
+                        }
+                    }
+                }
+            }
+            
         },
         "/match": {
             "get": {
