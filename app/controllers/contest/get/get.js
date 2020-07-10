@@ -40,28 +40,28 @@ const get = (req, res) => {
                             $filter: {
                             input: '$teamOne',
                             as: 'teamOne',
-                            cond: {$eq: ['$$teamOne.userId', 'userId']}
+                            cond: {$eq: ['$$teamOne.userId', "req.user.id"]}
                         }
                     },
                'teamTwo':1,
                 'teamTwoAmount': {$filter: {
                     input: '$teamTwo',
                     as: 'teamTwo',
-                    cond: {$eq: ['$$teamTwo.userId', 'userId']}
+                    cond: {$eq: ['$$teamTwo.userId', "req.user.id"]}
                 },
                 },
                'teamThree':1,
                 'teamThreeAmount': {$filter: {
                     input: '$teamThree',
                     as: 'teamThree',
-                    cond: {$eq: ['$$teamThree.userId', 'userId']}
+                    cond: {$eq: ['$$teamThree.userId', "req.user.id"]}
                 },
                 },
                 'teamFour':1,
                 'teamFourAmount': {$filter: {
                     input: '$teamFour',
                     as: 'teamFour',
-                    cond: {$eq: ['$$teamFour.userId', 'userId']}
+                    cond: {$eq: ['$$teamFour.userId', "req.user.id"]}
                 },
                 },
                'teamFive':1,
@@ -178,7 +178,7 @@ const get = (req, res) => {
                         ...player,
                         userAmount:contest.teamOneAmount,
                         totalAmount:contest.totalAmount.teamOne,
-                        totalPlayerCount:_.uniqBy(contest.teamOne,'userId').length,
+                        totalPlayerCount:_.uniqBy(contest.teamOne,"req.user.id").length,
                         multiplier:0.85*contest.finalTotal < contest.totalAmount.teamOne ? contest.finalTotal/contest.totalAmount.teamOne : 0.85*contest.finalTotal/contest.totalAmount.teamOne || 0,  
                         prize: 0.85*contest.finalTotal < contest.totalAmount.teamOne  ? contest.finalTotal : contest.finalTotal*0.85 || 0 ,   
                         payout: 0.85*contest.finalTotal < contest.totalAmount.teamOne  ? contest.finalTotal*contest.teamOneAmount/contest.totalAmount.teamOne - (contest.finalTotal*contest.teamOneAmount/contest.totalAmount.teamOne-contest.teamOneAmount)*0.15 : 0.85*contest.finalTotal*contest.teamOneAmount/contest.totalAmount.teamOne || 0   
@@ -188,7 +188,7 @@ const get = (req, res) => {
                         ...player,
                         userAmount:contest.teamTwoAmount,
                         totalAmount:contest.totalAmount.teamTwo,
-                        totalPlayerCount:_.uniqBy(contest.teamTwo,'userId').length,
+                        totalPlayerCount:_.uniqBy(contest.teamTwo,"req.user.id").length,
                         multiplier:0.85*contest.finalTotal < contest.totalAmount.teamTwo ? contest.finalTotal/contest.totalAmount.teamTwo : 0.85*contest.finalTotal/contest.totalAmount.teamTwo || 0,  
                         prize: 0.85*contest.finalTotal < contest.totalAmount.teamTwo  ? contest.finalTotal : contest.finalTotal*0.85 || 0,   
                         payout: 0.85*contest.finalTotal < contest.totalAmount.teamTwo  ? contest.finalTotal*contest.teamTwoAmount/contest.totalAmount.teamTwo - (contest.finalTotal*contest.teamTwoAmount/contest.totalAmount.teamTwo-contest.teamTwoAmount)*0.15 : 0.85*contest.finalTotal*contest.teamTwoAmount/contest.totalAmount.teamTwo || 0,  
@@ -199,7 +199,7 @@ const get = (req, res) => {
                         ...player,
                         userAmount:contest.teamThreeAmount,
                         totalAmount:contest.totalAmount.teamThree,
-                        totalPlayerCount:_.uniqBy(contest.teamThree,'userId').length,
+                        totalPlayerCount:_.uniqBy(contest.teamThree,"req.user.id").length,
                         multiplier:0.85*contest.finalTotal < contest.totalAmount.teamThree ? contest.finalTotal/contest.totalAmount.teamThree : 0.85*contest.finalTotal/contest.totalAmount.teamThree || 0,  
                         prize: 0.85*contest.finalTotal < contest.totalAmount.teamThree  ? contest.finalTotal : contest.finalTotal*0.85 || 0,   
                         payout: 0.85*contest.finalTotal < contest.totalAmount.teamThree  ? contest.finalTotal*contest.teamThreeAmount/contest.totalAmount.teamThree - (contest.finalTotal*contest.teamThreeAmount/contest.totalAmount.teamThree-contest.teamThreeAmount)*0.15 : 0.85*contest.finalTotal*contest.teamThreeAmount/contest.totalAmount.teamThree || 0, 
@@ -210,7 +210,7 @@ const get = (req, res) => {
                         ...player,
                         userAmount:contest.teamFourAmount,
                         totalAmount:contest.totalAmount.teamFour,
-                        totalPlayerCount:_.uniqBy(contest.teamFour,'userId').length,
+                        totalPlayerCount:_.uniqBy(contest.teamFour,"req.user.id").length,
                         multiplier:0.85*contest.finalTotal < contest.totalAmount.teamFour ? contest.finalTotal/contest.totalAmount.teamFour : 0.85*contest.finalTotal/contest.totalAmount.teamFour || 0,  
                         prize: 0.85*contest.finalTotal < contest.totalAmount.teamFour  ? contest.finalTotal : contest.finalTotal*0.85 || 0,   
                         payout: 0.85*contest.finalTotal < contest.totalAmount.teamFour  ? contest.finalTotal*contest.teamFourAmount/contest.totalAmount.teamFour - (contest.finalTotal*contest.teamFourAmount/contest.totalAmount.teamFour-contest.teamFourAmount)*0.15 :  0.85*contest.finalTotal*contest.teamFourAmount/contest.totalAmount.teamFour || 0
@@ -221,7 +221,7 @@ const get = (req, res) => {
                         ...player,
                         userAmount:contest.teamFiveAmount,
                         totalAmount:contest.totalAmount.teamFive,
-                        totalPlayerCount:_.uniqBy(contest.teamFive,'userId').length,
+                        totalPlayerCount:_.uniqBy(contest.teamFive,"req.user.id").length,
                         multiplier:0.85*contest.finalTotal < contest.totalAmount.teamFive ? contest.finalTotal/contest.totalAmount.teamFive : 0.85*contest.finalTotal/contest.totalAmount.teamFive || 0,  
                         prize: 0.85*contest.finalTotal < contest.totalAmount.teamFive  ? contest.finalTotal : contest.finalTotal*0.85 || 0,   
                         payout: 0.85*contest.finalTotal < contest.totalAmount.teamFive  ? contest.finalTotal*contest.teamFiveAmount/contest.totalAmount.teamFive - (contest.finalTotal*contest.teamFiveAmount/contest.totalAmount.teamFive-contest.teamFiveAmount)*0.15 : 0.85*contest.finalTotal*contest.teamFiveAmount/contest.totalAmount.teamFive || 0,  
@@ -232,7 +232,7 @@ const get = (req, res) => {
                         ...player,
                         userAmount:contest.teamSixAmount,
                         totalAmount:contest.totalAmount.teamSix,
-                        totalPlayerCount:_.uniqBy(contest.teamSix,'userId').length,
+                        totalPlayerCount:_.uniqBy(contest.teamSix,"req.user.id").length,
                         multiplier:0.85*contest.finalTotal < contest.totalAmount.teamSix ? contest.finalTotal/contest.totalAmount.teamSix : 0.85*contest.finalTotal/contest.totalAmount.teamSix || 0,  
                         prize: 0.85*contest.finalTotal < contest.totalAmount.teamSix  ? contest.finalTotal : contest.finalTotal*0.85 || 0,   
                         payout: 0.85*contest.finalTotal < contest.totalAmount.teamSix  ? contest.finalTotal*contest.teamSixAmount/contest.totalAmount.teamSix - (contest.finalTotal*contest.teamSixAmount/contest.totalAmount.teamSix-contest.teamSixAmount)*0.15 :  0.85*contest.finalTotal*contest.teamSixAmount/contest.totalAmount.teamSix || 0
@@ -243,7 +243,7 @@ const get = (req, res) => {
                         ...player,
                         userAmount:contest.teamSevenAmount,
                         totalAmount:contest.totalAmount.teamSeven,
-                        totalPlayerCount:_.uniqBy(contest.teamSeven,'userId').length,
+                        totalPlayerCount:_.uniqBy(contest.teamSeven,"req.user.id").length,
                         multiplier:0.85*contest.finalTotal < contest.totalAmount.teamSeven ? contest.finalTotal/contest.totalAmount.teamSeven : 0.85*contest.finalTotal/contest.totalAmount.teamSeven || 0,  
                         prize: 0.85*contest.finalTotal < contest.totalAmount.teamSeven  ? contest.finalTotal : contest.finalTotal*0.85 || 0,   
                         payout: 0.85*contest.finalTotal < contest.totalAmount.teamSeven  ? contest.finalTotal*contest.teamSevenAmount/contest.totalAmount.teamSeven - (contest.finalTotal*contest.teamSevenAmount/contest.totalAmount.teamSeven-contest.teamSevenAmount)*0.15 : 0.85*contest.finalTotal*contest.teamSevenAmount/contest.totalAmount.teamSeven || 0, 
@@ -254,7 +254,7 @@ const get = (req, res) => {
                         ...player,
                         userAmount:contest.teamEightAmount,
                         totalAmount:contest.totalAmount.teamEight,
-                        totalPlayerCount:_.uniqBy(contest.teamEight,'userId').length,
+                        totalPlayerCount:_.uniqBy(contest.teamEight,"req.user.id").length,
                         multiplier:0.85*contest.finalTotal < contest.totalAmount.teamEight ? contest.finalTotal/contest.totalAmount.teamEight : 0.85*contest.finalTotal/contest.totalAmount.teamEight || 0,  
                         prize: 0.85*contest.finalTotal < contest.totalAmount.teamEight  ? contest.finalTotal : contest.finalTotal*0.85 || 0,   
                         payout: 0.85*contest.finalTotal < contest.totalAmount.teamEight  ? contest.finalTotal*contest.teamEightAmount/contest.totalAmount.teamEight - (contest.finalTotal*contest.teamEightAmount/contest.totalAmount.teamEight-contest.teamEightAmount)*0.15 : 0.85*contest.finalTotal*contest.teamEightAmount/contest.totalAmount.teamEight || 0, 
@@ -267,7 +267,7 @@ const get = (req, res) => {
                         ...player,
                         userAmount:contest.greyteamAmount,
                         totalAmount:contest.totalAmount.greyteam,
-                        totalPlayerCount:_.uniqBy(contest.greyteam,'userId').length,
+                        totalPlayerCount:_.uniqBy(contest.greyteam,"req.user.id").length,
                         multiplier:0.85*contest.finalTotal < contest.totalAmount.greyteam ? contest.finalTotal/contest.totalAmount.greyteam : 0.85*contest.finalTotal/contest.totalAmount.greyteam || 0,  
                         prize: 0.85*contest.finalTotal < contest.totalAmount.greyteam  ? contest.finalTotal : contest.finalTotal*0.85 || 0,   
                         payout: 0.85*contest.finalTotal < contest.totalAmount.greyteam  ? contest.finalTotal*contest.greyteamAmount/contest.totalAmount.greyteam - (contest.finalTotal*contest.greyteamAmount/contest.totalAmount.greyteam-contest.greyteamAmount)*0.15 : 0.85*contest.finalTotal*contest.greyteamAmount/contest.totalAmount.greyteam || 0,   
@@ -293,9 +293,9 @@ const get = (req, res) => {
                 typeName:contest.typeName,
                 playerInfo:contest.playerInfo,
                 teams:[],
-                teamOnePlayerCount:_.uniqBy(contest.teamOne,'userId').length,
-                teamTwoPlayerCount:_.uniqBy(contest.teamTwo,'userId').length,
-                teamThreePlayerCount:_.uniqBy(contest.teamThree,'userId').length,
+                teamOnePlayerCount:_.uniqBy(contest.teamOne,"req.user.id").length,
+                teamTwoPlayerCount:_.uniqBy(contest.teamTwo,"req.user.id").length,
+                teamThreePlayerCount:_.uniqBy(contest.teamThree,"req.user.id").length,
                 teamOneAmount:contest.teamOneAmount || 0,
                 teamOnePayout:(contest.totalAmount.teamOne+contest.totalAmount.teamTwo+contest.totalAmount.teamThree)*contest.teamOneAmount/contest.totalAmount.teamOne || 0,
                 teamTwoAmount:contest.teamTwoAmount || 0,

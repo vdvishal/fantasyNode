@@ -37,7 +37,7 @@ const joinVs = async (req, res) => {
     if(req.body.teamId === 1){
         team = {
             teamOne: {
-                userId: 'userId',//req.user.id,
+                userId: req.user.id,//req.user.id,
                 amount: req.body.amount 
             }
         }
@@ -46,7 +46,7 @@ const joinVs = async (req, res) => {
     }else if(req.body.teamId === 2){
         team = {
             teamTwo: {
-                userId: 'userId',//req.user.id,
+                userId: req.user.id,//req.user.id,
                 amount: req.body.amount 
             }
         } 
@@ -55,7 +55,7 @@ const joinVs = async (req, res) => {
     }else if(req.body.teamId === 3){
         team = {
             teamThree: {
-                userId: 'userId',//req.user.id,
+                userId: req.user.id,//req.user.id,
                 amount: req.body.amount 
             }
         }
@@ -64,7 +64,7 @@ const joinVs = async (req, res) => {
     }else if(req.body.teamId === 4){
         team = {
             teamFour: {
-                userId: 'userId',//req.user.id,
+                userId: req.user.id,//req.user.id,
                 amount: req.body.amount 
             }
         } 
@@ -73,7 +73,7 @@ const joinVs = async (req, res) => {
     }else if(req.body.teamId === 7){
         team = {
             teamSeven: {
-                userId: 'userId',//req.user.id,
+                userId: req.user.id,//req.user.id,
                 amount: req.body.amount 
             }
         }
@@ -82,7 +82,7 @@ const joinVs = async (req, res) => {
     }else if(req.body.teamId === 5){
         team = {
             teamFive: {
-                userId: 'userId',//req.user.id,
+                userId: req.user.id,//req.user.id,
                 amount: req.body.amount 
             }
         } 
@@ -91,7 +91,7 @@ const joinVs = async (req, res) => {
     }else if(req.body.teamId === 6){
         team = {
             teamSix: {
-                userId: 'userId',//req.user.id,
+                userId: req.user.id,//req.user.id,
                 amount: req.body.amount 
             }
         }
@@ -100,7 +100,7 @@ const joinVs = async (req, res) => {
     }else if(req.body.teamId === 8){
         team = {
             teamEight: {
-                userId: 'userId',//req.user.id,
+                userId: req.user.id,//req.user.id,
                 amount: req.body.amount 
             }
         } 

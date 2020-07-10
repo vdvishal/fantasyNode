@@ -26,7 +26,7 @@ const join = (req, res) => {
     if(req.body.teamId === 1){
         team = {
             teamOne: {
-                userId: 'userId',//req.user.id,
+                userId: req.user.id,//req.user.id,
                 amount: req.body.amount 
             }
         }
@@ -35,7 +35,7 @@ const join = (req, res) => {
     }else if(req.body.teamId === 2){
         team = {
             teamTwo: {
-                userId: 'userId',//req.user.id,
+                userId: req.user.id,//req.user.id,
                 amount: req.body.amount 
             }
         } 
@@ -44,7 +44,7 @@ const join = (req, res) => {
     }else if(req.body.teamId === 3){
         team = {
             teamThree: {
-                userId: 'userId',//req.user.id,
+                userId: req.user.id,//req.user.id,
                 amount: req.body.amount 
             }
         } 

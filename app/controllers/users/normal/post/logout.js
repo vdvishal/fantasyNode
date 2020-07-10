@@ -7,7 +7,7 @@ const
 const logout = (req, res) => {
     console.log(req.headers.authorization);
     
-    redisClient.HDEL("key",req.headers.authorization)
+    // redisClient.HDEL("key",req.headers.authorization)
     // redisClient.HSET(req.headers.authorization,"String",1,function(err) {
     //     if (err) throw err;
     // })

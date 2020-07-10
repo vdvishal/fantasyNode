@@ -15,16 +15,16 @@ const getUserId = (req, res) => {
             $match:{
                 status:req.params.status,
                 $or:[
-                    {teamOne:{$elemMatch:{'userId':'userId'}}},
-                    {teamTwo:{$elemMatch:{'userId':'userId'}}},
-                    {teamThree:{$elemMatch:{'userId':'userId'}}},
-                    {teamFour:{$elemMatch:{'userId':'userId'}}},
-                    {teamFive:{$elemMatch:{'userId':'userId'}}},
-                    {teamSix:{$elemMatch:{'userId':'userId'}}},
-                    {teamSeven:{$elemMatch:{'userId':'userId'}}},
-                    {teamEight:{$elemMatch:{'userId':'userId'}}},
-                    {teamEight:{$elemMatch:{'userId':'userId'}}},
-                    {purpleTeam:{$elemMatch:{'userId':'userId'}}}
+                    {teamOne:{$elemMatch:{'userId':req.user.id}}},
+                    {teamTwo:{$elemMatch:{'userId':req.user.id}}},
+                    {teamThree:{$elemMatch:{'userId':req.user.id}}},
+                    {teamFour:{$elemMatch:{'userId':req.user.id}}},
+                    {teamFive:{$elemMatch:{'userId':req.user.id}}},
+                    {teamSix:{$elemMatch:{'userId':req.user.id}}},
+                    {teamSeven:{$elemMatch:{'userId':req.user.id}}},
+                    {teamEight:{$elemMatch:{'userId':req.user.id}}},
+                    {teamEight:{$elemMatch:{'userId':req.user.id}}},
+                    {purpleTeam:{$elemMatch:{'userId':req.user.id}}}
                 ]
             }
         },

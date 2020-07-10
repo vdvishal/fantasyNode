@@ -12,7 +12,7 @@ const MatchUpContest = mongoose.model('MatchUpContest');
 const post = (req, res) => {
     console.log(req.body);
     
-    const contest = new MatchUpContest(req.body)
+    const contest = new MatchUpContest({userId:req.user.id,...req.body})
 
     contest.save().then(response => res.status(200).json(response)).catch()
 

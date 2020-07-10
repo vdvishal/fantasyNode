@@ -115,6 +115,10 @@ const login = async (req, res) => {
           res.status(204)
           return res.status(204).json({ message: 'No user found' });
         }
+        if (user === null) {
+          res.status(204)
+          return res.status(204).json({ message: 'No user found' });
+        }
         if (!hash.comparePassword(user.password, req.body.password)) {
           res.status(401)
           return res.send({ message: 'Incorrect email or password.' });

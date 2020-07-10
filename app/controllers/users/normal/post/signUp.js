@@ -127,7 +127,7 @@ const saveToDb = (data) => new Promise((resolve, reject) => {
         }],
         wallet: {
             balance: 0,
-            bonus: 0.5
+            bonus: 0
         },
         totalRefers: 0,
         facebookId: data.facebookId || 0,

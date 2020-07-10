@@ -30,14 +30,18 @@ const Contest =  new Schema({
   ],
   teamOne: [
     {
-      userId: String,
+      userId: {
+        type: mongoose.Types.ObjectId
+      },
       amount: Number
     }
   ],
  
 teamTwo: [
     {
-      userId: String,
+      userId: {
+        type: mongoose.Types.ObjectId
+      },
       amount: Number
     }
   ],
@@ -45,7 +49,9 @@ teamTwo: [
 teamThree: [
  
     {
-      userId: String,
+      userId: {
+        type: mongoose.Types.ObjectId
+      },
       amount: Number
     }
   ],
@@ -53,7 +59,9 @@ teamThree: [
 teamFour: [
  
     {
-      userId: String,
+      userId: {
+        type: mongoose.Types.ObjectId
+      },
       amount: Number
     }
   ],
@@ -61,7 +69,9 @@ teamFour: [
 teamFive: [
  
     {
-      userId: String,
+      userId: {
+        type: mongoose.Types.ObjectId
+      },
       amount: Number
     }
   ],
@@ -69,21 +79,27 @@ teamFive: [
 teamSix: [
  
     {
-      userId: String,
+      userId: {
+        type: mongoose.Types.ObjectId
+      },
       amount: Number
     }
   ],
   
 teamSeven: [
     {
-      userId: String,
+      userId: {
+        type: mongoose.Types.ObjectId
+      },
       amount: Number
     }
   ],
    
 teamEight:[
     {
-      userId: String,
+      userId: {
+        type: mongoose.Types.ObjectId
+      },
       amount: Number
     }
   ],
