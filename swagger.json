@@ -1,869 +1,388 @@
 {
-    "swagger": "2.0",
-    "info": {
-        "version": "1.0.0",
-        "title": "Fantasy App Api",
-        "description": "API for fantasy app",
-        "license": {
-            "name": "MIT",
-            "url": "https://opensource.org/licenses/MIT"
-        }
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Swagger Petstore",
+    "description": "",
+    "termsOfService": "http://swagger.io/terms/",
+    "contact": {
+      "email": "apiteam@swagger.io"
     },
-    "host": "localhost:3009",
-    "basePath": "/api/v1",
-    "tags": [
-        {
-            "name": "Users",
-            "description": "API for users in the system"
-        },
-        {
-            "name": "Match",
-            "description": "API for upcoming matches"
-        },
-        {
-            "name": "Contest",
-            "description": "API for Contest"
-        },
-        {
-            "name": "Team",
-            "description": "API for get post delete patch teams"
-        }
-    ],
-    "schemes": [
-        "http",
-        "https"
-    ],
-    "consumes": [
-        "application/json"
-    ],
-    "produces": [
-        "application/json"
-    ],
-    "paths": {
-        "/users/signup": {
-            "post": {
-                "tags": [
-                    "Users"
-                ],
-                "summary": "SignUp new user in system",
-                "description": "Create new user in system",
-                "parameters": [
-                    {
-                        "name": "user",
-                        "in": "body",
-                        "description": "User that we want to create",
-                        "schema": {
-                            "$ref": "#/definitions/User"
-                        }
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Registered successfully, please verify your email address."
-                    },
-                    "409": {
-                        "description": "Email already registered"
-                    },
-                    "422": {
-                        "description": "Validation Error"
-                    }
-                }
-            }
-        },
-        "/users/login": {
-            "post": {
-                "tags": [
-                    "Users"
-                ],
-                "description": "Login user in system",
-                "parameters": [
-                    {
-                        "name": "user",
-                        "in": "body",
-                        "description": "Login user to system",
-                        "schema": {
-                            "$ref": "#/definitions/login"
-                        }
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "New user is created",
-                        "schema": {
-                            "properties": {
-                                "message": {
-                                    "type": "string",
-                                    "enum": "User logged in succesfully"
-                                },
-                                "token": {
-                                    "type": "string",
-                                    "enum": "uiyaschgbaiuscbasiucbasuicabsiub"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation error",
-                        "schema": {
-                            "$ref": "#/definitions/default"
-                        }
-                    },
-                    "409": {
-                        "description": "Password is incorrect",
-                        "schema": {
-                            "$ref": "#/definitions/default"
-                        }
-                    }
-                }
-            }
-        },
-        "/users/profile": {
-            "parameters": [
-                {
-                    "name": "Authorization",
-                    "in": "header",
-                    "required": true,
-                    "description": "JWT token for auth(eg:- JWT tokenToSend)",
-                    "type": "string"
-                }
-            ],
-            "get": {
-                "tags": [
-                    "Users"
-                ],
-                "summary": "Get user",
-                "responses": {
-                    "200": {
-                        "description": "User is found",
-                        "schema": {
-                            "$ref": "#/definitions/profile"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "summary": "Update user with give ID",
-                "tags": [
-                    "Users"
-                ],
-                "parameters": [
-                    {
-                        "name": "user",
-                        "in": "body",
-                        "description": "User with new values of properties",
-                        "schema": {
-                            "$ref": "#/definitions/User"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "User is updated",
-                        "schema": {
-                            "$ref": "#/definitions/User"
-                        }
-                    }
-                }
-            }
-        },
-        "/users/refreshToken": {
-            "parameters": [
-                {
-                    "name": "Authorization",
-                    "in": "header",
-                    "required": true,
-                    "description": "JWT token for auth(eg:- JWT tokenToSend)",
-                    "type": "string"
-                }
-            ],
-            "get": {
-                "tags": [
-                    "Users"
-                ],
-                "summary": "Get user",
-                "responses": {
-                    "200": {
-                        "description": "User is found",
-                        "schema": {
-                            "$ref": "#/definitions/profile"
-                        }
-                    }
-                }
-            }
-            
-        },
-        "/match": {
-            "get": {
-                "tags": [
-                    "Match"
-                ],
-                "summary": "Get matches list",
-                "responses": {
-                    "200": {
-                        "description": "matches list",
-                        "schema": {}
-                    }
-                }
-            }
-        },
-        "/match/user": {
-            "get": {
-                "tags": [
-                    "Match"
-                ],
-                "summary": "Get matches joined by user",
-                "responses": {
-                    "200": {
-                        "description": "matches list",
-                        "schema": {}
-                    }
-                }
-            }
-        },
-        "/contest/{matchId}": {
-            "parameters": [
-                {
-                    "name": "matchId",
-                    "in": "path",
-                    "required": true,
-                    "description": "List of contest for the match",
-                    "type": "string"
-                }
-            ],
-            "get": {
-                "tags": [
-                    "Contest"
-                ],
-                "summary": "Get contest list for the match",
-                "responses": {
-                    "200": {
-                        "description": "Contest list",
-                        "schema": {}
-                    }
-                }
-            }
-        },
-        "/contest/{id}": {
-            "parameters": [
-                {
-                    "name": "id",
-                    "in": "path",
-                    "required": true,
-                    "description": "Get detail of the contest",
-                    "type": "string"
-                }
-            ],
-            "get": {
-                "tags": [
-                    "Contest"
-                ],
-                "summary": "Get detail of the contest",
-                "responses": {
-                    "200": {
-                        "description": "Contest Details",
-                        "schema": {}
-                    }
-                }
-            }
-        },
-        "/contest/user": {
-            "get": {
-                "tags": [
-                    "Contest"
-                ],
-                "summary": "Get detail of the contest by user",
-                "responses": {
-                    "200": {
-                        "description": "Contest Details",
-                        "schema": {}
-                    }
-                }
-            }
-        },
-        "/contest/join": {
-            "parameters": [
-                {
-                    "name": "Authorization",
-                    "in": "header",
-                    "required": true,
-                    "description": "JWT token for auth(eg:- JWT tokenToSend)",
-                    "type": "string"
-                },
-                {
-                    "name": "_id",
-                    "in": "body",
-                    "required": true,
-                    "description": "ContestId of the contest to join",
-                    "type": "string"
-                },
-                {
-                    "name": "team",
-                    "in": "body",
-                    "required": true,
-                    "description": "1 is for team which on more side/red team && 0 is for team which on lesser side/blue team",
-                    "type": "number"
-                },
-                {
-                    "name": "amount",
-                    "in": "body",
-                    "required": true,
-                    "description": "amount bet ion the player",
-                    "type": "number"
-                }
-            ],
-            "post": {
-                "tags": [
-                    "Contest"
-                ],
-                "summary": "Join contest",
-                "responses": {
-                    "200": {
-                        "description": "Join contest",
-                        "schema": {}
-                    }
-                }
-            }
-        },
-        "/contest/join/custom": {
-            "parameters": [
-                {
-                    "name": "Authorization",
-                    "in": "header",
-                    "required": true,
-                    "description": "JWT token for auth(eg:- JWT tokenToSend)",
-                    "type": "string"
-                },
-                {
-                    "name": "_id",
-                    "in": "body",
-                    "required": true,
-                    "description": "ContestId of the contest to join",
-                    "type": "string"
-                },
-                {
-                    "name": "team",
-                    "in": "body",
-                    "required": true,
-                    "description": "1 is for team which on more side/red team && 0 is for team which on lesser side/blue team",
-                    "type": "number"
-                },
-                {
-                    "name": "amount",
-                    "in": "body",
-                    "required": true,
-                    "description": "amount bet on the player",
-                    "type": "number"
-                }
-            ],
-            "post": {
-                "tags": [
-                    "Contest"
-                ],
-                "summary": "Join contest",
-                "responses": {
-                    "200": {
-                        "description": "Join contest",
-                        "schema": {}
-                    }
-                }
-            }
-        },
-        "/contest/join/vs": {
-            "parameters": [
-                {
-                    "name": "Authorization",
-                    "in": "header",
-                    "required": true,
-                    "description": "JWT token for auth(eg:- JWT tokenToSend)",
-                    "type": "string"
-                },
-                {
-                    "name": "_id",
-                    "in": "body",
-                    "required": true,
-                    "description": "ContestId of the contest to join",
-                    "type": "string"
-                },
-                {
-                    "name": "team",
-                    "in": "body",
-                    "required": true,
-                    "description": "redTeam: 1 blueTeam: 2 greenTeam: 3 yellowTeam: 4",
-                    "type": "number"
-                },
-                {
-                    "name": "amount",
-                    "in": "body",
-                    "required": true,
-                    "description": "amount bet on the player",
-                    "type": "number"
-                }
-            ],
-            "post": {
-                "tags": [
-                    "Contest"
-                ],
-                "summary": "Join custom contest",
-                "responses": {
-                    "200": {
-                        "description": "Join contest",
-                        "schema": {}
-                    }
-                }
-            }
-        },
-        "/contest/create": {
-            "parameters": [
-                {
-                    "name": "Authorization",
-                    "in": "header",
-                    "required": true,
-                    "description": "JWT token for auth(eg:- JWT tokenToSend)",
-                    "type": "string"
-                },
-                {
-                    "name": "_id",
-                    "in": "body",
-                    "required": true,
-                    "description": "ContestId of the contest to join",
-                    "type": "string"
-                },
-                {
-                    "name": "team",
-                    "in": "body",
-                    "required": true,
-                    "description": "redTeam: 1 blueTeam: 2 greenTeam: 3 yellowTeam: 4",
-                    "type": "number"
-                },
-                {
-                    "name": "amount",
-                    "in": "body",
-                    "required": true,
-                    "description": "amount bet on the player",
-                    "type": "number"
-                }
-            ],
-            "post": {
-                "tags": [
-                    "Contest"
-                ],
-                "summary": "Join custom contest",
-                "responses": {
-                    "200": {
-                        "description": "Join contest",
-                        "schema": {}
-                    }
-                }
-            }
-        },
-        "/team/players/{teamId}": {
-            "parameters": [
-                {
-                    "name": "Authorization",
-                    "in": "header",
-                    "required": true,
-                    "description": "JWT token for auth(eg:- JWT tokenToSend)",
-                    "type": "string"
-                },
-                {
-                    "name": "teamId",
-                    "in": "path",
-                    "required": true,
-                    "description": "teamId of the players",
-                    "type": "string"
-                }
-            ],
-            "get": {
-                "tags": [
-                    "Team"
-                ],
-                "summary": "Get players of a team to make user teams",
-                "responses": {
-                    "200": {
-                        "description": "Player list",
-                        "schema": {}
-                    }
-                }
-            }
-        },
-        "/team": {
-            "parameters": [
-                {
-                    "name": "Authorization",
-                    "in": "header",
-                    "required": true,
-                    "description": "JWT token for auth(eg:- JWT tokenToSend)"
-                },
-                {
-                    "name": "type",
-                    "in": "query",
-                    "required": true,
-                    "description": "use tags: 1.teamId 2.matchId",
-                    "type": "string"
-                },
-                {
-                    "name": "teamId",
-                    "in": "query",
-                    "description": "team id of a particular team",
-                    "type": "string"
-                },
-                {
-                    "name": "matchId",
-                    "in": "query",
-                    "description": "matchId id of a particular match",
-                    "type": "number"
-                }
-            ],
-            "get": {
-                "tags": [
-                    "Team"
-                ],
-                "summary": "Get a team details or get list of team for a user for a match based on type",
-                "responses": {
-                    "200": {
-                        "description": "Player list",
-                        "schema": {}
-                    }
-                }
-            }
-        },
-        "/team/user": {
-            "post": {
-                "tags": [
-                    "Team"
-                ],
-                "parameters": [
-                    {
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true,
-                        "description": "JWT token for auth(eg:- JWT tokenToSend)",
-                        "type": "string"
-                    },
-                    {
-                        "name": "body",
-                        "in": "body",
-                        "description": "team created by user",
-                        "type": "object",
-                        "schema": {
-                            "type": "object",
-                            "$ref": "#/definitions/team"
-                        }
-                    }
-                ],
-                "summary": "Create team for contest",
-                "responses": {
-                    "200": {
-                        "description": "Player list",
-                        "schema": {}
-                    }
-                }
-            },
-            "patch": {
-                "tags": [
-                    "Team"
-                ],
-                "parameters": [
-                    {
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true,
-                        "description": "JWT token for auth(eg:- JWT tokenToSend)",
-                        "type": "string"
-                    },
-                    {
-                        "name": "body",
-                        "in": "body",
-                        "description": "patch team by user",
-                        "type": "object",
-                        "schema": {
-                            "type": "object",
-                            "$ref": "#/definitions/teamPatch"
-                        }
-                    }
-                ],
-                "summary": "Patch team by id",
-                "responses": {
-                    "200": {
-                        "description": "Player list",
-                        "schema": {}
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "Team"
-                ],
-                "parameters": [
-                    {
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true,
-                        "description": "JWT token for auth(eg:- JWT tokenToSend)",
-                        "type": "string"
-                    },
-                    {
-                        "name": "teamId",
-                        "in": "body",
-                        "description": "delete team by id",
-                        "type": "string"
-                    }
-                ],
-                "summary": "delete team by id",
-                "responses": {
-                    "200": {
-                        "description": "Player list",
-                        "schema": {}
-                    }
-                }
-            }
-        },
-        "/deposit": {
-            "post": {
-                "tags": [
-                    "Deposit"
-                ],
-                "parameters": [
-                    {
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true,
-                        "description": "JWT token for auth(eg:- JWT tokenToSend)",
-                        "type": "string"
-                    },
-                    {
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "description": "JWT token for auth(eg:- JWT tokenToSend)",
-                        "type": "string"
-                    }
-                ],
-                "summary": "Deposit API pending"
-
-            }
-        },
-        "/withdraw": {
-            "post": {
-                "tags": [
-                    "Deposit"
-                ],
-                "parameters": [
-                    {
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true,
-                        "description": "JWT token for auth(eg:- JWT tokenToSend)",
-                        "type": "string"
-                    },
-                    {
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "description": "JWT token for auth(eg:- JWT tokenToSend)",
-                        "type": "string"
-                    }
-                ],
-                "summary": "Deposit API pending"
-
-            }
-        }
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "definitions": {
-        "User": {
-            "required": [
-                "email",
-                "password",
-                "userName",
-                "fName",
-                "lName"
-            ],
-            "properties": {
-                "email": {
-                    "type": "string",
-                    "uniqueItems": true
-                },
-                "firstName": {
-                    "type": "string"
-                },
-                "lastName": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "userName": {
-                    "type": "string"
-                },
-                "refferCode": {
-                    "type": "string"
-                },
-                "countryCode": {
-                    "type": "string"
-                },
-                "phone": {
-                    "type": "string"
-                },
-                "loginType":  {
-                    "type": "string"
-                },
-                "facebookId":{
-                    "type": "string"
-                }
-
-            }
-        },
-        "login": {
-            "required": [
-                "email",
-                "password"
-            ],
-            "properties": {
-                "email": {
-                    "type": "string",
-                    "uniqueItems": true
-                },
-                "password": {
-                    "type": "string"
-                }
-            }
-        },
-        "profile": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string",
-                    "uniqueItems": true
-                },
-                "firstName": {
-                    "type": "string"
-                },
-                "lastName": {
-                    "type": "string"
-                },
-                "wallet": {
-                    "type": "object",
-                    "properties": {
-                        "balance": {
-                            "type": "number"
-                        },
-                        "bonus": {
-                            "type": "number"
-                        }
-                    }
-                },
-                "userName": {
-                    "type": "string"
-                },
-                "refferCode": {
-                    "type": "string"
-                }
-            }
-        },
-        "team": {
-            "type": "object",
-            "properties": {
-                "matchId": {
-                    "type": "string",
-                    "required": true
-                },
-                "players": {
-                    "type": "array",
-                    "items": {
-                        "properties": {
-                            "_id": {
-                                "type": "string",
-                                "required": true
-                            },
-                            "id": {
-                                "type": "number",
-                                "required": true
-                            },
-                            "credit": {
-                                "type": "number",
-                                "required": true
-                            },
-                            "name": {
-                                "type": "string",
-                                "required": true
-                            },
-                            "role": {
-                                "type": "string",
-                                "required": true
-                            },
-                            "support": {
-                                "type": "boolean",
-                                "description": "support",
-                                "required": true
-                            },
-                            "IGL": {
-                                "type": "boolean",
-                                "description": "support",
-                                "required": true
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "teamPatch": {
-            "type": "object",
-            "properties": {
-                "teamId": {
-                    "type": "string",
-                    "required": true
-                },
-                "players": {
-                    "type": "array",
-                    "items": {
-                        "properties": {
-                            "_id": {
-                                "type": "string",
-                                "required": true
-                            },
-                            "id": {
-                                "type": "number",
-                                "required": true
-                            },
-                            "credit": {
-                                "type": "number",
-                                "required": true
-                            },
-                            "name": {
-                                "type": "string",
-                                "required": true
-                            },
-                            "role": {
-                                "type": "string",
-                                "required": true
-                            },
-                            "support": {
-                                "type": "boolean",
-                                "description": "support",
-                                "required": true
-                            },
-                            "IGL": {
-                                "type": "boolean",
-                                "description": "support",
-                                "required": true
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "default": {
-            "properties": {
-                "message": {
-                    "type": "string"
-                }
-            }
-        }
+    "version": "1.0.0"
+  },
+  "externalDocs": {
+    "description": "Find out more about Swagger",
+    "url": "http://swagger.io"
+  },
+  "servers": [
+    {
+      "url": "https://api.link.com/api/v1"
+    },
+    {
+      "url": "http://api.link.com/api/v1"
     }
+  ],
+  "tags": [
+    {
+      "name": "users",
+      "description": "Everything about users"
+    },
+    {
+      "name": "match",
+      "description": "Everything about match"
+    },
+    {
+      "name": "contest",
+      "description": "Everything about contest"
+    }
+  ],
+  "paths": {
+    "/signup": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "User signup",
+        "requestBody": {
+          "description": "User object that needs to be added",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserResponse"
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Invalid input",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      }
+    },
+    "/match": {
+      "get": {
+        "tags": [
+          "match"
+        ],
+        "summary": "Get matches",
+        "parameters": [
+          {
+            "name": "matchId",
+            "in": "query",
+            "description": "MatchId if getting a specific match or 0 for all match",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {}
+          },
+          "405": {
+            "description": "Invalid input",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/match/user": {
+      "get": {
+        "tags": [
+          "match"
+        ],
+        "summary": "Get matches",
+        "parameters": [
+          {
+            "name": "matchId",
+            "in": "query",
+            "description": "MatchId if getting a specific match or 0 for all match",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {}
+          },
+          "405": {
+            "description": "Invalid input",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/contest/{matchId}": {
+      "get": {
+        "tags": [
+          "contest"
+        ],
+        "summary": "Get matches",
+        "parameters": [
+          {
+            "name": "matchId",
+            "in": "path",
+            "description": "Get contest in the match",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {}
+          },
+          "405": {
+            "description": "Invalid input",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/contest/matchUps/{matchId}": {
+      "get": {
+        "tags": [
+          "contest"
+        ],
+        "summary": "Get matchups contest",
+        "parameters": [
+          {
+            "name": "matchId",
+            "in": "path",
+            "description": "Get matchups contest in the match",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {}
+          },
+          "405": {
+            "description": "Invalid input",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/contest/join": {
+      "post": {
+        "tags": [
+          "contest"
+        ],
+        "summary": "Join Contest",
+        "requestBody": {
+          "description": "User object that needs to be added",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {}
+          },
+          "405": {
+            "description": "Invalid input",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/user": {
+      "post": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Create user",
+        "description": "This can only be done by the logged in user.",
+        "operationId": "createUser",
+        "requestBody": {
+          "description": "Created user object",
+          "content": {
+            "*/*": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": "successful operation",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      }
+    },
+    "/login": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Logs user into the system",
+        "operationId": "loginUser",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "query",
+            "description": "The user name for login",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "password",
+            "in": "query",
+            "description": "The password for login in clear text",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "headers": {
+              "X-Rate-Limit": {
+                "description": "calls per hour allowed by the user",
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "X-Expires-After": {
+                "description": "date in UTC when token expires",
+                "schema": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            },
+            "content": {
+              "application/xml": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid username/password supplied",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/logout": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Logs out current logged in user session",
+        "operationId": "logoutUser",
+        "responses": {
+          "default": {
+            "description": "successful operation",
+            "content": {}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          }
+        },
+        "xml": {
+          "name": "User"
+        }
+      },
+      "UserResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "petstore_auth": {
+        "type": "oauth2",
+        "flows": {
+          "implicit": {
+            "authorizationUrl": "http://petstore.swagger.io/oauth/dialog",
+            "scopes": {
+              "write:pets": "modify pets in your account",
+              "read:pets": "read your pets"
+            }
+          }
+        }
+      },
+      "api_key": {
+        "type": "apiKey",
+        "name": "api_key",
+        "in": "header"
+      }
+    }
+  }
 }
