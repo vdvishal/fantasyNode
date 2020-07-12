@@ -13,9 +13,9 @@ const { get,post } = contest
 module.exports.setRouter = (app) => {
     app.get(`${process.env.BASE_URL}/contest/:matchId`,get.get);
 
-    app.get(`${process.env.BASE_URL}/contest/live/:matchId`,isAuth(),get.getById);
+    app.get(`${process.env.BASE_URL}/contest/live/:matchId`,isAuth,get.getById);
 
-    app.get(`${process.env.BASE_URL}/contest/user`,isAuth(),get.getUserId);
+    app.get(`${process.env.BASE_URL}/contest/user`,isAuth,get.getUserId);
 
     app.get(`${process.env.BASE_URL}/contest/matchUps/:matchId`,get.matchUps);
 
@@ -24,13 +24,13 @@ module.exports.setRouter = (app) => {
 
 // POST --- > join, joinCustom, createCustom
 
-    app.post(`${process.env.BASE_URL}/contest/join`,isAuth(),post.join)
+    app.post(`${process.env.BASE_URL}/contest/join`,isAuth,post.join)
 
-    app.post(`${process.env.BASE_URL}/contest/join/custom`,isAuth(),post.joinCustom)
+    app.post(`${process.env.BASE_URL}/contest/join/custom`,isAuth,post.joinCustom)
 
-    app.post(`${process.env.BASE_URL}/contest/join/vs`,isAuth(),post.joinVs)
+    app.post(`${process.env.BASE_URL}/contest/join/vs`,isAuth,post.joinVs)
 
-    app.post(`${process.env.BASE_URL}/contest/join/matchup`,isAuth(),joinThirdContest.post.post)
+    app.post(`${process.env.BASE_URL}/contest/join/matchup`,isAuth,joinThirdContest.post.post)
 
 }
 

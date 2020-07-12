@@ -14,10 +14,7 @@ const Users = mongoose.model('Users');
 
 const joinVs = async (req, res) => {
 
-    await Users
-
-    console.log(req.body)
-
+ 
     let condition = {
         _id: req.body.contestId
     }

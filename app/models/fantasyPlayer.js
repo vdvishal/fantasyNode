@@ -12,6 +12,11 @@ const FantasyPlayer =  new Schema({
   
 },{strict:false})
 
+FantasyPlayer.virtual('matchDetail',{
+  ref: 'Matches',
+  localField: 'matchId',
+  foreignField: 'id',
+})
 
 
 mongoose.model('FantasyPlayer', FantasyPlayer);

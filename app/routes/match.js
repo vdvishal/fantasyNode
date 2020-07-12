@@ -8,7 +8,7 @@ module.exports.setRouter = (app) => {
     app.get(`${process.env.BASE_URL}/match/`,getUpcoming);
 
     // get --> byUserId
-    app.get(`${process.env.BASE_URL}/match/user/:status`,isAuth(),getByUserId);
+    app.get(`${process.env.BASE_URL}/match/user/:status`,isAuth,getByUserId);
 
 }
 

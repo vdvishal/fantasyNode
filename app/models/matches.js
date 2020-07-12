@@ -9,7 +9,6 @@ const mongoose = require('mongoose'),
   Schema = mongoose.Schema;
 
 const user =  new Schema({
-    key: String,
     name: String,
     teams: Object,
     start_date:Object,
