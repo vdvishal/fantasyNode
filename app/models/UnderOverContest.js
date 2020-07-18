@@ -9,13 +9,13 @@ const moment = require('moment')
 const mongoose = require('mongoose'),
   Schema = mongoose.Schema;
 
-const MatchUpContest =  new Schema({
+const UnderOverContest =  new Schema({
     matchId:Number,
     amount:Number,
     userId: {type: mongoose.Types.ObjectId},
-    selectedTeam:Object
+    selectedTeam: Object
 },{ strict: false,timestamps:true })
 
 
 
-mongoose.model('MatchUpContest', MatchUpContest);
+mongoose.model('UnderOverContest', UnderOverContest);

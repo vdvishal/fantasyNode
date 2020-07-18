@@ -12,6 +12,6 @@ const otherUserStats =  new Schema({
     spent: Number,
     contest: Number,
     exPoint: Number
-},{ strict: false })
+},{ strict: false,timestamps:true })
 
 mongoose.model('OtherUserStats', otherUserStats);

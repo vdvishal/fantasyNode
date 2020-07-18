@@ -125,11 +125,11 @@ const login = async (req, res) => {
         }
 
 
-        const token = jwt.sign({ id: user._id }, process.env.Access_key, { expiresIn: process.env.ACCESSTOKEN.toString() + 's', subject: 'user' });
+        const token = jwt.sign({ id: user._id }, process.env.Access_key, { expiresIn: '24h', subject: 'user' });
 
 
-        const refToken = jwt.sign({ id: user._id }, 'ref', { expiresIn: '86400s', subject: 'user' });
-
+        const refToken = jwt.sign({ id: user._id }, 'ref', { expiresIn: '24h', subject: 'user' });
+        res.status(200)
         res.send({ message: "Login success", token, refToken: refToken })
       });
       break;

@@ -17,6 +17,6 @@ const payout =  new Schema({
     paidOutDate:{
         type:Date
     }, 
-},{ strict: false })
+},{ strict: false,timestamps:true })
 
 mongoose.model('Payout', payout);

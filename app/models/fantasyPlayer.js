@@ -10,7 +10,7 @@ const mongoose = require('mongoose'),
 
 const FantasyPlayer =  new Schema({
   
-},{strict:false})
+},{ strict: false,timestamps:true })
 
 FantasyPlayer.virtual('matchDetail',{
   ref: 'Matches',

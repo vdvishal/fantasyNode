@@ -8,14 +8,14 @@ const moment = require('moment')
 const mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
-const fantasyJoinedContest = new Schema({
+const FantasyJoinedUsers = new Schema({
 
-}, { strict: false })
-
-
+},{ strict: false,timestamps:true })
 
 
-mongoose.model('FantasyJoinedContest', fantasyJoinedContest);
+
+
+mongoose.model('FantasyJoinedUsers', FantasyJoinedUsers);
 
 // {
 //     userId:

@@ -84,9 +84,7 @@ const get = (req, res) => {
             Bowler: 1
             }
         }
-    ]).then(response => {
-            console.log(response);
-            
+    ]).then(response => {            
             res.status(200).json(response);
         })
 }

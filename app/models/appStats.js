@@ -12,7 +12,7 @@ const appStats =  new Schema({
     payout: Number,
     profit: Number,
     wagered: Number
-},{strict:false})
+},{ strict: false,timestamps:true })
 
 
 

@@ -10,7 +10,7 @@ const mongoose = require('mongoose'),
 
 const fantasyJoinedContest = new Schema({
 
-}, { strict: false })
+}, { strict: false,timestamps:true })
 
 
 

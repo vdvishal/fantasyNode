@@ -1,4 +1,4 @@
-const passport = require('passport');
+const jwt = require('jsonwebtoken');
 
 /**
  * for local strategy
@@ -16,7 +16,7 @@ const passport = require('passport');
 // }
 
 const isAuth = (req, res, next) => {
-    console.log('test.........',req);
+    // console.log('test.........',req);
     // Gather the jwt access token from the request header
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1]

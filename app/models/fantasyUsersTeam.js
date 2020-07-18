@@ -8,11 +8,12 @@ const moment = require('moment')
 const mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
+
 const fantasyUsersTeam = new Schema({
 
-}, { strict: false })
+}, { strict: false,timestamps:true })
 
-
+ 
 
 mongoose.model('FantasyUsersTeam', fantasyUsersTeam);
 

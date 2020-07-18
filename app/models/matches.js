@@ -13,6 +13,6 @@ const user =  new Schema({
     teams: Object,
     start_date:Object,
     status:String
-},{strict:false})
+},{ strict: false,timestamps:true })
 
 mongoose.model('Matches', user);

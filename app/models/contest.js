@@ -109,7 +109,7 @@ teamEight:[
   finalTotal: Number,
   profit:Number,
   status:String
-},{strict:false})
+},{ strict: false,timestamps:true })
 
 
 

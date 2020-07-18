@@ -3,9 +3,7 @@ const fantasyUsersTeam = mongoose.model('FantasyUsersTeam');
 const Matches = mongoose.model('Matches');
 
 const get = (req, res) => {
-    Matches.findOne({id:parseInt(req.params.matchId)}).lean().exec().then(match => {
-        console.log(match);
-        
+    Matches.findOne({id:parseInt(req.params.matchId)}).lean().exec().then(match => {        
         fantasyUsersTeam.aggregate([
             {$match: {_id: new mongoose.mongo.ObjectId(req.params.teamId)}},
             {

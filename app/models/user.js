@@ -30,6 +30,6 @@ const user =  new Schema({
     googleId: String, 
     facebookId: String,
     status:Intl,
-})
+},{ strict: false,timestamps:true })
 
 mongoose.model('Users', user);
