@@ -8,7 +8,7 @@ const FantasyJoinedUsers = mongoose.model('FantasyJoinedUsers');
  * 
  * @param {*} req
     userId:req.params.userId,
-    matchId:req.params.matchId             
+    matchId:parseInt(req.params.matchId)             
     
     matchId -  ""
     contestId - 
@@ -20,7 +20,7 @@ const FantasyJoinedUsers = mongoose.model('FantasyJoinedUsers');
 const getUserId = async (req, res) => {
     let con1  = await UnderOverContest.aggregate([
         {
-            $match:{userId: mongoose.mongo.ObjectID("5f01ee1ba4f367053815c881"),matchId:12885}
+            $match:{userId: mongoose.mongo.ObjectID(req.user.id),matchId:parseInt(req.params.matchId)}
         },
         {
             $project:{
@@ -64,7 +64,7 @@ const getUserId = async (req, res) => {
 
     let con2  = await MatchUpContest.aggregate([
         {
-            $match:{userId: mongoose.mongo.ObjectID("5f01ee1ba4f367053815c881"),matchId:12885}
+            $match:{userId: mongoose.mongo.ObjectID(req.user.id),matchId:parseInt(req.params.matchId)}
         },
         {
             $project:{
@@ -107,53 +107,67 @@ const getUserId = async (req, res) => {
         ).exec()
         .then(response => response)
 
-    // let con3  = await FantasyJoinedUsers.aggregate([
-    //     {
-    //         $match: { userId:  mongoose.mongo.ObjectID("5f01ee1ba4f367053815c881"),matchId:req.params.matchId}
-    //     },
-    //     {
-    //         $lookup: {
-    //             from: 'matches',
-    //             localField: 'matchId',
-    //             foreignField: 'id',
-    //             as: 'match'
-    //         }
-    //     },
-    //     {
-    //         $lookup: {
-    //             from: 'fantasyjoinedusers',
-    //             localField: 'teamId',
-    //             foreignField: 'id',
-    //             as: 'team'
-    //         }
-    //     },
-    //     {
-    //         $lookup: {
-    //             from: 'fantasycontests',
-    //             localField: 'contestId',
-    //             foreignField: '_id',
-    //             as: 'contest'
-    //         }
-    //     }
-    //     ]).exec()
-    //     .then(response => response)
+    let con3  = await FantasyJoinedUsers.aggregate([
+        {
+            $match: { userId:  mongoose.mongo.ObjectID(req.user.id),matchId:parseInt(req.params.matchId)}
+        },
+        {
+            $lookup: {
+                from: 'fantasyusersteams',
+                localField: 'teamId',
+                foreignField: '_id',
+                as: 'team'
+            }
+        },
+        {
+            $project: {
+ 
+                matchId: 1,
+                contestId: 1,
+                teamId:1,
+                userId: 1,
+                team: {$arrayElemAt:["$team",0]},
+             }
+        },
+        {
+            $group: {
+                _id: "$contestId",
+                entries: { $push:"$$ROOT"},
+            }
+        },
+        {
+            $lookup: {
+                from: 'fantasycontests',
+                localField: '_id',
+                foreignField: '_id',
+                as: 'contestDetails'
+            }
+        },
+        {
+            $project: {
+                entries: 1,
+                contestDetails: {$arrayElemAt:["$contestDetails",0]},
+             }
+        },
+        ]).exec()
+        .then(response => response)
 
     let cons4 = await Contest.aggregate([
         {
             $match:{
-                matchId:parseInt(req.params.matchId),
+                matchId:parseInt(parseInt(req.params.matchId)),
                 contestType: 2,
                 $or:[
-                    {teamOne:{$elemMatch:{'userId':mongoose.mongo.ObjectID("5f01ee1ba4f367053815c881")}}},
-                    {teamTwo:{$elemMatch:{'userId':mongoose.mongo.ObjectID("5f01ee1ba4f367053815c881")}}},
-                    {teamThree:{$elemMatch:{'userId':mongoose.mongo.ObjectID("5f01ee1ba4f367053815c881")}}},
-                    {teamFour:{$elemMatch:{'userId':mongoose.mongo.ObjectID("5f01ee1ba4f367053815c881")}}},
-                    {teamFive:{$elemMatch:{'userId':mongoose.mongo.ObjectID("5f01ee1ba4f367053815c881")}}},
-                    {teamSix:{$elemMatch:{'userId':mongoose.mongo.ObjectID("5f01ee1ba4f367053815c881")}}},
-                    {teamSeven:{$elemMatch:{'userId':mongoose.mongo.ObjectID("5f01ee1ba4f367053815c881")}}},
-                    {teamEight:{$elemMatch:{'userId':mongoose.mongo.ObjectID("5f01ee1ba4f367053815c881")}}},
-                    {teamEight:{$elemMatch:{'userId':mongoose.mongo.ObjectID("5f01ee1ba4f367053815c881")}}},
-                    {purpleTeam:{$elemMatch:{'userId':mongoose.mongo.ObjectID("5f01ee1ba4f367053815c881")}}}
+                    {teamOne:{$elemMatch:{'userId':mongoose.mongo.ObjectID(req.user.id)}}},
+                    {teamTwo:{$elemMatch:{'userId':mongoose.mongo.ObjectID(req.user.id)}}},
+                    {teamThree:{$elemMatch:{'userId':mongoose.mongo.ObjectID(req.user.id)}}},
+                    {teamFour:{$elemMatch:{'userId':mongoose.mongo.ObjectID(req.user.id)}}},
+                    {teamFive:{$elemMatch:{'userId':mongoose.mongo.ObjectID(req.user.id)}}},
+                    {teamSix:{$elemMatch:{'userId':mongoose.mongo.ObjectID(req.user.id)}}},
+                    {teamSeven:{$elemMatch:{'userId':mongoose.mongo.ObjectID(req.user.id)}}},
+                    {teamEight:{$elemMatch:{'userId':mongoose.mongo.ObjectID(req.user.id)}}},
+                    {teamEight:{$elemMatch:{'userId':mongoose.mongo.ObjectID(req.user.id)}}},
+                    {purpleTeam:{$elemMatch:{'userId':mongoose.mongo.ObjectID(req.user.id)}}}
                 ]
             }
         },
@@ -177,56 +191,56 @@ const getUserId = async (req, res) => {
                             $filter: {
                             input: '$teamOne',
                             as: 'teamOne',
-                            cond: {$eq: ['$$teamOne.userId',mongoose.mongo.ObjectID("5f01ee1ba4f367053815c881")]}
+                            cond: {$eq: ['$$teamOne.userId',mongoose.mongo.ObjectID(req.user.id)]}
                         }
                     },
                'teamTwo':1,
                 'teamTwoAmount': {$filter: {
                     input: '$teamTwo',
                     as: 'teamTwo',
-                    cond: {$eq: ['$$teamTwo.userId',mongoose.mongo.ObjectID("5f01ee1ba4f367053815c881")]}
+                    cond: {$eq: ['$$teamTwo.userId',mongoose.mongo.ObjectID(req.user.id)]}
                 },
                 },
                'teamThree':1,
                 'teamThreeAmount': {$filter: {
                     input: '$teamThree',
                     as: 'teamThree',
-                    cond: {$eq: ['$$teamThree.userId',mongoose.mongo.ObjectID("5f01ee1ba4f367053815c881")]}
+                    cond: {$eq: ['$$teamThree.userId',mongoose.mongo.ObjectID(req.user.id)]}
                 },
                 },
                 'teamFour':1,
                 'teamFourAmount': {$filter: {
                     input: '$teamFour',
                     as: 'teamFour',
-                    cond: {$eq: ['$$teamFour.userId',mongoose.mongo.ObjectID("5f01ee1ba4f367053815c881")]}
+                    cond: {$eq: ['$$teamFour.userId',mongoose.mongo.ObjectID(req.user.id)]}
                 },
                 },
                'teamFive':1,
                 'teamFiveAmount': {$filter: {
                     input: '$teamFive',
                     as: 'teamFive',
-                    cond: {$eq: ['$$teamFive.userId',mongoose.mongo.ObjectID("5f01ee1ba4f367053815c881")]}
+                    cond: {$eq: ['$$teamFive.userId',mongoose.mongo.ObjectID(req.user.id)]}
                 },
                 },
                 'teamSix':1,
                 'teamSixAmount': {$filter: {
                     input: '$teamSix',
                     as: 'teamSix',
-                    cond: {$eq: ['$$teamSix.userId',mongoose.mongo.ObjectID("5f01ee1ba4f367053815c881")]}
+                    cond: {$eq: ['$$teamSix.userId',mongoose.mongo.ObjectID(req.user.id)]}
                 },
                 },
                'teamSeven':1,
                 'teamSevenAmount': {$filter: {
                     input: '$teamSeven',
                     as: 'teamSeven',
-                    cond: {$eq: ['$$teamSeven.userId',mongoose.mongo.ObjectID("5f01ee1ba4f367053815c881")]}
+                    cond: {$eq: ['$$teamSeven.userId',mongoose.mongo.ObjectID(req.user.id)]}
                 },
                 },
                'teamEight':1,
                 'teamEightAmount': {$filter: {
                     input: '$teamEight',
                     as: 'teamEight',
-                    cond: {$eq: ['$$teamEight.userId',mongoose.mongo.ObjectID("5f01ee1ba4f367053815c881")]}
+                    cond: {$eq: ['$$teamEight.userId',mongoose.mongo.ObjectID(req.user.id)]}
                 },
                 },
                  
@@ -292,7 +306,7 @@ const getUserId = async (req, res) => {
                 _id:1
             }
         }
-    ]).exec().then(response => response[0]['contest'])
+    ]).exec().then(response => response[0] ? response[0]['contest'] : [])
 
     let arr = [];
      
@@ -401,7 +415,7 @@ const getUserId = async (req, res) => {
             contestName:contest.contestName})
     })
 
-    res.status(200).json({vs:sortedContest,underOver:con1,comboMatch:con2})
+    res.status(200).json({vs:sortedContest,underOver:con1,comboMatch:con2,fantasy:con3})
 }
 
 module.exports = getUserId

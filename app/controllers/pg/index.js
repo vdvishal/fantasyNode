@@ -1,27 +1,51 @@
 const Razorpay = require('razorpay');
+const moment = require('moment');
+const mongoose = require('mongoose');
+ 
+const User = mongoose.model('Users');
+const Orders = mongoose.model('Orders');
 
+ 
 var instance = new Razorpay({
-    key_id: 'rzp_test_05glXE1CJZE2Hd',
-    key_secret: 'S1FpJ91q0nUQ3DqP3Q8I3jva'
+    key_id: process.env.RAZOR_KEY,
+    key_secret: process.env.RAZOR_SECRET
   })
 
 
 
   const createOrder = (req,res) => {
+
+    if(req.body.amount <= 0){
+      res.status(400).json({message:"Amount must be greater than 0"})
+    }
       
     var options = {
-        amount: 500,  // amount in the smallest currency unit
+        amount: parseInt(req.body.amount)*100,  // amount in the smallest currency unit
         currency: "INR",
-        receipt: "order_rcptid_1sda1",
-        payment_capture: '1'
+        receipt: `receipt_${moment().unix()}`,
+        payment_capture:1,
+        notes: {
+          userId: req.user.id
+        }
       };
-      console.log(options);
 
     instance.orders.create(options, function(err, order) {
-        console.log(order);
-        console.log(err);
+        if(err){
+          res.status(400).json({message:err.message})
+        }
 
-        res.status(200).json(order)
+        User.updateOne({_id:mongoose.mongo.ObjectID(req.user.id)},{
+          $set:{
+            activepayment:{...order,orderId:order.id}
+          }
+        }).then(Response=> {
+          let orderObj = new Orders({...order,orderId:order.id})
+          orderObj.save().then(resp=> {
+            res.status(200).json(order)
+          }).catch(err => res.status(500).json({message:"db error"}))
+        }).catch(err => res.status(500).json({message:"db error"}))
+
+        
       });
   }
 

@@ -5,7 +5,7 @@ const post = (req, res) => {
     FantasyUsersTeam.updateOne(
         { _id: new mongoose.mongo.ObjectId()}, 
         {$set:{
-            userId: "req.user.id",
+            userId: mongoose.mongo.ObjectId(req.user.id),
             teamName:  "req.user.username",
             matchId: parseInt(req.body.matchId),
             players: req.body.players

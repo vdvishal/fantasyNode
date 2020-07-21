@@ -135,8 +135,55 @@ const getUserId = async (req, res) => {
         return response
     })
 
+    let response4 = await FantasyJoinedUsers.aggregate([
+        {
+            $match:{'userId':new mongoose.mongo.ObjectID(req.user.id)}
+        },
+        {
+            $project:{
+                matchId:1
+            }
+        },
+        {
+            $group:{
+                _id :'null',
+                matchId: { $addToSet: "$matchId" }
+            }
+        },
+        {
+            $lookup: {
+                from: 'matches',
+                localField: 'matchId',
+                foreignField: 'id',
+                as: 'matchList'
+                }
+        },
+        {
+            $sort: {
+                "matchList.starting_at" : -1
+            }
+        },
+        {
+            $limit: 50
+        }
+    ]).exec().then(response => {
+        return response
+    })
+
+    response1 = response1[0] ? response1[0].matchList : []
+
+    response2 = response2[0] ? response2[0].matchList : []
+
+    response3 = response3[0] ? response3[0].matchList : []
+
+    response4 = response4[0] ? response4[0].matchList : []
+
  
-    let lll = _.uniq(response1[0].matchList,response2[0].matchList,response3[0].matchList)
+    let lll = _.uniqBy([...response1,
+        ...response2,
+        ...response3,
+        ...response4],"id")
+
     lll = _.orderBy(lll,['starting_at'],['desc'])
     lll = _.groupBy(lll,"status")
     

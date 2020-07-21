@@ -4,7 +4,7 @@ const AppStats = mongoose.model('AppStats');
 const _ = require('lodash');
 
 const get = (req, res) => {
-    Contest.find({matchId:parseInt(req.params.matchId)})
+    Contest.find({matchId:parseInt(req.params.matchId),isFull:false})
         .exec()
         .then(response => {            
             res.status(200).json({

@@ -1,12 +1,25 @@
 const mongoose = require('mongoose');
 const fantasyUsersTeam = mongoose.model('FantasyUsersTeam');
+const match = mongoose.model('Matches');
+const moment = require('moment')
 
-const get = (req, res) => {
-    fantasyUsersTeam.aggregate([
+const get = async (req, res) => {
+    
+    await match.findOne({id:parseInt(req.params.matchId)}).lean().then(response => {
+ 
+        if(moment(response.starting_at).unix() < moment().unix() ){
+            return res.status(202).json({message:"Match has already begun."})
+        }
+        console.log(moment(response.starting_at).unix());
+        console.log(moment().unix());
+
+    })
+
+    await fantasyUsersTeam.aggregate([
         {
             $match: {
                 matchId: parseInt(req.params.matchId),
-                userId: "req.user.id"
+                userId:  mongoose.mongo.ObjectId(req.user.id)
             }
         },
         {
