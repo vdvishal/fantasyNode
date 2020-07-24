@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const UnderOverContest = mongoose.model('UnderOverContest');
+const Users = mongoose.model('Users');
+const Orders = mongoose.model('Orders');
 
 /**
  * 
@@ -9,17 +11,45 @@ const UnderOverContest = mongoose.model('UnderOverContest');
  * @payload {*} res 
  */
 
-const post = (req, res) => {    
+const post = async (req, res) => {    
     let dt = req.body
     
+    const userDetails = await Users.findById(req.user.id)
+    .select('wallet')
+    .lean()
+    .exec()
+    .then(response => response)
+    .catch(err => res.status(500).json("Error try again later"));
+ 
+    if(userDetails.wallet.balance < req.body.amount){
+        return res.status(202).json({message:"Not enough balance."})
+    }
+
+
     Object.entries(dt.selectedTeam).forEach(([key,value]) => {
         dt.selectedTeam[key].contestId = mongoose.mongo.ObjectID(dt.selectedTeam[key].contestId)
     })
 
     const contest = new UnderOverContest({userId:req.user.id,...dt})
 
-    contest.save().then(response => res.status(200).json(response)).catch()
+    await contest.save().then(response => response).catch(err => res.status(500).json("Error try again later"));
 
+    let order = new Orders({
+        "amount" :  req.body.amount*100,
+        "status" : "contest_debit",
+        "orderId": "Under/Over",
+        "notes" : {
+            "userId" : req.user.id
+        }
+    })
+
+    order.save().then().catch()
+
+    await Users.updateOne({_id:req.user.id},{
+        $inc:{
+            "wallet.balance":-parseFloat(req.body.amount)
+        }
+    }).then(respo => res.status(200).json({message:"Contest Joined"}))
 }
 
 

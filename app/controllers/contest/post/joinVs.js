@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Contest = mongoose.model('Contest');
 const AppStats = mongoose.model('AppStats');
 const Users = mongoose.model('Users');
+const Orders = mongoose.model('Orders');
 
 /**
  * 
@@ -17,6 +18,18 @@ const joinVs = async (req, res) => {
  
     let condition = {
         _id: req.body.contestId
+    }
+
+    
+    const userDetails = await Users.findById(req.user.id)
+        .select('wallet')
+        .lean()
+        .exec()
+        .then(response => response)
+        .catch(err => res.status(500).json("Error try again later"));
+     
+    if(userDetails.wallet.balance < req.body.amount){
+        return res.status(202).json({message:"Not enough balance."})
     }
      
     let team;
@@ -122,18 +135,32 @@ const joinVs = async (req, res) => {
         }
     }
 
-    Contest.updateOne(condition,update).then(response => {
-        console.log(response);
-
+    await Contest.updateOne(condition,update).then(response => {
         AppStats.updateOne({},{
             $inc:{
                 wagered:redAmount+blueAmount+greenAmount+yellowAmount+orangeAmount+purpleAmount+brownAmount+blackAmount+pinkAmount+greyAmount,
                 // profit: (redAmount+blueAmount+greenAmount+yellowAmount+orangeAmount+purpleAmount+brownAmount+blackAmount+pinkAmount+greyAmount)*0.15
             }
-        },{upsert:true}).then(response => {})
-        //Rabbitmq post {}
-        res.status(200).json({message:"contest joined"})
+        },{upsert:true}).then(response => {})       
     }).catch(err => console.log(err))
+
+    let order = new Orders({
+        "amount" :  req.body.amount*100,
+        "status" : "contest_debit",
+        "orderId": "Matchups",
+        "notes" : {
+            "userId" : req.user.id
+        }
+    })
+
+    order.save().then().catch()
+
+        
+    await Users.updateOne({_id:req.user.id},{
+        $inc:{
+            "wallet.balance":-parseFloat(req.body.amount)
+        }
+    }).then(respo => res.status(200).json({message:"Contest Joined"}))
 }
 
 module.exports = joinVs

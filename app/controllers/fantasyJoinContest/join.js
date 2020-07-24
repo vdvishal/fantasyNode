@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const FantasyJoinedUsers = mongoose.model('FantasyJoinedUsers');
 const FantasyContest = mongoose.model('FantasyContest');
+const Users = mongoose.model('Users');
+const Orders = mongoose.model('Orders');
 
 
 /**
@@ -13,21 +15,31 @@ const FantasyContest = mongoose.model('FantasyContest');
  * @payload {*} res 
  */
 
-const post = async (req, res) => { 
-    
+const post = async (req, res) => {     
     const contestDetails = await FantasyContest.findById(req.body.contestId)
         .lean()
         .exec()
         .then(response => response)
         .catch(err => res.status(500).json("Error try again later"));
     
+    const userDetails = await Users.findById(req.user.id)
+        .select('wallet')
+        .lean()
+        .exec()
+        .then(response => response)
+        .catch(err => res.status(500).json("Error try again later"));
+    
+    if(userDetails.wallet.balance < contestDetails.entryFee){
+        return res.status(202).json({message:"Not enough balance."})
+    }
+
     const entryCount = await FantasyJoinedUsers.find({
         contestId: mongoose.mongo.ObjectID(req.body.contestId),
         userId: mongoose.mongo.ObjectID(req.user.id),
     }).count().exec().then(response => response)
 
     if(contestDetails.limit <= entryCount){
-       return res.status(202).send({message:"Max team limit reached"})
+       return res.status(202).json({message:"Max team limit reached"})
     }    
 
     if(contestDetails.totalSpots > contestDetails.totalJoined){
@@ -48,7 +60,6 @@ const post = async (req, res) => {
             contestDetails.totalJoined = 0;
             await createNenterContest({...contestDetails});
         }
-        res.status(200).send({message:"Contest joined"})
     }else{
         const contest = await FantasyContest.findOne({
             totalSpots: contestDetails.totalSpots,
@@ -71,19 +82,33 @@ const post = async (req, res) => {
                         isFull:  {$eq: [ contest.totalSpots, contest.totalJoined + 1 ] }  
                         }
                     }
-                ]).then(response => res.status(200).send({message:"Contest joined"}))
+                ]).then(response =>{})
                 .catch(err => res.status(500).send({message:"Error try again later"}))
         }else{
             contestDetails.totalJoined = 1;
            let newContest = await createNenterContest(contestDetails);
            req.body.contestId = newContest;
            await enterContest({...req.body,userId:req.user.id})
-           res.status(200).json({message:"Contest Joined"})
+           
         }
     }
 
+    let order = new Orders({
+        "amount" : contestDetails.entryFee*100,
+        "status" : "contest_debit",
+        "orderId": "Fantasy " + contestDetails.contestName,
+        "notes" : {
+            "userId" : req.user.id
+        }
+    })
 
+    order.save().then().catch()
 
+    await Users.updateOne({_id:req.user.id},{
+        $inc:{
+            "wallet.balance":-contestDetails.entryFee
+        }
+    }).then(respo => res.status(200).json({message:"Contest Joined"}))
 }
 
 
@@ -102,6 +127,8 @@ const enterContest = (contest) => new Promise((resolve,reject) => {
             .then(response => resolve(response))
             .catch(err => reject(err));
 })
+
+
 
 const createNenterContest = (contest) => new Promise((resolve,reject) => {
             

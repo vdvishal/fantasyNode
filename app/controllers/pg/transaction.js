@@ -5,7 +5,7 @@ const User = mongoose.model('Users');
 
 
 const getOrder = (req,res) => {
-    Orders.find({"notes.userId":req.user.id,status:"paid"})
+    Orders.find({"notes.userId":req.user.id,status:{$ne:"created"}})
                                 .sort({_id:-1})
                                 .skip(req.query.page*50)
                                 .limit(50)

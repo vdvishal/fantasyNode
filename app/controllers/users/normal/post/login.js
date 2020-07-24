@@ -87,11 +87,11 @@ const login = async (req, res) => {
             status: 1
           })
 
-          userModel.save((err, resp) => {
+          userModel.save((err, user) => {
             if (err)
               reject(err)
             else {
-              userId = resp._id;
+              userId = user._id;
 
               const token = jwt.sign({ id: user._id }, process.env.Access_key, { expiresIn: process.env.ACCESSTOKEN.toString() + 's', subject: 'user' });
               const refToken = jwt.sign({ id: user._id }, 'ref', { expiresIn: '86400s', subject: 'user' });

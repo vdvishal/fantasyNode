@@ -40,7 +40,7 @@ module.exports.setRouter = (app) => {
 
     app.post(`${baseUrl}/reset/password`,resetPassword.resetPassword)
 
-    app.post(`${baseUrl}/patch/password`,isAuth,changePassword.changePassword)
+    app.patch(`${baseUrl}/password`,isAuth,changePassword.changePassword)
 
     //
     

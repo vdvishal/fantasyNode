@@ -77,7 +77,7 @@ const signUp = async (req, res) => {
 
 const checkEmail = (email) => new Promise((resolve, reject) => {
     // check user email is already present
-    user.findOne({ email: email }, (err, res) => {
+    user.findOne({ email: email,verified:true }, (err, res) => {
         if (err) {
             reject(err)
         } else if (res == null) {
