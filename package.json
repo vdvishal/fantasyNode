@@ -52,6 +52,7 @@
     "razorpay": "^2.0.6",
     "redis": "^3.0.2",
     "swagger-ui-express": "^4.1.4",
+    "twilio": "^3.48.1",
     "uniqid": "^5.2.0",
     "winston": "^3.2.1",
     "worker-farm": "^1.7.0"

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
  
 const User = mongoose.model('Users');
 const OtherUserStats = mongoose.model('OtherUserStats');
-
+const moment = require('moment')
  
 
 /**
@@ -13,8 +13,10 @@ const OtherUserStats = mongoose.model('OtherUserStats');
 
  
  const profile = async (req,res) => {
-   User.findById(req.user.id).lean().then(response => {   
-    res.send({message: "User profile",data:{...response}})
+    User.findByIdAndUpdate(req.user.id,{$set:{
+      lastOnline: moment.now()
+    }}).select('email phone fullName userName wallet verifiedKYC refCode activated profilePic').lean().exec().then(response => {         
+      res.send({message: "User profile",data:{...response}})
 
       //  OtherUserStats.findOne({userId:req.user.id}).lean().then(responseX => {
       //   responseX.exPoint = Math.floor(responseX.exPoint/1000);

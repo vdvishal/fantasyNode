@@ -2,7 +2,8 @@
 const express = require('express');
 const router = express.Router();
  const isAuth = require('../middlewares/passport/isAuthenticate')
- 
+ const isRef = require('../middlewares/jwt/refToken')
+
 const {get, post, patch} = require("./../controllers/users").account;
 const {signUp,login,resetPassword,changePassword,logout} = post
 const { profile, activateAccount,refToken} = get
@@ -18,7 +19,7 @@ module.exports.setRouter = (app) => {
 
     app.get(`${baseUrl}/profile`,isAuth,profile.profile)
 
-    app.get(`${baseUrl}/refreshToken`,refToken.refreshToken)
+    app.get(`${baseUrl}/refreshToken`,isRef,refToken.refreshToken)
 
     app.get(`${baseUrl}/transactions`,isAuth,profile.profile)
 

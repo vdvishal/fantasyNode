@@ -16,8 +16,7 @@ const user =  new Schema({
     paymentId: String,
     profilePic:String,
     refCode:String,
-    time:{ type: Date, default: moment.now() },
-    verified: { type: Boolean, default: false },
+    verifiedKYC: { type: Boolean, default: false },
     activated: { type: Boolean, default: false },
     wallet: Object,
     OTP: Object,
@@ -30,6 +29,7 @@ const user =  new Schema({
     googleId: String, 
     facebookId: String,
     status:Intl,
+    lastOnline: {type:Date,default:moment.now()},
 },{ strict: false,timestamps:true })
 
 mongoose.model('Users', user);

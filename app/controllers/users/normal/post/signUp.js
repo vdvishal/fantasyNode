@@ -7,6 +7,7 @@ const mongoose = require('mongoose'),
     i18n = require('i18n'),
     sendMail = require('../../../../libraries/worker-farm/email'),
     signUpTemp = require('../../../../email/signUp'),
+    sendSms = require('../../../../libraries/twilio'),
     { check, validationResult } = require('express-validator'),
     randomize = require('randomatic'),
     validator = [
@@ -77,7 +78,7 @@ const signUp = async (req, res) => {
 
 const checkEmail = (email) => new Promise((resolve, reject) => {
     // check user email is already present
-    user.findOne({ email: email,verified:true }, (err, res) => {
+    user.findOne({ email: email,activated:true}, (err, res) => {
         if (err) {
             reject(err)
         } else if (res == null) {
@@ -90,7 +91,7 @@ const checkEmail = (email) => new Promise((resolve, reject) => {
 
 const checkPhone = (phone) => new Promise((resolve, reject) => {
     // check user phone is already present
-    user.findOne({ "phone.phone": phone }, (err, res) => {
+    user.findOne({ "phone.phone": phone,activated:true}, (err, res) => {
         if (err) {
             reject(err)
         } else if (res == null) {
@@ -105,8 +106,12 @@ const hashpassword = (password) => new Promise((resolve, reject) => {
     // hash password
     hash.hashPassword(password, (err, response) => {
         if (err) {
+            console.log(err);
+
             reject(err)
         } else {
+            console.log(response);
+            
             resolve(response)
         }
     })
@@ -119,12 +124,12 @@ const saveToDb = (data) => new Promise((resolve, reject) => {
         password: data.password,
         fullName: '',
         refCode: randomize('AAAA0'),
-        userName: randomize('aaaaaaaaaa'),
-        phone: [{
+        userName: data.email.split("@")[0],
+        phone: {
             countryCode: data.countryCode,
             phone: data.phone ? data.phone : "",
             isCurrentlyActive: true,
-        }],
+        },
         wallet: {
             balance: 0,
             bonus: 0
@@ -148,10 +153,10 @@ const saveToDb = (data) => new Promise((resolve, reject) => {
 
 
 const sendEmail = (email) => {
-    sendMail({
-        to: 'vishalvdutta@gmail.com',
-        ...signUpTemp(email)
-    });
+    // sendMail({
+    //     to: 'vishalvdutta@gmail.com',
+    //     ...signUpTemp(email)
+    // });
 }
 
 const sendVerifyCode = (phone,email) => {
@@ -165,6 +170,7 @@ const sendVerifyCode = (phone,email) => {
             active: true
         }
     }}).then(response => {
+        sendSms(12123,`Your verification code: ${code}`);
         SmsLog.updateOne({_id:new mongoose.mongo.ObjectId},{
             to: phone.phone,
             countryCode: phone.countryCode,
@@ -200,7 +206,7 @@ const checkReferalCode = (data) => {
                                 lastName: referrer.lastName || "",
                                 email: (referrer.email).toLowerCase() || "",
                                 countryCode: referrer.phone[0].countryCode || "",
-                                phone: referrer.phone[0].phone || "",
+                                phone: referrer.phone.phone || "",
                                 claimCount: 0
                             }
                         }, (err, res) => {

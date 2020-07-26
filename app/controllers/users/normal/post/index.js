@@ -1,7 +1,7 @@
 const signUp = require('./signUp')
 const login = require('./login')
  
-const resetPassword = require('./resetPassword')
+const resetPassword = require('./OTP')
 const changePassword = require('./changePassword')
 const logout = require('./logout')
  

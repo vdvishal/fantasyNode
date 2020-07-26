@@ -13,6 +13,7 @@ const Orders = mongoose.model('Orders');
 
 const post = async (req, res) => {    
     let dt = req.body
+    console.log(dt);
     
     const userDetails = await Users.findById(req.user.id)
     .select('wallet')
@@ -21,7 +22,7 @@ const post = async (req, res) => {
     .then(response => response)
     .catch(err => res.status(500).json("Error try again later"));
  
-    if(userDetails.wallet.balance < req.body.amount){
+    if(userDetails.wallet.balance <  parseInt(req.body.amount)){
         return res.status(202).json({message:"Not enough balance."})
     }
 
@@ -35,8 +36,10 @@ const post = async (req, res) => {
     await contest.save().then(response => response).catch(err => res.status(500).json("Error try again later"));
 
     let order = new Orders({
-        "amount" :  req.body.amount*100,
+        "amount" :  parseInt(req.body.amount)*100,
         "status" : "contest_debit",
+        "matchId": parseInt(req.body.matchId),
+        "contestType": 1,
         "orderId": "Under/Over",
         "notes" : {
             "userId" : req.user.id

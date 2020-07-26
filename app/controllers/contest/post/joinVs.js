@@ -145,8 +145,10 @@ const joinVs = async (req, res) => {
     }).catch(err => console.log(err))
 
     let order = new Orders({
-        "amount" :  req.body.amount*100,
+        "amount" :  parseInt(req.body.amount)*100,
         "status" : "contest_debit",
+        "matchId": parseInt(req.body.matchId),
+        "contestType": 2,
         "orderId": "Matchups",
         "notes" : {
             "userId" : req.user.id

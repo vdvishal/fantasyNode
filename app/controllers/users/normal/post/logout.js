@@ -1,23 +1,23 @@
 const
     mongoose = require('mongoose'),
     User = mongoose.model('Users'),
-    redisClient = require('../../../../libraries/redis/redis'),
-    redisClientEx = require('../../../../libraries/redis/keyExists');
+    Blacklist = mongoose.model('Blacklist');
 
-const logout = (req, res) => {
-    console.log(req.headers.authorization);
     
-    // redisClient.HDEL("key",req.headers.authorization)
-    // redisClient.HSET(req.headers.authorization,"String",1,function(err) {
-    //     if (err) throw err;
-    // })
-    
-    // redisClient.EXPIRE(req.headers.authorization,10,function(err) {
-    //     if (err) throw err;
-    // })
 
-    //  redisClient.FLUSHALL()
-    res.send();
+const logout = async (req, res) => {
+
+    let userToken = await User.findById(req.user.id).select('refToken').lean().exec().then(response => response)
+
+    let token = {
+        userId: req.user.id,
+        'token':  userToken.refToken
+    }
+
+    token = new Blacklist(token)
+
+    await token.save().then()
+    res.status(200).json({message:"Logged Out"});
 }
 
 module.exports = {

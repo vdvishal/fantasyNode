@@ -25,13 +25,15 @@ const get = async (req, res) => {
         {
             $project: {
                 players: { $objectToArray: "$players" },
-                teamName: 1
+                teamName: 1,
+                serialNumber: 1
             }
         },
         {
             $project: {
                 players: 1,
                 teamName: 1,
+                serialNumber: 1,
                 captain: {
                     $filter: {
                         input: "$players",
@@ -79,6 +81,7 @@ const get = async (req, res) => {
        
         {$project: {
             teamName:1,
+            serialNumber: 1,
             captain: {$arrayElemAt:[ "$captain", 0 ]},
             viceCaptain: {$arrayElemAt:[ "$viceCaptain", 0 ]},
             Allrounder: {$size:"$Allrounder"},
@@ -89,6 +92,7 @@ const get = async (req, res) => {
         },
         {$project: {
             teamName:1,
+            serialNumber: 1,
             captain: "$captain.v",
             viceCaptain:  "$viceCaptain.v",
             Allrounder: 1,

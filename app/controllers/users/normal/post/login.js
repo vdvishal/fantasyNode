@@ -1,13 +1,15 @@
 const redis = require('../../../../libraries/redis/redis');
 const mongoose = require('mongoose'),
   jwt = require('jsonwebtoken'),
+  sendSms = require('../../../../libraries/twilio'),
   hash = require('../../../../libraries/bcrypt/index'),
   randomize = require('randomatic'),
   User = mongoose.model('Users'),
+  moment = require('moment'),
   { check, validationResult } = require('express-validator');
 
 const validator = [
-  check('email').isEmail(),
+  // check('email').isEmail(),
 ]
 
 
@@ -15,7 +17,7 @@ const validator = [
  * @function login
  * types: steam, email
  */
-
+let userId;
 const login = async (req, res) => {
 
   const errorFormatter = ({ location, msg, param, value, nestedErrors }) => {
@@ -69,18 +71,23 @@ const login = async (req, res) => {
       });
       break;
     case 3:
-      User.findOne({ $or: [{ googleId: req.body.googleId }, { email: req.body.email }] }, function (err, user) {
+      User.findOne({ $or: [{ googleId: req.body.googleId,activated:true }, { email: req.body.email,activated:true }] }, function (err, user) {
         if (err) { return done(err); }
         if (user === null) {
           const userModel = new User({
             email: req.body.email,
             fullName: req.body.fullName,
+            phone: {
+              countryCode: "+91",
+              phone: req.body.phone ? req.body.phone : "",
+              isCurrentlyActive: true,
+            },
             refCode: randomize('AAAA0'),
-            userName: randomize('aaaaaaaaaa'),
+            userName: req.body.email.split("@")[0],
             profilePic: req.body.profilePic,
             wallet: {
               balance: 0,
-              bonus: 0.5
+              bonus: 0
             },
             totalRefers: 0,
             googleId: req.body.googleId,
@@ -89,27 +96,33 @@ const login = async (req, res) => {
 
           userModel.save((err, user) => {
             if (err)
-              reject(err)
+              res.status(500).json({ message: "Err try again later"})
             else {
               userId = user._id;
-
-              const token = jwt.sign({ id: user._id }, process.env.Access_key, { expiresIn: process.env.ACCESSTOKEN.toString() + 's', subject: 'user' });
-              const refToken = jwt.sign({ id: user._id }, 'ref', { expiresIn: '86400s', subject: 'user' });
-
-              res.send({ message: "Login success", token, refToken: refToken })
+              res.send({ message: "Verify OTP", userId,new:true })
             }
           })
         } else {
-          const token = jwt.sign({ id: user._id }, process.env.Access_key, { expiresIn: process.env.ACCESSTOKEN.toString() + 's', subject: 'user' });
+          const token = jwt.sign({ id: user._id }, process.env.Access_key, { expiresIn: process.env.ACCESSTOKEN, subject: 'user' });
           User.updateOne({ email: req.body.email }, { profilePic: req.body.profilePic, }).then().catch();
           const refToken = jwt.sign({ id: user._id }, 'ref', { expiresIn: '86400s', subject: 'user' });
 
-          res.send({ message: "Login success", token, refToken: refToken })
+          res.send({ message: "Login success", token, refToken: refToken,new:false })
         }
       });
       break;
+    case 4:
+      
+        const token = jwt.sign({ id: "Guest" }, process.env.Guest_Access_key, { subject: 'user' });
+
+        res.status(200)
+        res.send({ message: "Guest Login success", token })
+ 
+      break;
     default:
-      User.findOne({ email: req.body.email }, function (err, user) {
+      User.findOne({$or: [
+        { "phone.phone": req.body.email }, { email: req.body.email }]
+      }, function (err, user) {
         if (err) { return done(err); }
         if (user === null) {
           res.status(204)
@@ -125,10 +138,13 @@ const login = async (req, res) => {
         }
 
 
-        const token = jwt.sign({ id: user._id }, process.env.Access_key, { expiresIn: '24h', subject: 'user' });
+        const token = jwt.sign({ id: user._id }, process.env.Access_key, { expiresIn: `${process.env.ACCESSTOKEN}`, subject: 'user' });
 
 
-        const refToken = jwt.sign({ id: user._id }, 'ref', { expiresIn: '24h', subject: 'user' });
+        const refToken = jwt.sign({ id: user._id }, 'ref', { expiresIn: `${process.env.REFTOKEN}`, subject: 'user' });
+        
+        User.updateOne({_id:user._id},{$set:{refToken:refToken}}).then().catch()
+       
         res.status(200)
         res.send({ message: "Login success", token, refToken: refToken })
       });
@@ -137,6 +153,27 @@ const login = async (req, res) => {
 
 
 
+}
+
+
+const sendVerifyCode = (phone,email) => {
+  const code = randomize('AAAA0');
+  const time = moment().unix();
+  
+  User.updateOne({_id: userId},{$set:{
+      OTP:{
+          time,
+          code:code,
+          active: true
+      }
+  }}).then(response => {
+      sendSms(code,`Your verification code: ${code}`);
+      SmsLog.updateOne({_id:new mongoose.mongo.ObjectId},{
+          to: phone.phone,
+          countryCode: phone.countryCode || "+91",
+          code: code
+      },{upsert:true}).then(response => {}).catch()
+  }).catch()
 }
 
 

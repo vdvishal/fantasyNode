@@ -92,11 +92,14 @@ const post = async (req, res) => {
            
         }
     }
+ 
 
     let order = new Orders({
-        "amount" : contestDetails.entryFee*100,
+        "amount" : parseInt(contestDetails.entryFee)*100,
         "status" : "contest_debit",
         "orderId": "Fantasy " + contestDetails.contestName,
+        "matchId": parseInt(contestDetails.matchId),
+        "contestType": 4,
         "notes" : {
             "userId" : req.user.id
         }

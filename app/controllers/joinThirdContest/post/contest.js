@@ -34,8 +34,10 @@ const post = async (req, res) => {
     await contest.save().then(response => response).catch(resd => res.status(500).send({message:"Error try again later"}))
 
     let order = new Orders({
-        "amount" : req.body.amount*100,
+        "amount" : parseInt(req.body.amount)*100,
         "status" : "contest_debit",
+        "matchId": parseInt(req.body.matchId),
+        "contestType": 3,
         "orderId": "Combo Matchups",
         "notes" : {
             "userId" : req.user.id
