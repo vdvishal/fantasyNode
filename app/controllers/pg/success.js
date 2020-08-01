@@ -8,9 +8,10 @@ const secret= 'W!wxCAY@w5tZjy4'
 const successOrder = async (req,res) => {
     
 try {
-   let activePay = await User.findById(req.user.id).lean().exec().then(response => response)
+   let user = await User.findById(req.user.id).lean().exec().then(response => response)
 
-   activePay = activePay.activepayment;
+   let activePay = user.activepayment;
+   let firstBonus = 0 
 
 
    let Order = await Orders.findOne({orderId:activePay.orderId}).lean().exec().then(response => response)
@@ -22,12 +23,22 @@ try {
     let generated_signature = signature.digest('hex');
 
     if(generated_signature === req.body.razorpay_signature){
+        if(user.firstpay !== true){
+            firstBonus = (activePay.amount/100)*0.5;
+
+            if(firstBonus > 50){
+                firstBonus = 100
+            }
+         }
+
         await User.updateOne({_id:mongoose.mongo.ObjectID(req.user.id)},{
             $inc:{
-                'wallet.balance': activePay.amount/100
+                'wallet.balance': activePay.amount/100,
+                'wallet.bonus': firstBonus
             },
             $set:{
-                "activepayment.status": "paid"
+                "activepayment.status": "paid",
+                firstpay:true
             }
         }).then(response => response)
 
@@ -36,14 +47,28 @@ try {
                 "status": "paid"
             }
         }).then(response => {
-            res.status(200).json({message:"Deposit successfull"})
+
+            if(user.firstpay !== true){ 
+                let order = new Orders({
+                    "amount" :  parseInt(firstBonus)*100,
+                    "status" : "bonus",
+                    "orderId": "Welcome Bonus",
+                    "notes" : {
+                        "userId" : req.user.id
+                    }
+                })
+        
+                order.save().then().catch();
+            }
+
+            res.status(200).json({message:"Deposit Success"})
         })
     }else{
-        res.status(200).json({message:"Deposit failed"})
+        res.status(202).json({message:"Deposit failed"})
     }
 
         } catch (error) {
-            console.log(error); 
+            res.status(202).json(error); 
         }
 }
 

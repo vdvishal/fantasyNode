@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
-const Contest = mongoose.model('Contest');
-const UnderOverContest = mongoose.model('UnderOverContest');
-const MatchUpContest = mongoose.model('MatchUpContest');
-const FantasyJoinedUsers = mongoose.model('FantasyJoinedUsers');
+ 
+const Matches = mongoose.model('Matches');
+const Users = mongoose.model('Users');
+
 
 const _ = require('lodash')
 /**
@@ -15,181 +15,55 @@ const _ = require('lodash')
 
 
 const getUserId = async (req, res) => {
-    console.log(req.user.id);
+    let cond = {
+        starting_at: {
+            $gt: new Date().toISOString()
+        }
+    }
+    if(req.query.type === undefined || req.query.type === ''){
+        res.status(400).json("Type is missing")
+    }
     
-    let response1 = await Contest.aggregate([
-        {
-            $match:{
-                $or:[
-                    {teamOne:{$elemMatch:{'userId':new mongoose.mongo.ObjectID(req.user.id)}}},
-                    {teamTwo:{$elemMatch:{'userId':new mongoose.mongo.ObjectID(req.user.id)}}},
-                    {teamThree:{$elemMatch:{'userId':new mongoose.mongo.ObjectID(req.user.id)}}},
-                    {teamFour:{$elemMatch:{'userId':new mongoose.mongo.ObjectID(req.user.id)}}},
-                    {teamFive:{$elemMatch:{'userId':new mongoose.mongo.ObjectID(req.user.id)}}},
-                    {teamSix:{$elemMatch:{'userId':new mongoose.mongo.ObjectID(req.user.id)}}},
-                    {teamSeven:{$elemMatch:{'userId':new mongoose.mongo.ObjectID(req.user.id)}}},
-                    {teamEight:{$elemMatch:{'userId':new mongoose.mongo.ObjectID(req.user.id)}}},
-                ]
+    if(req.query.type==="1"){
+        cond = {
+            starting_at: {
+                $gt: Date.now()
             }
-        },
-        {
-            $project:{
-                matchId: 1
-            }
-        },  
-        {
-            $group:{
-                _id :'null',
-                matchId: { $addToSet: "$matchId" }
-            }
-        },
-        {
-            $lookup: {
-                from: 'matches',
-                localField: 'matchId',
-                foreignField: 'id',
-                as: 'matchList'
-                }
-        },
-        {
-            $sort: {
-                "matchList.starting_at" : -1
-            }
-        },
-        {
-            $limit: 50
         }
-    ]).exec().then(response => {
+    }
 
-        return response
-        // res.status(200).json({data:response})
-    })
-
-    let response2 = await UnderOverContest.aggregate([
-        {
-            $match:{'userId':new mongoose.mongo.ObjectID(req.user.id)}
-        },
-        {
-            $project:{
-                matchId:1
-            }
-        },
-        {
-            $group:{
-                _id :'null',
-                matchId: { $addToSet: "$matchId" }
-            }
-        },
-        {
-            $lookup: {
-                from: 'matches',
-                localField: 'matchId',
-                foreignField: 'id',
-                as: 'matchList'
-                }
-        },
-        {
-            $sort: {
-                "matchList.starting_at" : -1
-            }
-        },
-        {
-            $limit: 50
+    if(req.query.type==="2"){
+        cond = {
+            isLive:true
         }
-    ]).exec().then(response => {
-        return response
-    })
+    }
 
-    let response3 = await MatchUpContest.aggregate([
-        {
-            $match:{'userId':new mongoose.mongo.ObjectID(req.user.id)}
-        },
-        {
-            $project:{
-                matchId:1
-            }
-        },
-        {
-            $group:{
-                _id :'null',
-                matchId: { $addToSet: "$matchId" }
-            }
-        },
-        {
-            $lookup: {
-                from: 'matches',
-                localField: 'matchId',
-                foreignField: 'id',
-                as: 'matchList'
-                }
-        },
-        {
-            $sort: {
-                "matchList.starting_at" : -1
-            }
-        },
-        {
-            $limit: 50
+    if(req.query.type==="3"){
+        cond = {
+            isLive:false,
+            status:"Finished"
         }
-    ]).exec().then(response => {
-        return response
-    })
+    }
 
-    let response4 = await FantasyJoinedUsers.aggregate([
-        {
-            $match:{'userId':new mongoose.mongo.ObjectID(req.user.id)}
-        },
-        {
-            $project:{
-                matchId:1
-            }
-        },
-        {
-            $group:{
-                _id :'null',
-                matchId: { $addToSet: "$matchId" }
-            }
-        },
-        {
-            $lookup: {
-                from: 'matches',
-                localField: 'matchId',
-                foreignField: 'id',
-                as: 'matchList'
-                }
-        },
-        {
-            $sort: {
-                "matchList.starting_at" : -1
-            }
-        },
-        {
-            $limit: 50
-        }
-    ]).exec().then(response => {
-        return response
-    })
-
-    response1 = response1[0] ? response1[0].matchList : []
-
-    response2 = response2[0] ? response2[0].matchList : []
-
-    response3 = response3[0] ? response3[0].matchList : []
-
-    response4 = response4[0] ? response4[0].matchList : []
-
+    const userDetails = await Users.findById(req.user.id)
+    .select('joinedMatch')
+    .lean()
+    .exec()
+    .then(response => response)
+    .catch(err => res.status(500).json("Error try again later"));
+    
+    console.log({
+        id:{$in:userDetails.joinedMatch},
+        ...cond
+    });
+    
+     Matches.find({
+        id:{$in:userDetails.joinedMatch || []},
+        ...cond
+    }).then(response => res.status(200).json({data:response}))
+    .catch(err => res.status(500).json("Error try again later"));
  
-    let lll = _.uniqBy([...response1,
-        ...response2,
-        ...response3,
-        ...response4],"id")
-
-    lll = _.orderBy(lll,['starting_at'],['desc'])
-    lll = _.groupBy(lll,"status")
     
-    console.log(lll);
-    
-    res.status(200).json({data:lll})
 
 }
 

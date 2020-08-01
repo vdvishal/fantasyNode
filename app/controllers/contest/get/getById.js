@@ -97,9 +97,18 @@ const getById = async (req, res) => {
         ...response[response.localTeam].Bowler, ...response[response.visitorTeam].Bowler,
     }));
 
-    console.log(FantasyPlayers);
+     let obj = {}
+     Object.entries(FantasyPlayers).forEach(([key,value]) => {
+         if(typeof value.points === 'number'){
+        obj = {...obj,[key]:value}  
+        console.log(obj);
+
+    }})
+
+    console.log(obj);
     
-    FantasyPlayers = _.orderBy(FantasyPlayers,['position.name'],['asc'])
+
+    FantasyPlayers = _.orderBy(obj,['points'],['desc'])
 
      
     res.status(200).json({myTeam,FantasyPlayers,Match})

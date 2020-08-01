@@ -20,6 +20,9 @@ const joinVs = async (req, res) => {
         _id: req.body.contestId
     }
 
+    if(req.body.amount === 0 || isNaN(req.body.amount)){
+        return res.status(400).json({message:"Amount cannot be zero"})
+    }
     
     const userDetails = await Users.findById(req.user.id)
         .select('wallet')
@@ -28,9 +31,33 @@ const joinVs = async (req, res) => {
         .then(response => response)
         .catch(err => res.status(500).json("Error try again later"));
      
-    if(userDetails.wallet.balance < req.body.amount){
-        return res.status(202).json({message:"Not enough balance."})
-    }
+        if(req.body.amount*0.2 <= userDetails.wallet.bonus){
+            if(userDetails.wallet.balance >= req.body.amount - req.body.amount*0.2){
+                bonus = req.body.amount*0.2;
+                balance = req.body.amount - req.body.amount*0.2;
+            }else{
+                return res.status(202).json({message:"Not enough balance."})
+            }
+        }
+    
+        if(req.body.amount*0.2 > userDetails.wallet.bonus){
+            if(userDetails.wallet.balance >= req.body.amount - userDetails.wallet.bonus){
+                bonus = userDetails.wallet.bonus;
+                balance = req.body.amount - userDetails.wallet.bonus;
+            }
+    
+            if(userDetails.wallet.balance + userDetails.wallet.bonus < req.body.amount ){
+                return res.status(202).json({message:"Not enough balance."})
+            }
+        }
+    
+        if(userDetails.wallet.bonus === 0 && userDetails.wallet.balance < req.body.amount){
+            return res.status(202).json({message:"Not enough balance."})
+        }
+    
+        if(bonus === 0 && balance === 0){
+            balance = req.body.amount
+        }
      
     let team;
     let redAmount = 0;
@@ -159,6 +186,9 @@ const joinVs = async (req, res) => {
 
         
     await Users.updateOne({_id:req.user.id},{
+        $push:{
+            joinedMatch: parseInt(req.body.matchId)
+        },
         $inc:{
             "wallet.balance":-parseFloat(req.body.amount)
         }

@@ -1,12 +1,14 @@
 const
     mongoose = require('mongoose'),
     User = mongoose.model('Users'),
+    Orders = mongoose.model('Orders'),
+    Appconfig = mongoose.model('Appconfigs'),
     randomize = require('randomatic'),
     hash = require('../../../../libraries/bcrypt'),
     moment = require('moment'),
     jwt = require('jsonwebtoken'),
     sendSms = require('../../../../libraries/twilio'),
-    bcrypt = require('../../../../libraries/bcrypt')
+    bcrypt = require('../../../../libraries/bcrypt');
 
 const sendOTP = (req, res) => {
 
@@ -63,6 +65,7 @@ const sendOTP = (req, res) => {
 
             const code = randomize('AAAA0')
             const time = moment().unix();
+ 
             hash.hashPassword(req.body.password, (err, response) => {
                 if (err) {        
                     return res.status(500).json({ message: 'Err...........' });
@@ -98,12 +101,12 @@ const sendOTP = (req, res) => {
 }
 
  
-
+let refBonus = 50;
 
 const verifyOTP = (req, res) => {
 
     if(req.body.type === 1){
-        User.findById(req.body.id).select('OTP').then(response => {
+        User.findById(req.body.id).lean().then(response => {
             
             if(response.OTP.active && moment().unix() - response.OTP.time > 120){
                 console.log(moment().unix());
@@ -114,17 +117,43 @@ const verifyOTP = (req, res) => {
             }
  
             if (response.OTP.code === req.body.code && response.OTP.active && moment().unix() - response.OTP.time < 120) {
-                User.updateOne({_id:req.body.id},{$set:{
-                    activated:true
-                    }
-                }).then(response => {
+                User.updateOne({_id:req.body.id},
+                    {
+                        $set:{
+                            activated:true
+                        },
+                        $inc: {
+                            "totalRefers": 1,
+                            "wallet.bonus" : refBonus
+                        }
+                }).then(resp => {
 
                     const token = jwt.sign({ id: req.body.id }, process.env.Access_key, { expiresIn: `${process.env.ACCESSTOKEN}`, subject: 'user' });
-
+                   
+                    let order = new Orders({
+                        "amount" :  parseInt(refBonus)*100,
+                        "status" : "bonus",
+                        "orderId": "Signup Bonus",
+                        "notes" : {
+                            "userId" : req.body.id
+                        }
+                    })
+            
+                    order.save().then().catch();
 
                     const refToken = jwt.sign({ id: req.body.id }, 'ref', { expiresIn: `${process.env.REFTOKEN}`, subject: 'user' });
                     
                     User.updateOne({_id:req.body.id},{$set:{refToken:refToken}}).then().catch()
+                    console.log(response.refferCode);
+
+                    if (response.refferCode) {
+                        // Appconfig.findOne({}).then(config => {
+                        //     refBonus = config.refBonus
+                        //     checkReferalCode(response)
+                        // })
+                        checkReferalCode(response)
+
+                    }
                    
                     res.status(200)
                     res.send({ message: "Verification success", token, refToken: refToken })
@@ -190,6 +219,79 @@ const resetPassword = (req, res) => {
     })
 }
 
+
+
+const checkReferalCode = (data) => {
+    console.log(data);
+    
+         if (data.refferCode && data.refferCode != "" && data.refferCode != undefined) {
+            User.findOne({refCode: data.refferCode}, (err, referrer) => {
+                if (err) {
+                    return "ERRRR";
+                } else if (referrer === null) {
+                    return  ({ message:"Refferal code is invalid" })
+                } else {
+                    let referralData = {
+                        userId: data._id,
+                        registeredOn: moment().unix(),
+                        firstname: data.firstName,
+                        lastName: data.lastName || "",
+                        email: (data.email).toLowerCase() || "",
+                        countryCode: data.phone.countryCode || "",
+                        phone: data.phone.phone || "",
+                    }
+                    updateReferals(referralData,referrer._id, (err, res) => {
+                        updateProfile(data._id, {
+                            userId: referrer._id,
+                        }, (err, res) => {
+                             
+                        })
+                    })
+                }
+            });
+        }  
+}
+
+
+const updateReferals = (referralCode,refferId, callBack) => {
+    console.log(referralCode);
+    console.log(refferId);
+
+    User.updateOne({ _id: new mongoose.mongo.ObjectId(refferId) }, {
+        $push: {
+            "referrals": {
+                userId: referralCode.userId,
+                registeredOn: referralCode.registeredOn,
+                firstname: referralCode.firstname,
+                lastName: referralCode.lastName,
+                email: referralCode.email,
+                countryCode: referralCode.countryCode,
+                phone: referralCode.phone
+            }
+        }, $inc: {
+            "totalRefers": 1,
+            "wallet.bonus" : refBonus*0.5
+        }
+    }).then(response => {
+        callBack(null, response);
+    }).catch(err => {
+        callBack(err);
+    })
+
+}
+
+const updateProfile = (userId, data, callBack) => {
+    console.log(userId);
+    console.log(data);
+
+    User.updateOne({ _id: new mongoose.mongo.ObjectId(userId) }, {
+        $set: {refferData:data}
+    }).then(response => {
+        callBack(null, response);
+    }).catch(err => {
+        callBack(err);
+    })
+}
 
 module.exports = {
     sendOTP,

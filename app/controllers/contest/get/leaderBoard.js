@@ -18,6 +18,7 @@ const _ = require('lodash');
 
 const getLeaderBoard = async (req, res) => {
   
+     
     let leaderBoard = await FantasyJoinedUsers.aggregate([
         {
             $match:{
@@ -50,7 +51,8 @@ const getLeaderBoard = async (req, res) => {
         {
             $project:{
                 teamDetails:{
-                    teamName:1
+                    teamName:1,
+                    _id:1
                 },
                 userDetails: {
                     userName:1,

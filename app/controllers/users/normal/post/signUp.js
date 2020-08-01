@@ -10,28 +10,38 @@ const mongoose = require('mongoose'),
     sendSms = require('../../../../libraries/twilio'),
     { check, validationResult } = require('express-validator'),
     randomize = require('randomatic'),
+
     validator = [
         check('email').isEmail(),
-        check('refferCode').isString(),
         check('password').isLength({ min: 5 }).withMessage('Must be at least 5 chars long'),
         check('countryCode').isString(),
-        check('phone').isString(),
+        check('phone').isString().notEmpty(),
         check('loginType').isInt(),
-        check('facebookId').isString(),
-    ]
+     ]
+
+    const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
+
 
 let userId;
 const signUp = async (req, res) => {
+ 
     try {
         const errorFormatter = ({ location, msg, param, value, nestedErrors }) => {
-            return `${location}[${param}]: ${msg}`;
+            return `${param}: ${msg}`;
         };
-
+ 
         const errors = validationResult(req).formatWith(errorFormatter)
 
         if (!errors.isEmpty()) {
             return res.status(422).json({ message: errors.array() })
         }
+        const phone = phoneUtil.parseAndKeepRawInput(req.body.phone, 'IN');
+
+         
+        if (!phoneUtil.isValidNumber(phone)) {
+            return res.status(400).json({ message: "Phone number is not valid" })
+        }
+
 
         if (req.body.email == "" && req.body.phone == "") {
             res.status(408)
@@ -61,9 +71,7 @@ const signUp = async (req, res) => {
         req.body.email = req.body.email.toLowerCase()
         await saveToDb({ ...req.body })
 
-        if (req.body.refferCode) {
-            checkReferalCode({ ...req.body })
-        }
+
 
         sendEmail(req.body.email.toLowerCase())
         sendVerifyCode({phone:req.body.phone,countryCode:'+91',email:req.body.email})
@@ -72,7 +80,7 @@ const signUp = async (req, res) => {
         return res.send({ message: "Registered successfully",userId: userId})
 
     } catch (error) {
-        return res.send({ message: error.message }).status(error.code)
+        return res.send({ message: error.message }).status(500)
     }
 }
 
@@ -124,6 +132,7 @@ const saveToDb = (data) => new Promise((resolve, reject) => {
         password: data.password,
         fullName: '',
         refCode: randomize('AAAA0'),
+        refferCode:data.refferCode,
         userName: data.email.split("@")[0],
         phone: {
             countryCode: data.countryCode,
@@ -166,7 +175,7 @@ const sendVerifyCode = (phone,email) => {
     user.updateOne({_id: userId},{$set:{
         OTP:{
             time,
-            code:1111,
+            code:code,
             active: true
         }
     }}).then(response => {
@@ -174,86 +183,12 @@ const sendVerifyCode = (phone,email) => {
         SmsLog.updateOne({_id:new mongoose.mongo.ObjectId},{
             to: phone.phone,
             countryCode: phone.countryCode,
-            code: 1111 // randomize('0000')
+            code: code
         },{upsert:true}).then(response => {}).catch()
     }).catch()
 }
 
-const checkReferalCode = (data) => {
-    return new Promise((resolve, reject) => {
-        if (data.refferCode && data.refferCode != "" && data.refferCode != undefined) {
-            user.findOne({ $or: [{ refCode: data.refferCode }, { refCode: data.refferCode }] }, (err, referrer) => {
-                if (err) {
-                    return reject(dbErrResponse);
-                } else if (referrer === null) {
-                    return resolve({ message:"Refferal code is invalid" })
-                } else {
-                    let referralData = {
-                        id: referrer._id,
-                        userId: userId,
-                        registeredOn: moment().unix(),
-                        firstname: data.firstName,
-                        lastName: data.lastName || "",
-                        email: (data.email).toLowerCase() || "",
-                        countryCode: data.countryCode || "",
-                        phone: data.mobile || "",
-                    }
-                    updateReferals(referralData, (err, res) => {
-                        updateProfile(userId, {
-                            referrUser: {
-                                userId: (referrer._id).toString(),
-                                firstname: referrer.firstName || "",
-                                lastName: referrer.lastName || "",
-                                email: (referrer.email).toLowerCase() || "",
-                                countryCode: referrer.phone[0].countryCode || "",
-                                phone: referrer.phone.phone || "",
-                                claimCount: 0
-                            }
-                        }, (err, res) => {
-                            return resolve(data);
-                        })
-                    })
-                }
-            });
-        } else {
-            return resolve(data);
-        }
-    });
-}
 
-const updateReferals = (referralCode, callBack) => {
-    user.updateOne({ _id: new mongoose.mongo.ObjectId(referralCode.id) }, {
-        $push: {
-            "referrals": {
-                userId: referralCode.userId,
-                registeredOn: referralCode.registeredOn,
-                firstname: referralCode.firstname,
-                lastName: referralCode.lastName,
-                email: referralCode.email,
-                countryCode: referralCode.countryCode,
-                phone: referralCode.phone
-            }
-        }, $inc: {
-            "totalRefers": 1
-        }
-    }).then(response => {
-        callBack(null, response);
-    }).catch(err => {
-        callBack(err);
-    })
-
-}
-
-const updateProfile = (userId, data, callBack) => {
-    user.updateOne({ _id: new mongoose.mongo.ObjectId(userId) }, {
-        $set: data
-    }).then(response => {
-        callBack(null, response);
-    }).catch(err => {
-        callBack(err);
-    })
-
-}
 
 module.exports = {
     signUp,

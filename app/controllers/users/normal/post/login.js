@@ -9,8 +9,7 @@ const mongoose = require('mongoose'),
   { check, validationResult } = require('express-validator');
 
 const validator = [
-  // check('email').isEmail(),
-]
+ ]
 
 
 /**
@@ -32,7 +31,7 @@ const login = async (req, res) => {
 
   switch (req.body.loginType) {
     case 2:
-      User.findOne({ $or: [{ facebookId: req.body.facebookId }, { email: req.body.email }] }, function (err, user) {
+      User.findOne({ $or: [{ facebookId: req.body.facebookId,activated:true  }, { email: req.body.email,activated:true  }] }, function (err, user) {
         if (err) { return done(err); }
         if (user === null) {
           const userModel = new User({
@@ -65,7 +64,8 @@ const login = async (req, res) => {
         } else {
           const token = jwt.sign({ id: user._id }, process.env.Access_key, { expiresIn: process.env.ACCESSTOKEN.toString() + 's', subject: 'user' });
           const refToken = jwt.sign({ id: user._id }, 'ref', { expiresIn: '86400s', subject: 'user' });
-          User.updateOne({ email: req.body.email }, { profilePic: req.body.profilePic, }).then().catch();
+          
+          User.updateOne({ _id: user._id },{$set:{refToken:refToken,profilePic: req.body.profilePic,}}).then().catch();
           res.send({ message: "Login success", token, refToken: refToken })
         }
       });
@@ -104,8 +104,9 @@ const login = async (req, res) => {
           })
         } else {
           const token = jwt.sign({ id: user._id }, process.env.Access_key, { expiresIn: process.env.ACCESSTOKEN, subject: 'user' });
-          User.updateOne({ email: req.body.email }, { profilePic: req.body.profilePic, }).then().catch();
           const refToken = jwt.sign({ id: user._id }, 'ref', { expiresIn: '86400s', subject: 'user' });
+          
+          User.updateOne({ _id: user._id },{$set:{refToken:refToken,profilePic: req.body.profilePic,}}).then().catch();
 
           res.send({ message: "Login success", token, refToken: refToken,new:false })
         }
@@ -121,17 +122,18 @@ const login = async (req, res) => {
       break;
     default:
       User.findOne({$or: [
-        { "phone.phone": req.body.email }, { email: req.body.email }]
-      }, function (err, user) {
-        if (err) { return done(err); }
-        if (user === null) {
+        { "phone.phone": req.body.email,activated:true }, { email: req.body.email,activated:true }]
+      }).lean().exec().then(user => {
+         if (user === null) {
           res.status(204)
           return res.status(204).json({ message: 'No user found' });
         }
-        if (user === null) {
-          res.status(204)
-          return res.status(204).json({ message: 'No user found' });
+        if (req.body.password === null || req.body.password.length === 0 ||  req.body.password === '') {
+          res.status(202)
+          return res.status(202).json({ message: 'Password is empty' });
         }
+        console.log(user);
+        
         if (!hash.comparePassword(user.password, req.body.password)) {
           res.status(401)
           return res.send({ message: 'Incorrect email or password.' });

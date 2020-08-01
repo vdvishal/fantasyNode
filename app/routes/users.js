@@ -5,10 +5,12 @@ const router = express.Router();
  const isRef = require('../middlewares/jwt/refToken')
 
 const {get, post, patch} = require("./../controllers/users").account;
-const {signUp,login,resetPassword,changePassword,logout} = post
+const {signUp,login,resetPassword,changePassword,logout,kyc} = post
 const { profile, activateAccount,refToken} = get
 const { patchProfile } = patch
-// router.use(addOn)
+ 
+
+ 
 
 module.exports.setRouter = (app) => {
     let baseUrl = `${process.env.BASE_URL}/users`;
@@ -46,4 +48,10 @@ module.exports.setRouter = (app) => {
     //
     
     app.post(`${baseUrl}/logout`,isAuth,logout.logout)
+
+    //KYC
+    app.post(`${baseUrl}/kyc`,isAuth,kyc)
+
+    
+
 }

@@ -1,10 +1,13 @@
 const mongoose = require('mongoose');
 const FantasyUsersTeam = mongoose.model('FantasyUsersTeam');
 const Users = mongoose.model('Users');
+const updateWorker = require('../../../workfarm/index');
 
 const post = async (req, res) => {
     console.log(req.body);
     let user = await Users.findById(req.user.id).select('userName').lean().exec().then(response => response)
+
+    updateWorker.teamUpdate(req.body);
 
     await FantasyUsersTeam.updateOne(
         { _id: new mongoose.mongo.ObjectId()}, 

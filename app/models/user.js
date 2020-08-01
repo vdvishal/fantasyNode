@@ -22,14 +22,16 @@ const user =  new Schema({
     OTP: Object,
     blacklist: Array,
     banned: {type:Boolean,default:false},
-    phone:Array,
+    phone:Object,
     referrals:Array,
     totalRefers:Intl,
     referrUser:Object,
     googleId: String, 
     facebookId: String,
     status:Intl,
+    refferCode: String,
     lastOnline: {type:Date,default:moment.now()},
+    KYC:{}
 },{ strict: false,timestamps:true })
 
 mongoose.model('Users', user);
