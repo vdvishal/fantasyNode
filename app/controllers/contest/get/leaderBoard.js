@@ -23,6 +23,7 @@ const getLeaderBoard = async (req, res) => {
         {
             $match:{
                 contestId: mongoose.mongo.ObjectID(req.params.contestId),
+                userId: {$ne: mongoose.mongo.ObjectID(req.user.id)}
             }
         },
         {
@@ -52,7 +53,8 @@ const getLeaderBoard = async (req, res) => {
             $project:{
                 teamDetails:{
                     teamName:1,
-                    _id:1
+                    _id:1,
+                    serialNumber:1
                 },
                 userDetails: {
                     userName:1,
@@ -89,6 +91,8 @@ const getLeaderBoard = async (req, res) => {
     ])
     .then(response => response)
     .catch(err => err)
+    console.log(leaderBoard);
+    
      
     res.status(200).json({leaderBoard})
 

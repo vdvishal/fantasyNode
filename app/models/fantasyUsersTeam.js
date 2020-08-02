@@ -13,7 +13,11 @@ const fantasyUsersTeam = new Schema({
 
 }, { strict: false,timestamps:true })
 
- 
+fantasyUsersTeam.virtual('matchDetail',{
+    ref: 'Matches',
+    localField: 'matchId',
+    foreignField: 'id',
+  })
 
 mongoose.model('FantasyUsersTeam', fantasyUsersTeam);
 

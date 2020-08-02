@@ -2,15 +2,18 @@ const mongoose = require('mongoose');
 const fantasyUsersTeam = mongoose.model('FantasyUsersTeam');
 const Matches = mongoose.model('Matches');
 const _ = require('lodash');
+const moment = require('moment')
 
 //,starting_at:{$gt: new Date().toISOString()}
 const get = (req, res) => {
-    Matches.findOne({id:parseInt(req.params.matchId)}).lean().exec().then(match => {    
-            // if(match === null){
-            //    return res.status(202).json({message:"Teams can viewed after match has started"});
-            // }    
-            console.log(req.params.teamId);
-            console.log(match.localteam.id);
+    fantasyUsersTeam.findById(req.params.teamId).populate('matchDetail').lean().then(response => {
+        
+        if(req.user.id !== response.userId.toString() && moment(response.matchDetail[0].starting_at).unix() > moment().unix()){
+            return res.status(202).json({message:"Teams can viewed after match has started"});
+        }
+ 
+        let match = response.matchDetail[0]
+  
 
          fantasyUsersTeam.aggregate([
             {$match: {_id: new mongoose.mongo.ObjectId(req.params.teamId)}},
@@ -69,8 +72,8 @@ const get = (req, res) => {
                 }
             }
             ]).exec().then(response => {
-                 
-              let FantasyPlayers = {...response[0].players, ...response[1].players,...response[2].players,...response[3].players}
+ 
+              let FantasyPlayers = response.length !== 0 ?  {...response[0].players, ...response[1].players,...response[2].players,...response[3].players} : []
 
                 FantasyPlayers =  _.orderBy(FantasyPlayers,['points'],['desc']);
                 res.status(200).json({FantasyPlayers,

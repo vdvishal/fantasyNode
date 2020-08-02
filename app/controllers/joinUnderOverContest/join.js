@@ -91,7 +91,7 @@ const post = async (req, res) => {
     order.save().then().catch()
 
     await Users.updateOne({_id:req.user.id},{
-        $push:{
+        $addToSet:{
             joinedMatch: parseInt(req.body.matchId)
         },
         $inc:{

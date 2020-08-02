@@ -27,7 +27,7 @@ const getUserId = async (req, res) => {
     if(req.query.type==="1"){
         cond = {
             starting_at: {
-                $gt: Date.now()
+                $gt: new Date().toISOString()
             }
         }
     }

@@ -1,21 +1,17 @@
 const mongoose = require('mongoose');
 const FantasyJoinedUsers = mongoose.model('FantasyJoinedUsers');
 
-const match = mongoose.model('Matches');
+const matches = mongoose.model('Matches');
 const moment = require('moment')
 
 const patch = async (req, res) => {
-    console.log(req.body);
-    
-    await match.findOne({id:parseInt(req.body.matchId)}).lean().then(response => {
- 
-        if(moment(response.starting_at).unix() < moment().unix() ){
-            return res.status(202).json({message:"Match has already begun."})
-        }
-        console.log(moment(response.starting_at).unix());
-        console.log(moment().unix());
+     
+    let match = await matches.findOne({id:parseInt(req.body.matchId)}).lean().then(response => response)
 
-    })
+     
+    if(moment(match.starting_at).unix() < moment().unix() ){
+        return res.status(202).json({message:"Match has already begun."})
+    }
 
     await FantasyJoinedUsers.updateOne({_id: mongoose.mongo.ObjectID(req.body.prevTeam)},{
         $set:{

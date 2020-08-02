@@ -9,7 +9,7 @@ const image = require('../controllers/uploadImage/uploadImage')
 var multer  = require('multer')
 var storage = multer.diskStorage(
     {
-        destination: './uploads/',
+        destination: '/var/www/html/images/',
         filename: function ( req, file, cb ) {
             cb( null, Date.now() + '.' + file.mimetype.split('/')[1]);
         }

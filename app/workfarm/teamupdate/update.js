@@ -12,7 +12,7 @@ FantasyPlayer = mongoose.model('FantasyPlayer');
 const chalk = require('chalk');
 
 // Get matchKey//matchData
-module.exports = (data,cb) => {
+module.exports = (data,prev,cb) => {
     mongoose.connect(process.env.DB_HOST, { useNewUrlParser: true, useUnifiedTopology: true });
 
     console.log(chalk.bgRed("Winner update worker started"));
@@ -22,8 +22,39 @@ module.exports = (data,cb) => {
         let Players = await FantasyPlayer.findOne({matchId:data.matchId}).lean().exec().then(response => response).catch(err => console.log(err))  
         
         let teamplayers = data.players;
+        let prevplayers = prev.players;
 
         let arr = [];
+        console.log(prevplayers);
+        
+
+        Object.entries(prevplayers).forEach(([key,value]) => {
+            let cond = {
+                [`${value.teamId}.${value.position.name}.${key}.selected`]:-1,
+                [`${value.teamId}.${value.position.name}.${key}.captainCount`]: 0,
+                [`${value.teamId}.${value.position.name}.${key}.vcaptainCount`]: 0
+            }
+
+            if(value.captain === true){
+                cond = {
+                    [`${value.teamId}.${value.position.name}.${key}.selected`]:-1,
+                    [`${value.teamId}.${value.position.name}.${key}.captainCount`]: -1,
+                    [`${value.teamId}.${value.position.name}.${key}.vcaptainCount`]: 0
+                }
+            }
+
+            if(value.viceCaptain === true){
+                cond = {
+                    [`${value.teamId}.${value.position.name}.${key}.selected`]:-1,
+                    [`${value.teamId}.${value.position.name}.${key}.captainCount`]: 0,
+                    [`${value.teamId}.${value.position.name}.${key}.vcaptainCount`]: -1
+                }
+            }
+  
+            arr.push(new Promise((resolve,reject) => (FantasyPlayer.updateOne({_id:mongoose.mongo.ObjectID(Players._id)},{
+                $inc:cond,
+             })).then(resp => resolve(true)).catch(err => reject(false))))
+        });
 
         Object.entries(teamplayers).forEach(([key,value]) => {
             let cond = {
@@ -50,8 +81,7 @@ module.exports = (data,cb) => {
   
             arr.push(new Promise((resolve,reject) => (FantasyPlayer.updateOne({_id:mongoose.mongo.ObjectID(Players._id)},{
                 $inc:cond,
-                $set:{totalTeams: Players.totalTeams ? Players.totalTeams + 1 : 1}
-            })).then(resp => resolve(true)).catch(err => reject(false))))
+             })).then(resp => resolve(true)).catch(err => reject(false))))
         });
         
         await Promise.all(arr).then(resp => (true)).catch(err => {console.log(err);})
