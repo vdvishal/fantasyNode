@@ -7,7 +7,7 @@ const moment = require('moment')
 
 const get = (req, res) => {
 
-    if(req.query.matchId !== 'undefined'){
+    if(req.query.matchId !== 'undefined' && req.query.matchId !== 1){
         console.log(req.query.matchId);
 
         match.findOne({id:parseInt(req.query.matchId)}).exec().then(result => 
