@@ -25,10 +25,10 @@ module.exports = (data,prev,cb) => {
         let prevplayers = prev.players;
 
         let arr = [];
-        console.log(prevplayers);
-        
+         
 
         Object.entries(prevplayers).forEach(([key,value]) => {
+
             let cond = {
                 [`${value.teamId}.${value.position.name}.${key}.selected`]:-1,
                 [`${value.teamId}.${value.position.name}.${key}.captainCount`]: 0,
@@ -56,6 +56,13 @@ module.exports = (data,prev,cb) => {
              })).then(resp => resolve(true)).catch(err => reject(false))))
         });
 
+        await Promise.all(arr).then(resp => {
+            console.log(resp); 
+            }).catch(err => {console.log(err);})
+
+        let arr2 = [];
+
+
         Object.entries(teamplayers).forEach(([key,value]) => {
             let cond = {
                 [`${value.teamId}.${value.position.name}.${key}.selected`]:1,
@@ -79,16 +86,18 @@ module.exports = (data,prev,cb) => {
                 }
             }
   
-            arr.push(new Promise((resolve,reject) => (FantasyPlayer.updateOne({_id:mongoose.mongo.ObjectID(Players._id)},{
+            arr2.push(new Promise((resolve,reject) => (FantasyPlayer.updateOne({_id:mongoose.mongo.ObjectID(Players._id)},{
                 $inc:cond,
-             })).then(resp => resolve(true)).catch(err => reject(false))))
+             })).then(resp =>{  resolve(true)}).catch(err => reject(false))))
         });
         
-        await Promise.all(arr).then(resp => (true)).catch(err => {console.log(err);})
+        await Promise.all(arr2).then(resp => {
+            console.log(resp); 
+            mongoose.connection.close()
+            cb(null,'true')}).catch(err => {console.log(err);})
         
         
-        mongoose.connection.close()
-        cb(null,'true')
+        
         // ContestType3
 
     }

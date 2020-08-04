@@ -67,7 +67,7 @@ module.exports = (data,cb) => {
         if (err) {
             logger.error(err, 'mongoose connection open handler', 10)
         } else {
-            console.log(`${chalk.green("Database connection open")}`);
+            console.log(`${chalk.blueBright("Database connection open")}`);
             count();
         }
         //process.exit(1)

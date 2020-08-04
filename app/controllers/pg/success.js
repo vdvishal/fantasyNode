@@ -27,7 +27,7 @@ try {
             firstBonus = (activePay.amount/100)*0.5;
 
             if(firstBonus > 50){
-                firstBonus = 100
+                firstBonus = 50
             }
          }
 

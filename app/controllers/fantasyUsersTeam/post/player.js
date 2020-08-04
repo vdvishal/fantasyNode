@@ -13,19 +13,19 @@ const post = async (req, res) => {
 
     let count = await FantasyUsersTeam.count({userId: mongoose.mongo.ObjectId(req.user.id),matchId: parseInt(req.body.matchId)})
             .then(resp => resp)
-    updateWorker.teamUpdate(req.body,null,1);
 
     await FantasyUsersTeam.updateOne(
         { _id: new mongoose.mongo.ObjectId()}, 
         {$set:{
             userId: mongoose.mongo.ObjectId(req.user.id),
-            teamName:  user.userName,
+            teamName: user.userName,
             matchId: parseInt(req.body.matchId),
             players: req.body.players,
             serialNumber:count + 1
         }
     },{upsert:true}
     ).then(response => {
+        updateWorker.teamUpdate(req.body,null,1);
         res.status(200).json({message:"Team Added"});
     })
 }

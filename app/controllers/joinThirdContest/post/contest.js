@@ -80,7 +80,7 @@ const post = async (req, res) => {
         "status" : "contest_debit",
         "matchId": parseInt(req.body.matchId),
         "contestType": 3,
-        "orderId": "Combo Matchups",
+        "orderId": "Combo Duels",
         "notes" : {
             "userId" : req.user.id
         }
