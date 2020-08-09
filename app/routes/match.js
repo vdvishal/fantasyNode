@@ -1,5 +1,5 @@
 const match = require('../controllers/match/get')
-const isAuth = require('../middlewares/passport/isAuthenticate')
+const isAuth = require('../middlewares/jwt/auth')
 
 const { getUpcoming,getByUserId } = match
 

@@ -20,6 +20,11 @@ const post = async (req, res) => {
     let bonus = 0;
     let balance = 0;
 
+    try {
+        
+    } catch (error) {
+        
+    }
      
     const contestDetails = await FantasyContest.findById(req.body.contestId)
         .lean()
@@ -145,6 +150,12 @@ const post = async (req, res) => {
     })
 
     order.save().then().catch()
+
+    await Matches.updateOne({id:contestDetails.matchId},{
+        $addToSet :{
+            joinedMatch:parseInt(contestDetails.matchId)
+        }
+    }).then()
 
     await Users.updateOne({_id:req.user.id},{
         $addToSet:{

@@ -19,7 +19,7 @@
   },
   "servers": [
     {
-      "url": "https://api.link.com/api/v1"
+      "url": "http://localhost:3008/api/v1"
     },
     {
       "url": "http://api.link.com/api/v1"
@@ -40,7 +40,7 @@
     }
   ],
   "paths": {
-    "/signup": {
+    "/users/signup": {
       "post": {
         "tags": [
           "users"
@@ -70,6 +70,44 @@
                 }
               }
             }
+          },
+          "405": {
+            "description": "Invalid input",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      }
+    },
+    "/users/login": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "User signup",
+        "requestBody": {
+          "description": "User object that needs to be added",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+                }
+              
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+             
           },
           "405": {
             "description": "Invalid input",
@@ -116,9 +154,18 @@
         "summary": "Get matches",
         "parameters": [
           {
-            "name": "matchId",
+            "name": "type",
             "in": "query",
-            "description": "MatchId if getting a specific match or 0 for all match",
+            "description": "type = 1 -> upcoming; type = 2 -> live; type = 3 -> completed ",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "headers",
+            "description": "JWT token",
             "required": true,
             "schema": {
               "type": "string"
@@ -142,12 +189,12 @@
         "tags": [
           "contest"
         ],
-        "summary": "Get matches",
+        "summary": "Get contest",
         "parameters": [
           {
             "name": "matchId",
             "in": "path",
-            "description": "Get contest in the match",
+            "description": "Get contest type 1 in the match",
             "required": true,
             "schema": {
               "type": "string"
@@ -176,7 +223,7 @@
           {
             "name": "matchId",
             "in": "path",
-            "description": "Get matchups contest in the match",
+            "description": "Get contest type 3 in the match",
             "required": true,
             "schema": {
               "type": "string"
@@ -252,77 +299,23 @@
         "x-codegen-request-body-name": "body"
       }
     },
-    "/login": {
-      "get": {
-        "tags": [
-          "user"
-        ],
-        "summary": "Logs user into the system",
-        "operationId": "loginUser",
-        "parameters": [
-          {
-            "name": "username",
-            "in": "query",
-            "description": "The user name for login",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "password",
-            "in": "query",
-            "description": "The password for login in clear text",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "successful operation",
-            "headers": {
-              "X-Rate-Limit": {
-                "description": "calls per hour allowed by the user",
-                "schema": {
-                  "type": "integer",
-                  "format": "int32"
-                }
-              },
-              "X-Expires-After": {
-                "description": "date in UTC when token expires",
-                "schema": {
-                  "type": "string",
-                  "format": "date-time"
-                }
-              }
-            },
-            "content": {
-              "application/xml": {
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid username/password supplied",
-            "content": {}
-          }
-        }
-      }
-    },
     "/logout": {
       "get": {
         "tags": [
           "user"
         ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "headers",
+            "description": "JWT token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+
         "summary": "Logs out current logged in user session",
         "operationId": "logoutUser",
         "responses": {
@@ -348,9 +341,6 @@
           "phone": {
             "type": "string"
           }
-        },
-        "xml": {
-          "name": "User"
         }
       },
       "UserResponse": {

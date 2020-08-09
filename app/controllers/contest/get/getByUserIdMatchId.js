@@ -27,61 +27,67 @@ const getUserId = async (req, res) => {
         },
         {
             $project:{
-                    selectedTeam: 1,//{ $objectToArray: "$selectedTeam"},
+                    selectedTeam: { $objectToArray: "$selectedTeam"},
                     amount:1,
-                    contest:1,
+                     
                     winner:1,
-                    players:1,
+   
                     payout:{ $objectToArray: "$winner"},
                 }
          },
-        //  { "$unwind": "$selectedTeam" },
-        //  {
-        //     $lookup: {
-        //         from: 'contests',
-        //         localField: 'selectedTeam.v.contestId',
-        //         foreignField: '_id',
-        //         as: 'contest'
-        //     }
-        // },
-        // {
-        //     $group: {
-        //         _id:"$_id",
-        //         contest: {
-        //             $addToSet: {$arrayElemAt:["$contest",0]}
-        //         },
-        //         amount: {
-        //             $addToSet: "$amount"
-        //         },
-        //         selectedTeam: {
-        //             $push: "$selectedTeam"
-        //         },
-        //         winner:{
-        //             $addToSet: "$winner"
-        //         },
-        //         payout:{
-        //             $addToSet: "$payout"
-        //         },
-        //         players:{
-        //             $addToSet: "$players"
-        //         },
-        //     }
-        // },
-        // {
-        //     $project: {
-        //         _id:1,
-        //         contest: 1,
-        //         amount:{$arrayElemAt:["$amount",0]},
-        //         selectedTeam: { $arrayToObject: "$selectedTeam"},
-        //         winner:{$arrayElemAt:["$winner",0]},
-        //         payout:{$arrayElemAt:["$payout",0]},
-        //         players:{$arrayElemAt:["$players",0]},
-        //     }
-        // },
+         { "$unwind": "$selectedTeam" },
+         {
+            $lookup: {
+                from: 'contests',
+                localField: 'selectedTeam.v.contestId',
+                foreignField: '_id',
+                as: 'contest'
+            }
+        },
+        {
+            $group: {
+                _id:"$_id",
+                contest: {
+                    $addToSet: {$arrayElemAt:["$contest",0]}
+                },
+                amount: {
+                    $addToSet: "$amount"
+                },
+                selectedTeam: {
+                    $push: "$selectedTeam"
+                },
+                winner:{
+                    $addToSet: "$winner"
+                },
+                payout:{
+                    $addToSet: "$payout"
+                },
+                players:{
+                    $addToSet: "$players"
+                },
+            }
+        },
         {
             $project: {
                 _id:1,
                 contest: 1,
+                amount:{$arrayElemAt:["$amount",0]},
+                selectedTeam: { $arrayToObject: "$selectedTeam"},
+                winner:{$arrayElemAt:["$winner",0]},
+                payout:{$arrayElemAt:["$payout",0]},
+                players:{$arrayElemAt:["$players",0]},
+                
+            }
+        },
+        {
+            $project: {
+                _id:1,
+                contest: 1,
+                wonContest:{$filter: {
+                    input: "$contest",
+                    as: "item",
+                    cond: { $eq: [ "$$item.status", "notstarted" ] }
+                }},
                 amount:1,
                 selectedTeam: 1,
                 winner:1,
@@ -105,20 +111,83 @@ const getUserId = async (req, res) => {
         },
         {
             $project:{
-                    selectedTeam:1,
-                    amount:1,
+                selectedTeam:{ $objectToArray: "$selectedTeam"},	
+                                    amount:1,
                     winner:1,
                     contest:1,
                     players:1,
                     payout:{ $objectToArray: "$winner"},
                 }
          },
+         { "$unwind": "$selectedTeam" },
+         {
+            $lookup: {
+                from: 'contests',
+                localField: 'selectedTeam.v.contestId',
+                foreignField: '_id',
+                as: 'contest'
+            }
+        },
+        {
+            $group: {
+                _id:"$_id",
+                contest: {
+                    $addToSet: {$arrayElemAt:["$contest",0]}
+                },
+                amount: {
+                    $addToSet: "$amount"
+                },
+                selectedTeam: {
+                    $push: "$selectedTeam"
+                },
+                winner:{
+                    $addToSet: "$winner"
+                },
+                payout:{
+                    $addToSet: "$payout"
+                },
+                players:{
+                    $addToSet: "$players"
+                },
+            }
+        },
+        {
+            $project: {
+                _id:1,
+                contest: 1,
+                amount:{$arrayElemAt:["$amount",0]},
+                selectedTeam: { $arrayToObject: "$selectedTeam"},
+                winner:{$arrayElemAt:["$winner",0]},
+                payout:{$arrayElemAt:["$payout",0]},
+                players:{$arrayElemAt:["$players",0]},
+                
+            }
+        },
+
+        {
+            $project: {
+                _id:1,
+                contest: 1,
+                wonContest:{$filter: {
+                    input: "$contest",
+                    as: "item",
+                    cond: { $eq: [ "$$item.status", "notstarted" ] }
+                }},
+                amount:1,
+                selectedTeam:1,
+                winner:1,
+                payout:1,
+                players:1,
+                
+            }
+        },
         {
             $project: {
                 _id:1,
                 contest: 1,
                 players:1,
                 amount:1,
+                wonContest:1,
                 payout:1,
                 winner:1,
                 lostContest:{$filter: {
@@ -139,6 +208,9 @@ const getUserId = async (req, res) => {
     let con3  = await FantasyJoinedUsers.aggregate([
         {
             $match: { userId:  mongoose.mongo.ObjectID(req.user.id),matchId:parseInt(req.params.matchId)}
+        },
+        {
+            "$limit":100
         },
         {
             $lookup: {
@@ -178,7 +250,7 @@ const getUserId = async (req, res) => {
                 contestDetails: {$arrayElemAt:["$contestDetails",0]},
              }
         },
-        ]).exec()
+        ]).allowDiskUse(true).exec()
         .then(response => response)
 
         console.log(con2);

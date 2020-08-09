@@ -4,6 +4,8 @@ var swaggerUi = require('swagger-ui-express'),
     swaggerDocument = require('./swagger.json');
 require('dotenv').config({ path: './.env' })
 
+const Sentry = require('@sentry/node');
+
 const session = require('express-session');
 // const redisClient = require('./app/libraries/redis/redis');
 const isAuth = require('./app/middlewares/passport/isAuthenticate');
@@ -78,8 +80,10 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(require('express-status-monitor')())
 //Custom middleware
+Sentry.init({ dsn: 'https://7315e837b57b48999d9654123e111005@o431193.ingest.sentry.io/5381542' });
+app.use(Sentry.Handlers.requestHandler());
 
-
+ 
 fs.readdirSync(models).forEach(function (file) {
     if (~file.indexOf('.js')) require(models + '/' + file)
 });

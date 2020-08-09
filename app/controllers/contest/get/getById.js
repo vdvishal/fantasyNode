@@ -3,7 +3,7 @@ const FantasyPlayer = mongoose.model('FantasyPlayer');
 const FantasyJoinedUsers = mongoose.model('FantasyJoinedUsers');
 const Matches = mongoose.model('Matches');
 
-const AppStats = mongoose.model('AppStats');
+const FantasyLeaderBoard = mongoose.model('FantasyLeaderBoard');
 const _ = require('lodash');
 const moment = require('moment')
 
@@ -18,6 +18,41 @@ const moment = require('moment')
 
 const getById = async (req, res) => {
   
+    let leaderBoard = await FantasyLeaderBoard.aggregate([
+        {
+            $match: {
+                contestId: mongoose.mongo.ObjectID(req.params.contestId),
+                
+            }
+        },
+        {
+            $project: {
+                
+                'leader': {
+                    '$map': {
+                      'input': '$leader', 
+                      'as': 'user', 
+                      'in': {
+                         rank: '$$user.rank',
+                        'users': {
+                          '$filter': {
+                            'input': '$$user.users', 
+                            'as': 'myId', 
+                            'cond': {
+                              '$eq': [
+                                '$$myId.userDetails._id', mongoose.mongo.ObjectId(req.user.id)
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+            }
+        }
+ 
+    ]).then(response => response[0].leader)
+ 
     let myTeam = await FantasyJoinedUsers.aggregate([
         {
             $match:{
@@ -91,27 +126,25 @@ const getById = async (req, res) => {
     let FantasyPlayers = await FantasyPlayer.findOne({
         matchId: parseInt(req.params.matchId)
     }).lean().then(response => ({
-        ...response[response.localTeam].Allrounder, ...response[response.visitorTeam].Allrounder,
-        ...response[response.localTeam].Batsman, ...response[response.visitorTeam].Batsman,
-        ...response[response.localTeam].Wicketkeeper, ...response[response.visitorTeam].Wicketkeeper,
-        ...response[response.localTeam].Bowler, ...response[response.visitorTeam].Bowler,
+        ...response.players[response.localTeam].Allrounder, ...response.players[response.visitorTeam].Allrounder,
+        ...response.players[response.localTeam].Batsman, ...response.players[response.visitorTeam].Batsman,
+        ...response.players[response.localTeam].Wicketkeeper, ...response.players[response.visitorTeam].Wicketkeeper,
+        ...response.players[response.localTeam].Bowler, ...response.players[response.visitorTeam].Bowler,
     }));
 
      let obj = {}
      Object.entries(FantasyPlayers).forEach(([key,value]) => {
          if(typeof value.points === 'number'){
         obj = {...obj,[key]:value}  
-        console.log(obj);
-
+ 
     }})
 
-    console.log(obj);
-    
+     
 
     FantasyPlayers = _.orderBy(obj,['points'],['desc'])
 
      
-    res.status(200).json({myTeam,FantasyPlayers,Match})
+    res.status(200).json({myTeam,FantasyPlayers,Match,leaderBoard})
 
 }
 

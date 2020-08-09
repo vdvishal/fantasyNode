@@ -12,10 +12,10 @@ const get = (req, res) => {
             localTeam:response.localTeam,
             visitorTeam:response.visitorTeam,
             totalTeams:response.totalTeams,
-            Allrounder:{...response[response.localTeam].Allrounder,...response[response.visitorTeam].Allrounder},
-            Batsman:{...response[response.localTeam].Batsman,...response[response.visitorTeam].Batsman},
-            Wicketkeeper:{...response[response.localTeam].Wicketkeeper,...response[response.visitorTeam].Wicketkeeper},
-            Bowler:{...response[response.localTeam].Bowler,...response[response.visitorTeam].Bowler},
+            Allrounder:{...response.players[response.localTeam].Allrounder,...response.players[response.visitorTeam].Allrounder},
+            Batsman:{...response.players[response.localTeam].Batsman,...response.players[response.visitorTeam].Batsman},
+            Wicketkeeper:{...response.players[response.localTeam].Wicketkeeper,...response.players[response.visitorTeam].Wicketkeeper},
+            Bowler:{...response.players[response.localTeam].Bowler,...response.players[response.visitorTeam].Bowler},
         }
         
         obj.Allrounder = _.orderBy(obj.Allrounder,['credit'],["desc"])

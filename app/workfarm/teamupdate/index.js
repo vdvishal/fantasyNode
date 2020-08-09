@@ -27,24 +27,24 @@ module.exports = (data,cb) => {
 
         Object.entries(teamplayers).forEach(([key,value]) => {
             let cond = {
-                [`${value.teamId}.${value.position.name}.${key}.selected`]:1,
-                [`${value.teamId}.${value.position.name}.${key}.captainCount`]: 0,
-                [`${value.teamId}.${value.position.name}.${key}.vcaptainCount`]: 0
+                [`players.${value.teamId}.${value.position.name}.${key}.selected`]:1,
+                [`players.${value.teamId}.${value.position.name}.${key}.captainCount`]: 0,
+                [`players.${value.teamId}.${value.position.name}.${key}.vcaptainCount`]: 0
             }
 
             if(value.captain === true){
                 cond = {
-                    [`${value.teamId}.${value.position.name}.${key}.selected`]:1,
-                    [`${value.teamId}.${value.position.name}.${key}.captainCount`]: 1,
-                    [`${value.teamId}.${value.position.name}.${key}.vcaptainCount`]: 0
+                    [`players.${value.teamId}.${value.position.name}.${key}.selected`]:1,
+                    [`players.${value.teamId}.${value.position.name}.${key}.captainCount`]: 1,
+                    [`players.${value.teamId}.${value.position.name}.${key}.vcaptainCount`]: 0
                 }
             }
 
             if(value.viceCaptain === true){
                 cond = {
-                    [`${value.teamId}.${value.position.name}.${key}.selected`]:1,
-                    [`${value.teamId}.${value.position.name}.${key}.captainCount`]: 0,
-                    [`${value.teamId}.${value.position.name}.${key}.vcaptainCount`]: 1
+                    [`players.${value.teamId}.${value.position.name}.${key}.selected`]:1,
+                    [`players.${value.teamId}.${value.position.name}.${key}.captainCount`]: 0,
+                    [`players.${value.teamId}.${value.position.name}.${key}.vcaptainCount`]: 1
                 }
             }
   

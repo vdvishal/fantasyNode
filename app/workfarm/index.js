@@ -22,7 +22,7 @@ const teamUpdate = (data,prev,type) => {
 
         workers(data,(err,response) => {
             console.log(chalk.blueBright("teamUpdate Worker end"));
-            workerFarm.end(workers);
+            // workerFarm.end(workers);
        })
     }
 

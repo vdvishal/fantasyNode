@@ -2,7 +2,7 @@ const pg = require('../controllers/pg/index')
 const success = require('../controllers/pg/success')
 const transaction = require('../controllers/pg/transaction')
 
-const isAuth = require('../middlewares/passport/isAuthenticate')
+const isAuth = require('../middlewares/jwt/auth')
 
 
 module.exports.setRouter = (app) => {

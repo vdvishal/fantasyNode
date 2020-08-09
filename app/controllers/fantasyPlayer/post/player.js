@@ -10,7 +10,7 @@ const post = (req, res) => {
         // redis.HMSET('cricket_'+req.body.id)
         // redis.EXPIREAT('cricket_'+req.body.key,moment.unix(req.body.starting_at));
         
-        res.status(200).json(response);
+        res.status(200).json({message:"Updated"});
     })
 }   
 

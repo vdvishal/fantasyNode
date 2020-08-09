@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const isAuth = require('../middlewares/passport/isAuthenticate')
+const isAuth = require('../middlewares/jwt/auth')
 
 
 const contest = require('../controllers/contest')

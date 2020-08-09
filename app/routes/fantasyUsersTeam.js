@@ -1,5 +1,5 @@
 const fantasyUsersTeam = require('../controllers/fantasyUsersTeam')
-const isAuth = require('../middlewares/passport/isAuthenticate')
+const isAuth = require('../middlewares/jwt/auth')
 
 const { get,post } = fantasyUsersTeam;
 const { patch } = fantasyUsersTeam;

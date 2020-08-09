@@ -1,7 +1,7 @@
 'use strict'  
 const express = require('express');
 const router = express.Router();
- const isAuth = require('../middlewares/passport/isAuthenticate')
+const isAuth = require('../middlewares/jwt/auth')
  const isRef = require('../middlewares/jwt/refToken')
 
 const {get, post, patch} = require("./../controllers/users").account;

@@ -50,7 +50,9 @@ const getUserId = async (req, res) => {
     .lean()
     .exec()
     .then(response => response)
-    .catch(err => res.status(500).json("Error try again later"));
+    .catch(err => {
+        console.log(err)
+        res.status(500).json("Error try again later")});
     
     console.log({
         id:{$in:userDetails.joinedMatch},
@@ -61,7 +63,9 @@ const getUserId = async (req, res) => {
         id:{$in:userDetails.joinedMatch || []},
         ...cond
     }).then(response => res.status(200).json({data:response}))
-    .catch(err => res.status(500).json("Error try again later"));
+    .catch(err => {
+        console.log(err)
+        res.status(500).json("Error try again later")});
  
     
 

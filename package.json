@@ -18,6 +18,7 @@
   "homepage": "https://github.com/fantasyesportco/sportUsers#readme",
   "dependencies": {
     "@hapi/joi": "^17.1.1",
+    "@sentry/node": "^5.20.1",
     "amqplib": "^0.5.5",
     "axios": "^0.19.2",
     "bcryptjs": "^2.4.3",
