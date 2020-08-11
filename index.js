@@ -5,11 +5,11 @@ var swaggerUi = require('swagger-ui-express'),
 require('dotenv').config({ path: './.env' })
 
 const Sentry = require('@sentry/node');
+const statusMonitor = require('express-status-monitor')();
 
-const session = require('express-session');
+
 // const redisClient = require('./app/libraries/redis/redis');
-const isAuth = require('./app/middlewares/passport/isAuthenticate');
-
+ 
 
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
@@ -46,6 +46,8 @@ const models = './app/models';
 const routes = './app/routes';
 
 const app = express();
+
+app.use(statusMonitor);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
