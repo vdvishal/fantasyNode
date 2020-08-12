@@ -25,7 +25,9 @@ const patch = async (req, res) => {
 async function countUpdate(data,prev){
          
     let Players = await FantasyPlayer.findOne({matchId:data.matchId}).lean().exec().then(response => response).catch(err => console.log(err))  
-    
+    console.log(data);
+    console.log(prev);
+
     let teamplayers = data.players;
     let prevplayers = prev.players;
 
