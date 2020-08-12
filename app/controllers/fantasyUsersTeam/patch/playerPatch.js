@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const FantasyUsersTeam = mongoose.model('FantasyUsersTeam');
-const updateWorker = require('../../../workfarm/index');
+const FantasyPlayer = mongoose.model('FantasyPlayer');
 
 const patch = async (req, res) => {
  
