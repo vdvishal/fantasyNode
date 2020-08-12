@@ -54,11 +54,13 @@ module.exports = (data,cb) => {
             })).then(resp => resolve(true)).catch(err => reject(false))))
         });
         
-        await Promise.all(arr).then(resp => (true)).catch(err => {console.log(err);})
+        await Promise.all(arr).then(resp => {
+            mongoose.connection.close()
+            cb(null,'true')
+        }).catch(err => {console.log(err);})
         
         
-        mongoose.connection.close()
-        cb(null,'true')
+
         // ContestType3
 
     }
