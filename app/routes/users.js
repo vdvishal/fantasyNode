@@ -10,14 +10,19 @@ const { profile, activateAccount,refToken} = get
 const { patchProfile } = patch
  
 
- 
+const basicAuth = require('express-basic-auth')
+
 
 module.exports.setRouter = (app) => {
     let baseUrl = `${process.env.BASE_URL}/users`;
     
-    app.post(`${baseUrl}/signup`, signUp.validator,signUp.signUp);
+    app.post(`${baseUrl}/signup`,basicAuth({
+        users: { 'app': 'qwewqinasdoinoinacino' }
+    }), signUp.validator,signUp.signUp);
  
-    app.post(`${baseUrl}/login`,login.validator, login.login)
+    app.post(`${baseUrl}/login`,basicAuth({
+        users: { 'app': 'qwewqinasdoinoinacino' }
+    }),login.validator, login.login)
 
     app.get(`${baseUrl}/profile`,isAuth,profile.profile)
 
@@ -32,16 +37,24 @@ module.exports.setRouter = (app) => {
 
     // Activate Profile
 
-    app.get(`${baseUrl}/activate`,activateAccount.activateUser)
+    app.get(`${baseUrl}/activate`,basicAuth({
+        users: { 'app': 'qwewqinasdoinoinacino' }
+    }),activateAccount.activateUser)
 
     
     //reset && change password
     
-    app.post(`${baseUrl}/sendCode`,resetPassword.sendOTP)
+    app.post(`${baseUrl}/sendCode`,basicAuth({
+        users: { 'app': 'qwewqinasdoinoinacino' }
+    }),resetPassword.sendOTP)
 
-    app.post(`${baseUrl}/verify`,resetPassword.verifyOTP)
+    app.post(`${baseUrl}/verify`,basicAuth({
+        users: { 'app': 'qwewqinasdoinoinacino' }
+    }),resetPassword.verifyOTP)
 
-    app.post(`${baseUrl}/reset/password`,resetPassword.resetPassword)
+    app.post(`${baseUrl}/reset/password`,basicAuth({
+        users: { 'app': 'qwewqinasdoinoinacino' }
+    }),resetPassword.resetPassword)
 
     app.patch(`${baseUrl}/password`,isAuth,changePassword.changePassword)
 

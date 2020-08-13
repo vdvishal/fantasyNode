@@ -9,6 +9,7 @@ const patch = async (req, res) => {
     };
 
     let prevTeam = await FantasyUsersTeam.findOne({_id: new mongoose.mongo.ObjectId(req.params.teamId)})
+    .lean()
     .then(resp => resp)
 
     
@@ -23,17 +24,22 @@ const patch = async (req, res) => {
 }
 
 async function countUpdate(data,prev){
-         
+    try {
+        
+    } catch (error) {
+        
+    }
     let Players = await FantasyPlayer.findOne({matchId:data.matchId}).lean().exec().then(response => response).catch(err => console.log(err))  
-    console.log(data);
     console.log(prev);
-
+ 
     let teamplayers = data.players;
     let prevplayers = prev.players;
 
     let arr = [];
-     
-
+     try {
+   
+ 
+        
     Object.entries(prevplayers).forEach(([key,value]) => {
 
         let cond = {
@@ -102,6 +108,11 @@ async function countUpdate(data,prev){
         console.log(resp); 
  
  }).catch(err => {console.log(err);})
+         
+     } catch (error) {
+        console.log(error); 
+     }
+
     
     
     

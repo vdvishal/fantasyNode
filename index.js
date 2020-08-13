@@ -7,6 +7,8 @@ require('dotenv').config({ path: './.env' })
 const Sentry = require('@sentry/node');
 const statusMonitor = require('express-status-monitor')();
 
+ 
+const helmet = require('helmet')
 
 // const redisClient = require('./app/libraries/redis/redis');
  
@@ -47,13 +49,17 @@ const routes = './app/routes';
 
 const app = express();
 
-app.use(statusMonitor);
 
+
+app.use(statusMonitor);
+app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+
 
  
 // app.use(session({
@@ -67,7 +73,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 i18n.configure(options);
 
-app.use(i18n.init);
+// app.use(i18n.init);
 
 app.all('*', function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -79,8 +85,9 @@ app.all('*', function (req, res, next) {
 
 app.use(morgan("dev"))
 
-app.use(passport.initialize());
-app.use(passport.session());
+
+
+ 
 app.use(require('express-status-monitor')())
 //Custom middleware
 Sentry.init({ dsn: 'https://7315e837b57b48999d9654123e111005@o431193.ingest.sentry.io/5381542' });
@@ -98,7 +105,8 @@ fs.readdirSync(routes).forEach(function (file) {
     }
 });
 
-require('./app/libraries/passport')(passport);
+
+
 
 const server = http.createServer(app);
 server.listen(process.env.PORT);
