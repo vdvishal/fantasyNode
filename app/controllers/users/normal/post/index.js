@@ -9,6 +9,8 @@ const kyc = require('./kyc')
 
 const withdraw = require('./withdraw')
 
+const bank = require('./bank')
+
 module.exports = {
     signUp,
     login,
@@ -16,5 +18,6 @@ module.exports = {
     changePassword,
     logout,
     kyc,
-    withdraw
+    withdraw,
+    bank
 }

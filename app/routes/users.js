@@ -5,7 +5,7 @@ const isAuth = require('../middlewares/jwt/auth')
  const isRef = require('../middlewares/jwt/refToken')
 
 const {get, post, patch} = require("./../controllers/users").account;
-const {signUp,login,resetPassword,changePassword,logout,kyc} = post
+const {signUp,login,resetPassword,changePassword,logout,kyc,bank,withdraw} = post
 const { profile, activateAccount,refToken} = get
 const { patchProfile } = patch
  
@@ -65,6 +65,8 @@ module.exports.setRouter = (app) => {
     //KYC
     app.post(`${baseUrl}/kyc`,isAuth,kyc)
 
-    
+    app.post(`${baseUrl}/bank`,isAuth,bank)
+
+    app.post(`${baseUrl}/withdraw`,isAuth,withdraw)
 
 }

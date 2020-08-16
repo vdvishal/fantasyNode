@@ -19,14 +19,30 @@ const withdraw = async (req, res) => {
         return res.status(202).json({message:"Please link a upi address"});
     }
 
+    if(req.body.type === 1 && UserD.bank !== undefined && UserD.bank.verified !== false){
+        return res.status(202).json({message:"Bank account not verified."});
+    }
+
+ 
+
+    if(req.body.amount > UserD.wallet.withdrawal){
+        return res.status(202).json({message:"Amount must be less than or equal to the withdrawable amount"});
+    }
+
     let wdrw = new Withdraw({
         userId: mongoose.mongo.ObjectID(req.user.id),
         type:req.body.type,
         amount: req.body.amount
     }) 
 
-    wdrw.save().then(response => res.status(200).json({message:"Request accepted and processing"})).catch()
+    await wdrw.save().then(response => response).catch()
 
+    await User.updateOne({_id:mongoose.mongo.ObjectID(req.user.id)},{
+        $inc:{
+            'wallet.balance':-req.body.amount,
+            'wallet.withdrawal':-req.body.amount
+        }
+    }).then(response => res.status(200).json({message:"Request accepted and processing"})).catch()
 }
 
 module.exports = withdraw

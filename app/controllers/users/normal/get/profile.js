@@ -15,7 +15,15 @@ const moment = require('moment')
  const profile = async (req,res) => {
     User.findByIdAndUpdate(req.user.id,{$set:{
       lastOnline: moment.now()
-    }}).select('email phone fullName userName wallet verifiedKYC refCode activated profilePic').lean().exec().then(response => {         
+    }})
+    .select('email phone fullName userName wallet verifiedKYC refCode activated profilePic bank')
+    .lean().exec().then(response => {         
+      
+      if(response.bank){
+      response.bank.IFSC = "XXXXXXX";
+      response.bank.accNumber = "XXXXXXX" + '-' + response.bank.accNumber.slice(3,7);
+      response.bank.image = ''
+      }
       res.send({message: "User profile",data:{...response}})
 
       //  OtherUserStats.findOne({userId:req.user.id}).lean().then(responseX => {
@@ -25,6 +33,7 @@ const moment = require('moment')
       //   res.send({message: "database Error"})
       // })
     }).catch(err => {
+      console.log(err)
       res.send({message: "database Error"})
     })
 }
