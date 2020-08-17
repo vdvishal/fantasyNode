@@ -33,8 +33,11 @@ const getLeaderBoard = async (req, res) => {
             }
         ]).then(response => response)
         
-        let data = leaderBoard[0]
-        if(data.leader.length === 0){
+        console.log(leaderBoard);
+        
+        let data = leaderBoard.length > 0 ? leaderBoard[0] : [];
+
+        if(data.leader === undefined || (data.leader && data.leader.length === 0)){
             FantasyJoinedUsers.aggregate([
                 {
                     $match:{
@@ -97,15 +100,16 @@ const getLeaderBoard = async (req, res) => {
                 {
                     $project:{
                         users:[
-                            {teamDetails:"$teamDetails",
-                            userDetails:"$userDetails",}
+                            {
+                                teamDetails:"$teamDetails",
+                                userDetails:"$userDetails"
+                            }
                         ],
                         contestDetails:1
                      }
                 },
             ]).then(response => {
-                console.log(response);
-                data = {
+                 data = {
                     leader: response,
                     leaderLength: response[0].contestDetails.totalJoined
                 }

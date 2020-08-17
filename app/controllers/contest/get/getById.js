@@ -51,7 +51,7 @@ const getById = async (req, res) => {
             }
         }
  
-    ]).then(response => response[0].leader)
+    ]).then(response => response[0] ? response[0].leader : [])
  
     let myTeam = await FantasyJoinedUsers.aggregate([
         {
@@ -132,17 +132,21 @@ const getById = async (req, res) => {
         ...response.players[response.localTeam].Bowler, ...response.players[response.visitorTeam].Bowler,
     }));
 
+    
      let obj = {}
      Object.entries(FantasyPlayers).forEach(([key,value]) => {
          if(typeof value.points === 'number'){
-        obj = {...obj,[key]:value}  
- 
-    }})
-
-     
+            obj = {...obj,[key]:value}  
+        }else{
+            obj = {...obj,[key]:value}
+        }
+    })
 
     FantasyPlayers = _.orderBy(obj,['points'],['desc'])
-
+    
+    if(leaderBoard.length === 0){
+        FantasyPlayers = _.orderBy(obj,['credit'],['desc'])
+    }
      
     res.status(200).json({myTeam,FantasyPlayers,Match,leaderBoard})
 
