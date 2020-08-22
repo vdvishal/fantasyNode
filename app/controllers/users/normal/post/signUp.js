@@ -169,7 +169,7 @@ const sendEmail = (email) => {
 }
 
 const sendVerifyCode = (phone,email) => {
-    const code = randomize('AAAA0');
+    const code = randomize('0000');
     const time = moment().unix();
     
     user.updateOne({_id: userId},{$set:{
@@ -179,7 +179,7 @@ const sendVerifyCode = (phone,email) => {
             active: true
         }
     }}).then(response => {
-        sendSms(12123,`Your verification code: ${code}`);
+        sendSms(phone.countryCode+phone.phone,`Your verification code: ${code}`);
         SmsLog.updateOne({_id:new mongoose.mongo.ObjectId},{
             to: phone.phone,
             countryCode: phone.countryCode,

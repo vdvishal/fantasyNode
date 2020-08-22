@@ -4,11 +4,14 @@ const phone = process.env.TWILIO_NUMBER;
 
 const client = require('twilio')(accountSid, authToken);
 
-module.exports = sendSms = (number,message) => client.messages
+module.exports = sendSms = (number,message) => {
+  console.log(number);
+  
+  client.messages
   .create({
      body: message,
      from: phone,
      to: '+916003633574'
    })
   .then(message => console.log(message));
-
+}
