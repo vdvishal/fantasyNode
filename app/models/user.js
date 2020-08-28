@@ -16,6 +16,7 @@ const user =  new Schema({
     paymentId: String,
     profilePic:String,
     refCode:String,
+    refLink: String,
     verifiedKYC: { type: Boolean, default: false },
     activated: { type: Boolean, default: false },
     wallet: Object,

@@ -41,7 +41,9 @@ const getUserId = async (req, res) => {
     if(req.query.type==="3"){
         cond = {
             isLive:false,
-            status:"Finished"
+            starting_at: {
+                $lt: new Date().toISOString()
+            }
         }
     }
 

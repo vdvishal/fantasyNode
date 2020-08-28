@@ -127,11 +127,13 @@ const hashpassword = (password) => new Promise((resolve, reject) => {
 
 const saveToDb = (data) => new Promise((resolve, reject) => {
     // hash password
+    let refCode = randomize('AAAA0');
     const userModel = new user({
         email: data.email,
         password: data.password,
         fullName: '',
-        refCode: randomize('AAAA0'),
+        refCode: refCode,
+        refLink: `https://fantasyjutsu.com/register?ref=${refCode}`,
         refferCode:data.refferCode,
         userName: data.email.split("@")[0],
         phone: {

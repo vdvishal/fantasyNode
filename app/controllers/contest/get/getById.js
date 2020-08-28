@@ -123,32 +123,32 @@ const getById = async (req, res) => {
         id: parseInt(req.params.matchId)
     }).then(response => response);
 
-    let FantasyPlayers = await FantasyPlayer.findOne({
-        matchId: parseInt(req.params.matchId)
-    }).lean().then(response => ({
-        ...response.players[response.localTeam].Allrounder, ...response.players[response.visitorTeam].Allrounder,
-        ...response.players[response.localTeam].Batsman, ...response.players[response.visitorTeam].Batsman,
-        ...response.players[response.localTeam].Wicketkeeper, ...response.players[response.visitorTeam].Wicketkeeper,
-        ...response.players[response.localTeam].Bowler, ...response.players[response.visitorTeam].Bowler,
-    }));
+    // let FantasyPlayers = await FantasyPlayer.findOne({
+    //     matchId: parseInt(req.params.matchId)
+    // }).lean().then(response => ({
+    //     ...response.players[response.localTeam].Allrounder, ...response.players[response.visitorTeam].Allrounder,
+    //     ...response.players[response.localTeam].Batsman, ...response.players[response.visitorTeam].Batsman,
+    //     ...response.players[response.localTeam].Wicketkeeper, ...response.players[response.visitorTeam].Wicketkeeper,
+    //     ...response.players[response.localTeam].Bowler, ...response.players[response.visitorTeam].Bowler,
+    // }));
 
     
-     let obj = {}
-     Object.entries(FantasyPlayers).forEach(([key,value]) => {
-         if(typeof value.points === 'number'){
-            obj = {...obj,[key]:value}  
-        }else{
-            obj = {...obj,[key]:value}
-        }
-    })
+    //  let obj = {}
+    //  Object.entries(FantasyPlayers).forEach(([key,value]) => {
+    //      if(typeof value.points === 'number'){
+    //         obj = {...obj,[key]:value}  
+    //     }else{
+    //         obj = {...obj,[key]:value}
+    //     }
+    // })
 
-    FantasyPlayers = _.orderBy(obj,['points'],['desc'])
+    // FantasyPlayers = _.orderBy(obj,['points'],['desc'])
     
-    if(leaderBoard.length === 0){
-        FantasyPlayers = _.orderBy(obj,['credit'],['desc'])
-    }
+    // if(leaderBoard.length === 0){
+    //     FantasyPlayers = _.orderBy(obj,['credit'],['desc'])
+    // }
      
-    res.status(200).json({myTeam,FantasyPlayers,Match,leaderBoard})
+    res.status(200).json({myTeam,FantasyPlayers:[],Match,leaderBoard})
 
 }
 

@@ -26,6 +26,11 @@ const getUserId = async (req, res) => {
             $match:{userId: mongoose.mongo.ObjectID(req.user.id),matchId:parseInt(req.params.matchId)}
         },
         {
+            $sort:{
+                "_id":-1
+            }
+         },
+        {
             $project:{
                     selectedTeam: { $objectToArray: "$selectedTeam"},
                     amount:1,

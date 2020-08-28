@@ -17,7 +17,7 @@ const sendOTP = (req, res) => {
         .then(user => {
             if (!user) return res.status(204).json({ message: 'The number is not registered. Please register.' });
 
-            const code = randomize('AAAA0')
+            const code = randomize('0000')
             const time = moment().unix();
             User.findByIdAndUpdate(req.body.verifyId, {
                 $set: {
@@ -40,7 +40,7 @@ const sendOTP = (req, res) => {
         .then(user => {
             if (!user) return res.status(204).json({ message: 'The number is not registered. Please register.' });
 
-            const code = randomize('AAAA0')
+            const code = randomize('0000')
             const time = moment().unix();
             User.findByIdAndUpdate(user._id, {
                 $set: {
@@ -63,7 +63,7 @@ const sendOTP = (req, res) => {
         .then(user => {
             if (!user) return res.status(204).json({ message: 'No user registered.' });
 
-            const code = randomize('AAAA0')
+            const code = randomize('0000')
             const time = moment().unix();
  
             hash.hashPassword(req.body.password, (err, response) => {

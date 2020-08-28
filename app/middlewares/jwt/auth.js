@@ -11,7 +11,9 @@ const authenticateToken = (req, res, next) => {
                 return res.status(403).send({ message: 'Token Expired' });
             }
             else {
-                return res.status(500).send({ auth: false, message: 'Failed to authenticate token.', err: err });
+                console.log(err.message);
+                
+                return res.status(500).send({ auth: false, message: err.message, err: err });
             }
         }
         else {

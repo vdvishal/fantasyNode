@@ -62,8 +62,8 @@ const login = async (req, res) => {
             }
           })
         } else {
-          const token = jwt.sign({ id: user._id }, process.env.Access_key, { expiresIn: process.env.ACCESSTOKEN.toString() + 's', subject: 'user' });
-          const refToken = jwt.sign({ id: user._id }, 'ref', { expiresIn: '86400s', subject: 'user' });
+          const token = jwt.sign({ id: user._id }, process.env.Access_key, { expiresIn: process.env.ACCESSTOKEN.toString(), subject: 'user' });
+          const refToken = jwt.sign({ id: user._id }, 'ref', { expiresIn:  process.env.REFTOKEN.toString(), subject: 'user' });
           
           User.updateOne({ _id: user._id },{$set:{refToken:refToken,profilePic: req.body.profilePic,}}).then().catch();
           res.send({ message: "Login success", token, refToken: refToken })

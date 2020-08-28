@@ -3,9 +3,11 @@ const FantasyPlayer = mongoose.model('FantasyPlayer');
 const _ = require('lodash');
 
 const get = (req, res) => {
-    console.log("-------------");
+    console.log("-------------",req.query.matchId);
     
     FantasyPlayer.findOne({matchId:parseInt(req.query.matchId)}).populate('matchDetail').lean().sort({_id:-1}).then(response => { 
+        console.log("-------------",response);
+
         let obj = {
             matchId:response.matchId,
             matchDetail:response.matchDetail[0],
