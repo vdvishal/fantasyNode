@@ -3,9 +3,18 @@ const
     User = mongoose.model('Users'),
     bcrypt = require('../../../../libraries/bcrypt');
 
-const changePassword = async (req, res) => {
+    const Joi = require('joi')
 
-    let userDetails = await User.findById(req.user.id).select('password').then(resp => resp).catch(err => res.status(500).json({message:"Some error occured"}))
+const schema = Joi.object({
+    password:Joi.string().alphanum().length(5).required(),
+    oldPassword:Joi.string().required(),
+})
+
+const changePassword = async (req, res) => {
+    try {
+        await schema.validateAsync(req.body) 
+
+    let userDetails = await User.findById(req.user.id).select('password').then(resp => resp)
 
     if(bcrypt.comparePassword(req.body.oldPassword,userDetails.password)){
         await bcrypt.hashPassword(req.body.password, (err, pass) => {
@@ -16,7 +25,7 @@ const changePassword = async (req, res) => {
             }).then(rs =>
                 res.status(200).json({
                     message: "Password Updated"
-                })).catch(err => res.status(500).json({ message: err.message }))
+                }))
     
         })
     }else{
@@ -24,7 +33,9 @@ const changePassword = async (req, res) => {
             message: "Old Password does not match."
         })
     }
-
+        } catch (err) {
+            res.status(500).json({ message: err.message })  
+        }
 
 }
 

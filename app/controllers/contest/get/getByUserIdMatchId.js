@@ -89,6 +89,11 @@ const getUserId = async (req, res) => {
                 _id:1,
                 contest: 1,
                 wonContest:{$filter: {
+                    input: "$payout",
+                    as: "item",
+                    cond: { $eq: [ "$$item.v", 1 ] }
+                }},
+                inPlayContest:{$filter: {
                     input: "$contest",
                     as: "item",
                     cond: { $eq: [ "$$item.status", "notstarted" ] }
@@ -174,6 +179,11 @@ const getUserId = async (req, res) => {
                 _id:1,
                 contest: 1,
                 wonContest:{$filter: {
+                    input: "$payout",
+                    as: "item",
+                    cond: { $eq: [ "$$item.v", 1 ] }
+                }},
+                inPlayContest:{$filter: {
                     input: "$contest",
                     as: "item",
                     cond: { $eq: [ "$$item.status", "notstarted" ] }
@@ -258,7 +268,7 @@ const getUserId = async (req, res) => {
         ]).allowDiskUse(true).exec()
         .then(response => response)
 
-        console.log(con2);
+        console.log(con3);
         
     res.status(200).json({underOver:con1,comboMatch:con2,fantasy:con3})
 }

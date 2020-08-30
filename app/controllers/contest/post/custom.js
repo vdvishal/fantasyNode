@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const Contest = mongoose.model('Contest');
-const AppStats = mongoose.model('AppStats');
-
+ 
 /**
  * 
  * @param {*} req
@@ -13,60 +12,61 @@ const AppStats = mongoose.model('AppStats');
 
 const custom = (req, res) => {
     let team;
-    let redAmount = 0;
-    let blueAmount = 0;
-    let red;
-    let blue;
-    if(team === 1){
-        red = {
-            userId: 'userId',//req.user.id,
-            amount: req.body.amount 
-        }
-
-        redAmount = req.body.amount 
-    }else{
-        blue = {
-            userId: 'userId',//req.user.id,
-            amount: req.body.amount 
-        } 
-
-        blueAmount = req.body.amount 
+    let obj
+    if(req.body.contestType === 5){
+        obj = new Contest({
+            contestName: 'Under or Over',
+            contestType: 5,
+            playerId:req.body.playerId,
+            playerDetail: req.body.playerDetail, 
+            value: req.body.value,
+            type: req.body.type,
+            typeName: req.body.type === '1' ? 'Runs' : req.body.type === '2' ? "Wickets" : "Fantasy Points",
+            info: {
+                player1:req.body.subType === 1 ? `Under ${req.body.value}` : `Over ${req.body.value}`,
+                player2:req.body.subType === 1 ? `Over ${req.body.value}` : `Under ${req.body.value}`,
+            },
+            handicap: mongoose.mongo.ObjectId(req.user.id),
+            matchId: req.body.matchId,
+            minAmount:req.body.minAmount,
+            maxAmount:req.body.maxAmount,
+            users:{
+                player1:mongoose.mongo.ObjectId(req.user.id),
+                player2: '' 
+            },
+            finalAmount:req.body.maxAmount,
+            totalAmount: req.body.maxAmount*2*0.05
+        })
     }
 
-    let obj = new Contest({
-        contestName: 'More or less',
-        contestType: req.body.contestType,
-        value: req.body.value,
-        type: req.body.type,
-        typeName: req.body.type === '1' ? 'Runs' : req.body.type === '2' ? "Wickets" : "Fantasy Points",
-        info: {
-            redTeam: `More than ${req.body.value}`,
-            blueTeam:`Less than ${req.body.value}`,
-        },
-        matchId: req.body.matchId,
-        playerId: req.body.playerId,
-        playerDetails: req.body.playerDetails,
-        amount: redAmount+blueAmount,
-        totalAmount: {
-            redTeam: redAmount,
-            blueTeam: blueAmount
-        },
-        redTeam:[
-            red
-        ],
-        blueTeam: [
-            blue
-        ]
-    })
+    if(req.body.contestType === 6){
+        obj = new Contest({
+            contestName: 'Duels',
+            contestType: 6,
+            value: '',
+            type: 3,
+            typeName: "Fantasy Points",
+            player1:req.body.playerId,
+            player2:'',
+            player1Detail: req.body.playerDetail,
+            player2Detail: '',
+            handicap: mongoose.mongo.ObjectId(req.user.id),
+            matchId: req.body.matchId,
+            minAmount:req.body.minAmount,
+            maxAmount:req.body.maxAmount,
+            users:{
+                player1:mongoose.mongo.ObjectId(req.user.id),
+                player2: '' 
+            },
+            finalAmount:req.body.maxAmount,
+            totalAmount:req.body.maxAmount*2*0.05
+        })
+    }
+
+
     
     obj.save().then(response => {
-        AppStats.updateOne({},{
-            $inc:{
-                wagered:redAmount+blueAmount
-            }
-        }).then(response => {
-            res.status(200).json({message:"Contest Created"})
-        })
+        res.status(200).json({message:"Contest Created"})
     })
 }
 

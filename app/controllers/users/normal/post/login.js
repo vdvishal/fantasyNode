@@ -145,7 +145,7 @@ const login = async (req, res) => {
 
         const refToken = jwt.sign({ id: user._id }, 'ref', { expiresIn: `${process.env.REFTOKEN}`, subject: 'user' });
         
-        User.updateOne({_id:user._id},{$set:{refToken:refToken}}).then().catch()
+        User.updateOne({_id:user._id},{$set:{refToken:refToken,ip:req.payload.ip}}).then().catch()
        
         res.status(200)
         res.send({ message: "Login success", token, refToken: refToken })

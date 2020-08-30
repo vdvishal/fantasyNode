@@ -165,7 +165,7 @@ function onListening() {
     //  logger.info('server listening on port ' + addr.port, 'serverOnListeningHandler', 10);
     // DB connection 
      mongoose.connect(process.env.DB_HOST,{useNewUrlParser: true, useUnifiedTopology: true });
-
+    
     // redis connection
 
     // redisClient.on('connect', () => {
