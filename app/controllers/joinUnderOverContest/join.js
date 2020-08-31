@@ -21,7 +21,7 @@ const post = async (req, res) => {
     const MatchDetails = await Matches.findOne({id:parseInt(req.body.matchId)}).lean()
     .exec()
     .then(response => response)
-    .catch(err => res.status(500).json("Error try again later"));
+    .catch(err => res.status(502).json("Error try again later"));
 
     if(moment(MatchDetails.starting_at).unix() < moment().unix() ){
         return res.status(202).json({message:"Match has already begun."})
@@ -36,7 +36,7 @@ const post = async (req, res) => {
     .lean()
     .exec()
     .then(response => response)
-    .catch(err => res.status(500).json("Error try again later"));
+    .catch(err => res.status(502).json("Error try again later"));
  
 
 
@@ -75,7 +75,7 @@ const post = async (req, res) => {
 
     const contest = new UnderOverContest({userId:req.user.id,...dt})
 
-    await contest.save().then(response => response).catch(err => res.status(500).json("Error try again later"));
+    await contest.save().then(response => response).catch(err => res.status(502).json("Error try again later"));
 
     let order = new Orders({
         "amount" :  parseInt(req.body.amount)*100,

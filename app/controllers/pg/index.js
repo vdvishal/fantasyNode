@@ -42,8 +42,8 @@ var instance = new Razorpay({
           let orderObj = new Orders({...order,orderId:order.id})
           orderObj.save().then(resp=> {
             res.status(200).json(order)
-          }).catch(err => res.status(500).json({message:"db error"}))
-        }).catch(err => res.status(500).json({message:"db error"}))
+          }).catch(err => res.status(502).json({message:"db error"}))
+        }).catch(err => res.status(502).json({message:"db error"}))
 
         
       });

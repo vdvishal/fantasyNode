@@ -80,7 +80,7 @@ const signUp = async (req, res) => {
         return res.send({ message: "Registered successfully",userId: userId})
 
     } catch (error) {
-        return res.send({ message: error.message }).status(500)
+        return res.send({ message: error.message }).status(502)
     }
 }
 

@@ -29,7 +29,7 @@ const joinVs = async (req, res) => {
         .lean()
         .exec()
         .then(response => response)
-        .catch(err => res.status(500).json("Error try again later"));
+        .catch(err => res.status(502).json("Error try again later"));
      
         if(req.body.amount*0.2 <= userDetails.wallet.bonus){
             if(userDetails.wallet.balance >= req.body.amount - req.body.amount*0.2){

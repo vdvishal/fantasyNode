@@ -39,7 +39,11 @@ module.exports.setRouter = (app) => {
 
     app.get(`${process.env.BASE_URL}/contest/leaderboard/:contestId`,isAuth,get.leaderBoard);
 
+    app.get(`${process.env.BASE_URL}/contest/custom/:matchId`,basicAuth({
+        users: { 'app': 'qwewqinasdoinoinacino' }
+    }),get.getCustom);
 
+    
 // POST --- > join, joinCustom, createCustom
 
     app.post(`${process.env.BASE_URL}/contest/join`,isAuth,post.join)
@@ -54,6 +58,9 @@ module.exports.setRouter = (app) => {
 
     app.patch(`${process.env.BASE_URL}/contest/patch/fantasy`,isAuth,fantasypatchContest)
 
+    app.post(`${process.env.BASE_URL}/contest/custom`,isAuth,post.createCustom)
+
+    app.patch(`${process.env.BASE_URL}/contest/join/custom`,isAuth,post.joinCustom)
 
 }
 

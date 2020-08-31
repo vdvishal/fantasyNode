@@ -15,26 +15,29 @@ const Contest =  new Schema({
   type: Number, // 1: runs, 2: wickets, 3: goal, 4:fantasy points
   typeName: String,
   value: Number,
-  limit: Number, // max: 2
   open: {type:Boolean,default:true},
   matchId: Number,
   playerId: String,
-  playerInfo: Object,
-  playerIds: [
-    {
-      playerId: String,
-      playerName: String,
-      pic: String,
-      team: String
-    }
-  ],  
-  totalAmount: Object,
+  playerDetail: Object,   
   info: Object,
-  finalTotal: Number,
-  profit:Number,
-  status:String
-},{ strict: false,timestamps:true })
+  handicap: {type:mongoose.Types.ObjectId},
+  amount: Number,
+  totalAmount:Number,
+  status:String,
+  player1:Number,
+  player2:Number,
+  player1Detail: Object,
+  player2Detail: Object,
+  users:{
+    player1:{type:mongoose.Types.ObjectId},
+    player2:{type:mongoose.Types.ObjectId},
+  },
+  userInfo:{
+    player1:Object,
+    player2:Object,
+  },
+},{ timestamps:true })
 
 
 
-mongoose.model('Contest', Contest);
+mongoose.model('CustomContest', Contest);

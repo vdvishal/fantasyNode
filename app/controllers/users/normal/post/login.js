@@ -96,7 +96,7 @@ const login = async (req, res) => {
 
           userModel.save((err, user) => {
             if (err)
-              res.status(500).json({ message: "Err try again later"})
+              res.status(502).json({ message: "Err try again later"})
             else {
               userId = user._id;
               res.send({ message: "Verify OTP", userId,new:true })
@@ -145,7 +145,7 @@ const login = async (req, res) => {
 
         const refToken = jwt.sign({ id: user._id }, 'ref', { expiresIn: `${process.env.REFTOKEN}`, subject: 'user' });
         
-        User.updateOne({_id:user._id},{$set:{refToken:refToken,ip:req.payload.ip}}).then().catch()
+        User.updateOne({_id:user._id},{$set:{refToken:refToken}}).then().catch()
        
         res.status(200)
         res.send({ message: "Login success", token, refToken: refToken })

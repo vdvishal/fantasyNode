@@ -30,12 +30,12 @@ const post = async (req, res) => {
         .lean()
         .exec()
         .then(response => response)
-        .catch(err => res.status(500).json("Error try again later"));
+        .catch(err => res.status(502).json("Error try again later"));
 
     const MatchDetails = await Matches.findOne({id:contestDetails.matchId}).lean()
         .exec()
         .then(response => response)
-        .catch(err => res.status(500).json("Error try again later"));
+        .catch(err => res.status(502).json("Error try again later"));
 
         if(moment(MatchDetails.starting_at).unix() < moment().unix() ){
             return res.status(202).json({message:"Match has already begun."})
@@ -46,7 +46,7 @@ const post = async (req, res) => {
         .lean()
         .exec()
         .then(response => response)
-        .catch(err => res.status(500).json("Error try again later"));
+        .catch(err => res.status(502).json("Error try again later"));
     
  
     if(contestDetails.entryFee*0.2 <= userDetails.wallet.bonus){
@@ -98,7 +98,7 @@ const post = async (req, res) => {
                     }
                     }
                 ]).then(response => response)
-                .catch(err => res.status(500).send({message:"Error try again later"}))
+                .catch(err => res.status(502).send({message:"Error try again later"}))
         
         if(contestDetails.totalSpots === contestDetails.totalJoined + 1){
             contestDetails.totalJoined = 0;
@@ -127,7 +127,7 @@ const post = async (req, res) => {
                         }
                     }
                 ]).then(response =>{})
-                .catch(err => res.status(500).send({message:"Error try again later"}))
+                .catch(err => res.status(502).send({message:"Error try again later"}))
         }else{
             contestDetails.totalJoined = 1;
            let newContest = await createNenterContest(contestDetails);
@@ -151,11 +151,11 @@ const post = async (req, res) => {
 
     order.save().then().catch()
 
-    await Matches.updateOne({id:contestDetails.matchId},{
-        $addToSet :{
-            joinedMatch:parseInt(contestDetails.matchId)
-        }
-    }).then()
+    // await Matches.updateOne({id:contestDetails.matchId},{
+    //     $addToSet :{
+    //         joinedMatch:parseInt(contestDetails.matchId)
+    //     }
+    // }).then()
 
     await Users.updateOne({_id:req.user.id},{
         $addToSet:{

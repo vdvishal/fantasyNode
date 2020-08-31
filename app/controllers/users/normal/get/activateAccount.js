@@ -20,7 +20,7 @@ const activateUser = (req, res) => {
         }).then(rs =>
             res.status(200).json({
                 message: "Account activated"
-            })).catch(err => res.status(500).json({ message: err.message }))
+            })).catch(err => res.status(502).json({ message: err.message }))
         }
     })
 

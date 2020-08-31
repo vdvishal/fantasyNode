@@ -54,7 +54,7 @@ const getUserId = async (req, res) => {
     .then(response => response)
     .catch(err => {
         console.log(err)
-        res.status(500).json("Error try again later")
+        res.status(502).json("Error try again later")
     });
     
     console.log(userDetails)
@@ -66,7 +66,7 @@ const getUserId = async (req, res) => {
     }).then(response => res.status(200).json({data:response}))
     .catch(err => {
         console.log(err)
-        res.status(500).json("Error try again later")});
+        res.status(502).json("Error try again later")});
  
     
 

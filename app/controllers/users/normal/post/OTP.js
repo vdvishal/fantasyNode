@@ -68,7 +68,7 @@ const sendOTP = (req, res) => {
  
             hash.hashPassword(req.body.password, (err, response) => {
                 if (err) {        
-                    return res.status(500).json({ message: 'Err...........' });
+                    return res.status(502).json({ message: 'Err...........' });
                 } else {
 
                     User.findByIdAndUpdate(user._id, {
@@ -211,7 +211,7 @@ const resetPassword = (req, res) => {
                 }).then(rs =>
                     res.status(200).json({
                         message: "Password Updated, login again"
-                    })).catch(err => res.status(500).json({ message: err.message }))
+                    })).catch(err => res.status(502).json({ message: err.message }))
             })
         } else {
             res.status(406).json({ message: "Wrong code, try again!" });

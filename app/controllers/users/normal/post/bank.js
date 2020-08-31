@@ -35,7 +35,7 @@ const schema = Joi.object({
         } catch (error) {
  
             if(error.code){
-                res.status(500).json({message:"Error try again later"})
+                res.status(502).json({message:"Error try again later"})
             }else{
                 console.log(error);
                 
