@@ -88,6 +88,7 @@ const joinCustom = async (req, res) => {
         if (req.body.contestType === 5) {
             obj = {
                 $set: {
+                    handicap:mongoose.mongo.ObjectId(req.user.id),
                     users: {
                         player1: contestData.users.player1,
                         player2: mongoose.mongo.ObjectId(req.user.id),
@@ -107,7 +108,7 @@ const joinCustom = async (req, res) => {
         if (req.body.contestType === 6) {
             obj = {
                 $set: {
-
+                    handicap:mongoose.mongo.ObjectId(req.user.id),
                     player2: req.body.playerId,
                     player2Detail: req.body.playerDetail,
                     open: false,

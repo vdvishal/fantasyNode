@@ -10,7 +10,6 @@ const
         check('playerDetail').isJSON(),
         check('amount').isNumeric().not(0).toFloat(),
         check('value').isNumeric().toFloat(),
-        check('type').isNumeric(),
         check('subType').isNumeric(),
 
 
@@ -113,7 +112,7 @@ const custom = async (req, res) => {
                     },
                 },
                 amount: req.body.amount,
-                totalAmount: req.body.amount * 2 * 0.94
+                totalAmount: req.body.amount * 2 * 0.90
             })
         }
 
@@ -141,7 +140,7 @@ const custom = async (req, res) => {
                     },
                 },
                 amount: req.body.amount,
-                totalAmount: req.body.amount * 2 * 0.94
+                totalAmount: req.body.amount * 2 * 0.90
             })
         }
 
