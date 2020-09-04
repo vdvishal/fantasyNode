@@ -58,7 +58,7 @@ module.exports.setRouter = (app) => {
 
     app.patch(`${process.env.BASE_URL}/contest/patch/fantasy`,isAuth,fantasypatchContest)
 
-    app.post(`${process.env.BASE_URL}/contest/custom`,isAuth,post.createCustom)
+    app.post(`${process.env.BASE_URL}/contest/custom`,post.createCustom.validator,isAuth,post.createCustom.custom)
 
     app.patch(`${process.env.BASE_URL}/contest/join/custom`,isAuth,post.joinCustom)
 

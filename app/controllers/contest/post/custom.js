@@ -1,19 +1,18 @@
 const mongoose = require('mongoose');
 const Contest = mongoose.model('CustomContest');
 const Users = mongoose.model('Users');
+const FantasyPlayer = mongoose.model('FantasyPlayer');
+
+
 const { check, validationResult } = require('express-validator')
 const
     validator = [
-        check('matchId').isNumeric(),
-        check('contestType').isNumeric(),
-        check('playerId').isNumeric(),
-        check('playerDetail').isJSON(),
-        check('amount').isNumeric().not(0).toFloat(),
-        check('value').isNumeric().toFloat(),
-        check('subType').isNumeric(),
-
-
-
+        check('matchId').isFloat().toInt(),
+        check('contestType').isFloat().toInt(),
+        check('playerId').isFloat().toInt(),
+        check('amount').isFloat().toFloat(),
+        check('value').isFloat().toFloat().optional(),
+        check('subType').isFloat().toInt().optional(),
     ]
 
 /**
@@ -29,10 +28,12 @@ const custom = async (req, res) => {
     let bonus = 0;
     let balance = 0;
     let obj
+    let players;
 
     try {
 
-
+        console.log(req.body);
+ 
 
         const errorFormatter = ({ location, msg, param, value, nestedErrors }) => {
             return `${param}: ${msg}`;
@@ -40,11 +41,13 @@ const custom = async (req, res) => {
 
         const errors = validationResult(req).formatWith(errorFormatter)
 
+        console.log(errors);
+        
         if (!errors.isEmpty()) {
             return res.status(422).json({ message: errors.array() })
         }
 
-        if (req.body.contestType < 5 && req.body.contestType > 6) {
+        if (req.body.contestType < 5 || req.body.contestType > 6) {
             return res.status(202).json({ message: "Wrong contest type" })
         }
 
@@ -83,27 +86,40 @@ const custom = async (req, res) => {
         }
 
 
+        let response = await FantasyPlayer.findOne({matchId:parseInt(req.body.matchId)}).populate('matchDetail').lean().sort({_id:-1}).then(response => response)
+        console.log(response.matchDetail[0])
+        players = {
+            ...response.players[response.localTeam].Allrounder,
+            ...response.players[response.localTeam].Batsman,
+            ...response.players[response.localTeam].Wicketkeeper,
+            ...response.players[response.localTeam].Bowler,
+            ...response.players[response.visitorTeam].Allrounder,
+                    ...response.players[response.visitorTeam].Batsman,
+                    ...response.players[response.visitorTeam].Wicketkeeper,
+                    ...response.players[response.visitorTeam].Bowler,
+            }
+
         if (req.body.contestType === 5) {
             obj = new Contest({
                 contestName: 'Under or Over',
                 contestType: 5,
                 playerId: req.body.playerId,
-                playerDetail: req.body.playerDetail,
+                playerDetail:{...players[req.body.playerId],teamInfo:players[req.body.playerId].teamId === response.localTeam ? response.matchDetail[0].localteam : response.matchDetail[0].visitorteam},
                 value: req.body.value,
                 type: req.body.type,
-                typeName: req.body.type === '1' ? 'Runs' : req.body.type === '2' ? "Wickets" : "Fantasy Points",
+                typeName: req.body.type === 1 ? 'Runs' : req.body.type === 2 ? "Wickets" : "Fantasy Points",
                 info: {
-                    player1: req.body.subType === 1 ? `Under ${req.body.value}` : `Over ${req.body.value}`,
-                    player2: req.body.subType === 1 ? `Over ${req.body.value}` : `Under ${req.body.value}`,
+                    player1: req.body.subType === 1 ? `Under ${req.body.value} points` : `Over ${req.body.value} points`,
+                    player2: req.body.subType === 1 ? `Over ${req.body.value + 1} points` : `Under ${req.body.value + 1} points`,
                 },
                 player1: req.body.subType === 1 ? 1 : 2,
                 player2: req.body.subType === 1 ? 2 : 1,
-                handicap: mongoose.mongo.ObjectId(req.user.id),
+                
                 matchId: req.body.matchId,
 
                 users: {
                     player1: mongoose.mongo.ObjectId(req.user.id),
-                    player2: ''
+    
                 },
                 userInfo: {
                     player1: {
@@ -125,13 +141,11 @@ const custom = async (req, res) => {
                 typeName: "Fantasy Points",
                 player1: req.body.playerId,
                 player2: '',
-                player1Detail: req.body.playerDetail,
-                player2Detail: '',
-                handicap: mongoose.mongo.ObjectId(req.user.id),
+                player1Detail:{...players[req.body.playerId],teamInfo:players[req.body.playerId].teamId === response.localTeam ? response.matchDetail[0].localteam : response.matchDetail[0].visitorteam},
+                player2Detail: '', 
                 matchId: req.body.matchId,
                 users: {
                     player1: mongoose.mongo.ObjectId(req.user.id),
-                    player2: ''
                 },
                 userInfo: {
                     player1: {
@@ -146,11 +160,9 @@ const custom = async (req, res) => {
 
 
 
-        await obj.save().then(response => {
-            res.status(200).json({ message: "Contest Created" })
-        })
+        await obj.save().then(response => {})
 
-        await Users.updateOne({ _id: req.user.id }, {
+        await Users.updateOne({ _id:mongoose.mongo.ObjectId(req.user.id)}, {
             $addToSet: {
                 joinedMatch: parseInt(req.body.matchId)
             },
@@ -159,6 +171,8 @@ const custom = async (req, res) => {
                 "wallet.bonus": -parseFloat(bonus)
             }
         }).then(respo => res.status(200).json({ message: "Contest Joined" }))
+
+
     } catch (error) {
         console.log(error);
 
@@ -169,4 +183,4 @@ const custom = async (req, res) => {
 }
 
 
-module.exports = custom
+module.exports = {custom,validator}

@@ -15,10 +15,7 @@ const get = async (req, res) => {
                 },
             ]
         ,
-        contestType: req.query.contestType === 5 || req.query.contestType === 6
-            ? req.query.contestType : {
-                $in: [5, 6]
-            }
+        contestType: parseInt(req.query.contestType)
     }).skip((req.query.page - 1)*50).limit(50).then(response => res.status(200).json({ data: response }))
         .catch(err =>{
             console.log(err);
