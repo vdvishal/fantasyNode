@@ -2,17 +2,13 @@ const mongoose = require('mongoose');
 const Contest = mongoose.model('CustomContest');
 const Orders = mongoose.model('Orders');
 const Users = mongoose.model('Users');
+const FantasyPlayer = mongoose.model('FantasyPlayer');
 
 const { check, validationResult } = require('express-validator')
 const
     validator = [
-        check('matchId').isNumeric(),
         check('contestId').isMongoId(),
-        check('contestType').isNumeric(),
-        check('playerId').isNumeric().optional(),
-        check('playerDetail').isJSON().optional(),
-
-
+        check('playerId').isInt().toInt().optional(),
     ]
 /**
  * 
@@ -30,9 +26,10 @@ const joinCustom = async (req, res) => {
 
     try {
 
-        if (req.body.contestType < 5 && req.body.contestType > 6) {
-            return res.status(202).json({ message: "Wrong contest type" })
-        }
+ 
+
+        console.log(req.body);
+        
 
         const errorFormatter = ({ location, msg, param, value, nestedErrors }) => {
             return `${param}: ${msg}`;
@@ -53,7 +50,9 @@ const joinCustom = async (req, res) => {
 
 
 
-        const contestData = await Contest.findById(req.body.contestId).exec().lean().then(response => response)
+        const contestData = await Contest.findById(req.body.contestId).lean().exec().then(response => response)
+
+
 
         if (contestData.amount * 0.2 <= userDetails.wallet.bonus) {
             if (userDetails.wallet.balance >= contestData.amount - contestData.amount * 0.2) {
@@ -83,45 +82,50 @@ const joinCustom = async (req, res) => {
             balance = contestData.amount
         }
 
+        let response = await FantasyPlayer.findOne({matchId:parseInt(req.body.matchId)}).populate('matchDetail').lean().sort({_id:-1}).then(response => response)
+ 
+        players = {
+            ...response.players[response.localTeam].Allrounder,
+            ...response.players[response.localTeam].Batsman,
+            ...response.players[response.localTeam].Wicketkeeper,
+            ...response.players[response.localTeam].Bowler,
+            ...response.players[response.visitorTeam].Allrounder,
+                    ...response.players[response.visitorTeam].Batsman,
+                    ...response.players[response.visitorTeam].Wicketkeeper,
+                    ...response.players[response.visitorTeam].Bowler,
+            }
+
+            if(contestData.contestType === 6 && players[req.body.playerId] === undefined){
+                return res.status(202).json({ message: "Please select a player" })
+            }
+
         let obj;
 
-        if (req.body.contestType === 5) {
+        if (contestData.contestType === 5) {
             obj = {
                 $set: {
                     handicap:mongoose.mongo.ObjectId(req.user.id),
-                    users: {
-                        player1: contestData.users.player1,
-                        player2: mongoose.mongo.ObjectId(req.user.id),
-                    },
-                    userInfo: {
-                        player1: contestData.userInfo.player1,
-                        player2: {
-                            userName: userDetails.userName,
-                            profilePic: userDetails.profilePic
-                        },
+                    "users.player2": mongoose.mongo.ObjectId(req.user.id),
+                    "userInfo.player2": {
+                        userName: userDetails.userName,
+                        profilePic: userDetails.profilePic
                     },
                     open: false
                 }
             }
         }
 
-        if (req.body.contestType === 6) {
+        if (contestData.contestType === 6) {
             obj = {
                 $set: {
                     handicap:mongoose.mongo.ObjectId(req.user.id),
                     player2: req.body.playerId,
-                    player2Detail: req.body.playerDetail,
+                    player2Detail: {...players[req.body.playerId],teamInfo:players[req.body.playerId].teamId === response.localTeam ? response.matchDetail[0].localteam : response.matchDetail[0].visitorteam},
                     open: false,
-                    users: {
-                        player1: contestData.users.player1,
-                        player2: mongoose.mongo.ObjectId(req.user.id),
-                    },
-                    userInfo: {
-                        player1: contestData.userInfo.player1,
-                        player2: {
-                            userName: userDetails.userName,
-                            profilePic: userDetails.profilePic
-                        },
+                    "users.player2": mongoose.mongo.ObjectId(req.user.id),
+                    "userInfo.player2": {
+                        userName: userDetails.userName,
+                        profilePic: userDetails.profilePic
                     },
                 }
             }
@@ -156,7 +160,6 @@ const joinCustom = async (req, res) => {
 
         await Contest.updateOne({
             _id: mongoose.mongo.ObjectId(req.body.contestId),
-            matchId: req.body.matchId
         }, obj).then(response => response)
 
         await Users.updateOne({ _id: req.user.id }, {

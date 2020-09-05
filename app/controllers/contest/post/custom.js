@@ -87,7 +87,7 @@ const custom = async (req, res) => {
 
 
         let response = await FantasyPlayer.findOne({matchId:parseInt(req.body.matchId)}).populate('matchDetail').lean().sort({_id:-1}).then(response => response)
-        console.log(response.matchDetail[0])
+ 
         players = {
             ...response.players[response.localTeam].Allrounder,
             ...response.players[response.localTeam].Batsman,
@@ -97,6 +97,10 @@ const custom = async (req, res) => {
                     ...response.players[response.visitorTeam].Batsman,
                     ...response.players[response.visitorTeam].Wicketkeeper,
                     ...response.players[response.visitorTeam].Bowler,
+            }
+
+            if(players[req.body.playerId] === undefined){
+                return res.status(202).json({ message: "Please select a player" })
             }
 
         if (req.body.contestType === 5) {
