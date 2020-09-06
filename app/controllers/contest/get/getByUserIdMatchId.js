@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Contest = mongoose.model('Contest');
+const Contest = mongoose.model('CustomContest');
 const UnderOverContest = mongoose.model('UnderOverContest');
 const MatchUpContest = mongoose.model('MatchUpContest');
 const FantasyJoinedUsers = mongoose.model('FantasyJoinedUsers');
@@ -268,9 +268,20 @@ const getUserId = async (req, res) => {
         ]).allowDiskUse(true).exec()
         .then(response => response)
 
-        console.log(con3);
+        let con4  = await Contest.find({
+            matchId: parseInt(req.params.matchId),
+            $or: [            
+                    {
+                        "users.player1": mongoose.mongo.ObjectID(req.user.id)
+                    },
+                    {
+                        "users.player2": mongoose.mongo.ObjectID(req.user.id)
+                    },
+                ]
+        }).sort({amount:-1}).then(response => response)
+            
         
-    res.status(200).json({underOver:con1,comboMatch:con2,fantasy:con3})
+    res.status(200).json({underOver:con1,comboMatch:con2,fantasy:con3,custom:con4})
 }
 
 module.exports = getUserId

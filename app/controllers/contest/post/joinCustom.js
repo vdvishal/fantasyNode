@@ -82,7 +82,7 @@ const joinCustom = async (req, res) => {
             balance = contestData.amount
         }
 
-        let response = await FantasyPlayer.findOne({matchId:parseInt(req.body.matchId)}).populate('matchDetail').lean().sort({_id:-1}).then(response => response)
+        let response = await FantasyPlayer.findOne({matchId:parseInt(contestData.matchId)}).populate('matchDetail').lean().sort({_id:-1}).then(response => response)
  
         players = {
             ...response.players[response.localTeam].Allrounder,
