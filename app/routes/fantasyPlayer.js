@@ -16,5 +16,10 @@ module.exports.setRouter = (app) => {
         users: { 'app': 'qwewqinasdoinoinacino' }
     }),get.getTeam);
 
+    app.get(`${process.env.BASE_URL}/fantasyPlayer/:matchId/:playerId`,basicAuth({
+        users: { 'app': 'qwewqinasdoinoinacino' }
+    }),get.getSinglePlayer);
+
+    
 }
 
