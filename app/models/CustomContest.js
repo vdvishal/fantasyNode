@@ -17,7 +17,7 @@ const Contest =  new Schema({
   value: Number,
   open: {type:Boolean,default:true},
   matchId: Number,
-  playerId: String,
+  playerId: Number,
   playerDetail: Object,   
   info: Object,
   handicap: {type:mongoose.Types.ObjectId},

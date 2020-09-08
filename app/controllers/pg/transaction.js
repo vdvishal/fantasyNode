@@ -4,13 +4,15 @@ const User = mongoose.model('Users');
 
 
 
-const getOrder = (req,res) => {
-    Orders.find({"notes.userId":req.user.id,status:{$ne:"created"}})
+const getOrder = async (req,res) => {
+    let count = await Orders.count({"notes.userId":req.user.id,status:{$ne:"created"}}).then(response => response)
+    
+    await Orders.find({"notes.userId":req.user.id,status:{$ne:"created"}})
                                 .sort({_id:-1})
-                                .skip(req.query.page*50)
+                                .skip((parseInt(req.query.page) - 1)*50)
                                 .limit(50)
                                 .exec()
-                                .then(response =>{res.status(200).json(response)})
+                                .then(response =>{res.status(200).json({data:response,page:Math.ceil(count/50)})})
 }
 
 module.exports = getOrder;
