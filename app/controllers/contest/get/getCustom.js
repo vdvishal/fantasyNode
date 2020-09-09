@@ -30,8 +30,7 @@ const get = async (req, res) => {
             {
                 amount: { $lte: parseInt(req.query.max) }
             },
-        ]
-        ,
+        ],
         $or: req.query.playerId === "all" ? [
             {
                 contestType: parseInt(req.query.contestType)

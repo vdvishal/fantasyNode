@@ -122,7 +122,7 @@ const login = async (req, res) => {
       break;
     default:
       User.findOne({$or: [
-        { "phone.phone": req.body.email,activated:true }, { email: req.body.email,activated:true }]
+        { "phone.phone": req.body.email.toLowerCase(),activated:true }, { email: req.body.email.toLowerCase(),activated:true }]
       }).lean().exec().then(user => {
          if (user === null) {
           res.status(204)
