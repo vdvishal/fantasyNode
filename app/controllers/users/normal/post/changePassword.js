@@ -3,17 +3,17 @@ const
     User = mongoose.model('Users'),
     bcrypt = require('../../../../libraries/bcrypt');
 
-    const Joi = require('joi')
-
-const schema = Joi.object({
-    password:Joi.string().alphanum().length(5).required(),
-    oldPassword:Joi.string().required(),
-})
+ 
 
 const changePassword = async (req, res) => {
     try {
-        await schema.validateAsync(req.body) 
 
+    if(req.body.password.length < 5){
+        res.status(202).json({
+            message: "Password length must be greater than 5 char"
+        })
+    }
+        
     let userDetails = await User.findById(req.user.id).select('password').then(resp => resp)
 
     if(bcrypt.comparePassword(req.body.oldPassword,userDetails.password)){

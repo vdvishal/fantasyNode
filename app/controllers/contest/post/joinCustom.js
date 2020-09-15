@@ -52,18 +52,21 @@ const joinCustom = async (req, res) => {
 
         const contestData = await Contest.findById(req.body.contestId).lean().exec().then(response => response)
 
+        if(req.body.playerId === contestData.player1 && contestData.contestType === 6){
+            return res.status(202).json({ message: "You can't select a player same as your opponent." })
+        }
 
 
-        if (contestData.amount * 0.2 <= userDetails.wallet.bonus) {
-            if (userDetails.wallet.balance >= contestData.amount - contestData.amount * 0.2) {
-                bonus = contestData.amount * 0.2;
-                balance = contestData.amount - contestData.amount * 0.2;
+        if (contestData.amount * 1 <= userDetails.wallet.bonus) {
+            if (userDetails.wallet.balance >= contestData.amount - contestData.amount * 1) {
+                bonus = contestData.amount * 1;
+                balance = contestData.amount - contestData.amount * 1;
             } else {
                 return res.status(202).json({ message: "Not enough balance." })
             }
         }
 
-        if (contestData.amount * 0.2 > userDetails.wallet.bonus) {
+        if (contestData.amount * 1 > userDetails.wallet.bonus) {
             if (userDetails.wallet.balance >= contestData.amount - userDetails.wallet.bonus) {
                 bonus = userDetails.wallet.bonus;
                 balance = contestData.amount - userDetails.wallet.bonus;
@@ -134,27 +137,17 @@ const joinCustom = async (req, res) => {
         let order1 = {
             "amount": parseFloat(contestData.amount) * 100,
             "status": "contest_debit",
-            "orderId": req.body.contestType === 5 ? 'User Duels: Under or Over' : 'User Duels: Duels',
+            "orderId": 'Custom Duels',
             "matchId": parseInt(contestData.matchId),
             "contestType": req.body.contestType,
             "notes": {
-                "userId": req.user.id
+                "userId": req.user.id.toString()
             }
         }
-
-        let order2 = {
-            "amount": parseFloat(contestData.amount) * 100,
-            "status": "contest_debit",
-            "orderId": req.body.contestType === 5 ? 'User Duels: Under or Over' : 'User Duels: Duels',
-            "matchId": parseInt(contestData.matchId),
-            "contestType": req.body.contestType,
-            "notes": {
-                "userId": contestData.users.player1
-            }
-        }
+ 
 
         Orders.insertMany([
-            order1, order2
+            order1
         ]).then(response => response)
 
 
@@ -164,7 +157,7 @@ const joinCustom = async (req, res) => {
 
         await Users.updateOne({ _id: req.user.id }, {
             $addToSet: {
-                joinedMatch: parseInt(req.body.matchId)
+                joinedMatch: parseInt(contestData.matchId)
             },
             $inc: {
                 "wallet.balance": -parseFloat(balance),

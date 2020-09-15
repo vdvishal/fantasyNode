@@ -101,7 +101,7 @@ const sendOTP = (req, res) => {
 }
 
  
-let refBonus = 50;
+let refBonus = 25;
 
 const verifyOTP = (req, res) => {
 
@@ -123,7 +123,7 @@ const verifyOTP = (req, res) => {
                             activated:true
                         },
                         $inc: {
-                            "totalRefers": 1,
+                            "totalRefers": 0,
                             "wallet.bonus" : refBonus
                         }
                 }).then(resp => {
@@ -270,7 +270,6 @@ const updateReferals = (referralCode,refferId, callBack) => {
             }
         }, $inc: {
             "totalRefers": 1,
-            "wallet.bonus" : refBonus*0.5
         }
     }).then(response => {
         callBack(null, response);

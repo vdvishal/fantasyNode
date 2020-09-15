@@ -37,16 +37,16 @@ const post = async (req, res) => {
         .then(response => response)
         .catch(err => res.status(502).json("Error try again later"));
          
-    if(req.body.amount*0.2 <= userDetails.wallet.bonus){
-        if(userDetails.wallet.balance >= req.body.amount - req.body.amount*0.2){
-            bonus = req.body.amount*0.2;
-            balance = req.body.amount - req.body.amount*0.2;
+    if(req.body.amount*1 <= userDetails.wallet.bonus){
+        if(userDetails.wallet.balance >= req.body.amount - req.body.amount*1){
+            bonus = req.body.amount*1;
+            balance = req.body.amount - req.body.amount*1;
         }else{
             return res.status(202).json({message:"Not enough balance."})
         }
     }
 
-    if(req.body.amount*0.2 > userDetails.wallet.bonus){
+    if(req.body.amount*1 > userDetails.wallet.bonus){
         if(userDetails.wallet.balance >= req.body.amount - userDetails.wallet.bonus){
             bonus = userDetails.wallet.bonus;
             balance = req.body.amount - userDetails.wallet.bonus;

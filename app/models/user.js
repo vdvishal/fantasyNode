@@ -30,6 +30,7 @@ const user =  new Schema({
     googleId: String, 
     facebookId: String,
     status:Intl,
+    messageCount:{type:Number,default:2},
     refferCode: String,
     lastOnline: {type:Date,default:moment.now()},
     KYC:{}

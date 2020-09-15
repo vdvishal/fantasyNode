@@ -49,16 +49,16 @@ const post = async (req, res) => {
         .catch(err => res.status(502).json("Error try again later"));
     
  
-    if(contestDetails.entryFee*0.2 <= userDetails.wallet.bonus){
-        if(userDetails.wallet.balance >= contestDetails.entryFee - contestDetails.entryFee*0.2){
-            bonus = contestDetails.entryFee*0.2;
-            balance = contestDetails.entryFee - contestDetails.entryFee*0.2;
+    if(contestDetails.entryFee*1 <= userDetails.wallet.bonus){
+        if(userDetails.wallet.balance >= contestDetails.entryFee - contestDetails.entryFee*1){
+            bonus = contestDetails.entryFee*1;
+            balance = contestDetails.entryFee - contestDetails.entryFee*1;
         }else{
             return res.status(202).json({message:"Not enough balance."})
         }
     }
 
-    if(contestDetails.entryFee*0.2 > userDetails.wallet.bonus){
+    if(contestDetails.entryFee*1 > userDetails.wallet.bonus){
         if(userDetails.wallet.balance >= contestDetails.entryFee - userDetails.wallet.bonus){
             bonus = userDetails.wallet.bonus;
             balance = contestDetails.entryFee - userDetails.wallet.bonus;

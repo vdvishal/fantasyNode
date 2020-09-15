@@ -34,13 +34,39 @@ try {
         await User.updateOne({_id:mongoose.mongo.ObjectID(req.user.id)},{
             $inc:{
                 'wallet.balance': activePay.amount/100,
-                'wallet.bonus': firstBonus
+                'wallet.bonus': firstBonus,
+                messageCount:1
             },
             $set:{
                 "activepayment.status": "paid",
                 firstpay:true
             }
         }).then(response => response)
+
+        
+        if(user.firstpay !== true){ 
+            User.updateOne({_id:mongoose.mongo.ObjectID(user.refferData.userId)},{
+                $inc:{
+                   'wallet.bonus': 25,
+                    messageCount:1
+                }
+            }).then(response => {
+                if(user.firstpay !== true){ 
+                    let order = new Orders({
+                        "amount" :  25*100,
+                        "status" : "bonus",
+                        "orderId": "Referral Bonus",
+                        "notes" : {
+                            "userId" :user.refferData.userId.toString()
+                        }
+                    })
+            
+                    order.save().then().catch();
+    
+    
+                }
+            })
+        }
 
         await Orders.updateOne({_id:mongoose.mongo.ObjectID(Order._id)},{
             $set:{
@@ -52,17 +78,23 @@ try {
                 let order = new Orders({
                     "amount" :  parseInt(firstBonus)*100,
                     "status" : "bonus",
-                    "orderId": "Welcome Bonus",
+                    "orderId": "Deposit Bonus",
                     "notes" : {
                         "userId" : req.user.id
                     }
                 })
         
                 order.save().then().catch();
+
+
             }
 
             res.status(200).json({message:"Deposit Success"})
         })
+
+
+
+
     }else{
         res.status(202).json({message:"Deposit failed"})
     }

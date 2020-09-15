@@ -23,7 +23,9 @@ const withdraw = async (req, res) => {
         return res.status(202).json({message:"Bank account not verified."});
     }
 
- 
+    if(UserD.wallet.balance - UserD.wallet.withdrawal < 50){
+        return res.status(202).json({message:"You must deposit a minimum of ₹50 to withdraw"});
+    }
 
     if(req.body.amount > UserD.wallet.withdrawal){
         return res.status(202).json({message:"Amount must be less than or equal to the withdrawable amount"});

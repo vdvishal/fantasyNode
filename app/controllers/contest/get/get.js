@@ -15,6 +15,7 @@ const _ = require('lodash');
 const get = (req, res) => {
  
     Contest.find({matchId:parseInt(req.params.matchId),contestType:1})
+        .sort({"playerInfo.fullname":1})
         .lean()
         .then(arr2 =>res.status(200).json({data:[{_id:1,contest:arr2}]}))
         .catch(err => err)

@@ -3,6 +3,7 @@ const Contest = mongoose.model('CustomContest');
 const Users = mongoose.model('Users');
 const FantasyPlayer = mongoose.model('FantasyPlayer');
 
+const Orders = mongoose.model('Orders');
 
 const { check, validationResult } = require('express-validator')
 const
@@ -32,8 +33,11 @@ const custom = async (req, res) => {
 
     try {
 
-        console.log(req.body);
+        
  
+        req.body.amount = req.body.amount.toFixed(2)
+        req.body.amount = parseFloat(req.body.amount)
+        console.log('-----',req.body);
 
         const errorFormatter = ({ location, msg, param, value, nestedErrors }) => {
             return `${param}: ${msg}`;
@@ -47,6 +51,10 @@ const custom = async (req, res) => {
             return res.status(422).json({ message: errors.array() })
         }
 
+        if (req.body.amount < 10 ) {
+            return res.status(202).json({ message: "Amount should be greater than ₹9.99" })
+        }
+
         if (req.body.contestType < 5 || req.body.contestType > 6) {
             return res.status(202).json({ message: "Wrong contest type" })
         }
@@ -57,16 +65,16 @@ const custom = async (req, res) => {
             .exec()
             .then(response => response)
 
-        if (req.body.amount * 0.2 <= userDetails.wallet.bonus) {
-            if (userDetails.wallet.balance >= req.body.amount - req.body.amount * 0.2) {
-                bonus = req.body.amount * 0.2;
-                balance = req.body.amount - req.body.amount * 0.2;
+        if (req.body.amount * 1 <= userDetails.wallet.bonus) {
+            if (userDetails.wallet.balance >= req.body.amount - req.body.amount * 1) {
+                bonus = req.body.amount * 1;
+                balance = req.body.amount - req.body.amount * 1;
             } else {
                 return res.status(202).json({ message: "Not enough balance." })
             }
         }
 
-        if (req.body.amount * 0.2 > userDetails.wallet.bonus) {
+        if (req.body.amount * 1 > userDetails.wallet.bonus) {
             if (userDetails.wallet.balance >= req.body.amount - userDetails.wallet.bonus) {
                 bonus = userDetails.wallet.bonus;
                 balance = req.body.amount - userDetails.wallet.bonus;
@@ -165,6 +173,22 @@ const custom = async (req, res) => {
 
 
         await obj.save().then(response => {})
+
+        let order1 = {
+            "amount": parseFloat(req.body.amount) * 100,
+            "status": "contest_debit",
+            "orderId": 'Custom Duels',
+            "matchId": parseInt(req.body.matchId),
+            "contestType": req.body.contestType,
+            "notes": {
+                "userId": req.user.id.toString()
+            }
+        }
+ 
+
+        Orders.insertMany([
+            order1
+        ]).then(response => response)
 
         await Users.updateOne({ _id:mongoose.mongo.ObjectId(req.user.id)}, {
             $addToSet: {

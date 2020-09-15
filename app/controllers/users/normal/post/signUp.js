@@ -12,11 +12,12 @@ const mongoose = require('mongoose'),
     randomize = require('randomatic'),
 
     validator = [
-        check('email').isEmail(),
+        check('email').isEmail().notEmpty(),
         check('password').isLength({ min: 5 }).withMessage('Must be at least 5 chars long'),
-        check('countryCode').isString(),
+        check('countryCode').isString().notEmpty(),
         check('phone').isString().notEmpty(),
         check('loginType').isInt(),
+        check('refferCode').isString(),
      ]
 
     const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();

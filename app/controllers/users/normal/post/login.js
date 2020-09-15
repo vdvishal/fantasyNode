@@ -135,7 +135,7 @@ const login = async (req, res) => {
         console.log(user);
         
         if (!hash.comparePassword(user.password, req.body.password)) {
-          res.status(401)
+          res.status(202)
           return res.send({ message: 'Incorrect email or password.' });
         }
 

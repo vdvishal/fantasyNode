@@ -5,9 +5,14 @@ const
     
 
 const kyc = async (req, res) => {
-     console.log(req.body);
-     console.log(req.user.id);
-    const  UserD = User.findById(req.user.id).select('verifiedKYC').lean().then(response => response).catch(err => err)
+try {
+    
+
+    if(req.body.image === ''){
+        return res.status(202).json({message:"Kyc image required"});
+    }
+
+    const  UserD = User.findById(req.user.id).select('verifiedKYC').lean().then(response => response) 
 
     if(UserD.verifiedKYC === true){
         return res.status(202).json({message:"KYC already verified"});
@@ -17,9 +22,16 @@ const kyc = async (req, res) => {
             KYC:req.body,
             documentSubmitted:true
         }
-    }).then().catch(0)
+    }).then()
 
     res.status(200).json({message:"Details Updated"});
+
+} catch (error) {
+    console.log(error);
+    
+    res.status(500).json({message:"Db error"});
+
+}
 }
 
 module.exports = kyc

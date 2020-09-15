@@ -6,7 +6,7 @@ const _ = require('lodash');
 const get = (req, res) => {
     Contest.find({matchId:parseInt(req.params.matchId),contestType:3})
         .exec()
-        .then(response => {            
+        .then(response => {       
             res.status(200).json({
                 data:response
             })
