@@ -37,7 +37,7 @@ const custom = async (req, res) => {
  
         req.body.amount = req.body.amount.toFixed(2)
         req.body.amount = parseFloat(req.body.amount)
-        console.log('-----',req.body);
+        
 
         const errorFormatter = ({ location, msg, param, value, nestedErrors }) => {
             return `${param}: ${msg}`;
@@ -45,7 +45,7 @@ const custom = async (req, res) => {
 
         const errors = validationResult(req).formatWith(errorFormatter)
 
-        console.log(errors);
+        
         
         if (!errors.isEmpty()) {
             return res.status(422).json({ message: errors.array() })
@@ -65,29 +65,55 @@ const custom = async (req, res) => {
             .exec()
             .then(response => response)
 
-        if (req.body.amount * 1 <= userDetails.wallet.bonus) {
-            if (userDetails.wallet.balance >= req.body.amount - req.body.amount * 1) {
-                bonus = req.body.amount * 1;
-                balance = req.body.amount - req.body.amount * 1;
-            } else {
-                return res.status(202).json({ message: "Not enough balance." })
+            if(userDetails.stats && userDetails.stats.waggered > 100){
+                if(req.body.amount*0.5 <= userDetails.wallet.bonus){
+                    if(userDetails.wallet.balance >= req.body.amount - req.body.amount*0.5){
+                        bonus = req.body.amount*0.5;
+                        balance = req.body.amount - req.body.amount*0.5;
+                    }else{
+                        return res.status(202).json({message:"Not enough balance."})
+                    }
+                }
+        
+                if(req.body.amount*0.5 > userDetails.wallet.bonus){
+                    if(userDetails.wallet.balance >= req.body.amount - userDetails.wallet.bonus){
+                        bonus = userDetails.wallet.bonus;
+                        balance = req.body.amount - userDetails.wallet.bonus;
+                    }
+            
+                    if(userDetails.wallet.balance + userDetails.wallet.bonus < req.body.amount ){
+                        return res.status(202).json({message:"Not enough balance."})
+                    }
+                }
+            
+                if(userDetails.wallet.bonus === 0 && userDetails.wallet.balance < req.body.amount){
+                    return res.status(202).json({message:"Not enough balance."})
+                }
+            }else{
+                if(req.body.amount*1 <= userDetails.wallet.bonus){
+                    if(userDetails.wallet.balance >= req.body.amount - req.body.amount*1){
+                        bonus = req.body.amount*1;
+                        balance = req.body.amount - req.body.amount*1;
+                    }else{
+                        return res.status(202).json({message:"Not enough balance."})
+                    }
+                }
+        
+                if(req.body.amount*1 > userDetails.wallet.bonus){
+                    if(userDetails.wallet.balance >= req.body.amount - userDetails.wallet.bonus){
+                        bonus = userDetails.wallet.bonus;
+                        balance = req.body.amount - userDetails.wallet.bonus;
+                    }
+            
+                    if(userDetails.wallet.balance + userDetails.wallet.bonus < req.body.amount ){
+                        return res.status(202).json({message:"Not enough balance."})
+                    }
+                }
+            
+                if(userDetails.wallet.bonus === 0 && userDetails.wallet.balance < req.body.amount){
+                    return res.status(202).json({message:"Not enough balance."})
+                }
             }
-        }
-
-        if (req.body.amount * 1 > userDetails.wallet.bonus) {
-            if (userDetails.wallet.balance >= req.body.amount - userDetails.wallet.bonus) {
-                bonus = userDetails.wallet.bonus;
-                balance = req.body.amount - userDetails.wallet.bonus;
-            }
-
-            if (userDetails.wallet.balance + userDetails.wallet.bonus < req.body.amount) {
-                return res.status(202).json({ message: "Not enough balance." })
-            }
-        }
-
-        if (userDetails.wallet.bonus === 0 && userDetails.wallet.balance < req.body.amount) {
-            return res.status(202).json({ message: "Not enough balance." })
-        }
 
         if (bonus === 0 && balance === 0) {
             balance = req.body.amount
@@ -177,7 +203,7 @@ const custom = async (req, res) => {
         let order1 = {
             "amount": parseFloat(req.body.amount) * 100,
             "status": "contest_debit",
-            "orderId": 'Custom Duels',
+            "orderId": 'Created custom duel',
             "matchId": parseInt(req.body.matchId),
             "contestType": req.body.contestType,
             "notes": {
@@ -196,13 +222,15 @@ const custom = async (req, res) => {
             },
             $inc: {
                 "wallet.balance": -parseFloat(balance),
-                "wallet.bonus": -parseFloat(bonus)
+                "wallet.bonus": -parseFloat(bonus),
+                "stats.waggered":parseFloat(req.body.amount),
+                "stats.loss":parseFloat(req.body.amount)
             }
         }).then(respo => res.status(200).json({ message: "Contest Joined" }))
 
 
     } catch (error) {
-        console.log(error);
+        
 
         res.status(502).json({
             message: "Database Error!"

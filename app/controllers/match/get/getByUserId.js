@@ -53,19 +53,19 @@ const getUserId = async (req, res) => {
     .exec()
     .then(response => response)
     .catch(err => {
-        console.log(err)
+        
         res.status(502).json("Error try again later")
     });
     
-    console.log(userDetails)
+    
 
     
      Matches.find({
         id:{$in:userDetails.joinedMatch || []},
         ...cond
-    }).then(response => res.status(200).json({data:response}))
+    }).sort({starting_at:1}).then(response => res.status(200).json({data:response}))
     .catch(err => {
-        console.log(err)
+        
         res.status(502).json("Error try again later")});
  
     

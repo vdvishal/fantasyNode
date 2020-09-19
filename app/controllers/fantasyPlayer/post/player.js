@@ -3,7 +3,7 @@ const FantasyPlayer = mongoose.model('FantasyPlayer');
  
 const moment = require('moment')
 const post = (req, res) => {
-    console.log(req.body);
+    
 
     FantasyPlayer.updateOne({matchId:req.body.matchId},req.body,{upsert:true}).then(response => {
 

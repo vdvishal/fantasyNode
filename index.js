@@ -10,7 +10,7 @@ const statusMonitor = require('express-status-monitor')();
  
 const helmet = require('helmet')
 
-// const redisClient = require('./app/libraries/redis/redis');
+const redisClient = require('./app/libraries/redis/redis');
  
 
 const cookieParser = require('cookie-parser');
@@ -28,7 +28,7 @@ const path = require('path');
 const cluster = require('cluster');
 const http = require('http');
 const numCPUs = require('os').cpus().length;
-const passport = require('passport');
+const cors = require('cors');
 const fork = require('child_process').fork;
 
 
@@ -39,11 +39,11 @@ const fork = require('child_process').fork;
 
 const log = console.log;
 
-const options = {
-    directory: './i18n', // <--- use here. Specify translations files path.
-    locales: ["en","es"],
-    autoReload: true,
-}
+// const options = {
+//     directory: './i18n', // <--- use here. Specify translations files path.
+//     locales: ["en","es"],
+//     autoReload: true,
+// }
 const models = './app/models';
 const routes = './app/routes';
 
@@ -71,12 +71,32 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 //     resave: false
 // }));
 
-i18n.configure(options);
+// i18n.configure(options);
 
 // app.use(i18n.init);
+var allowedOrigins = ['http://localhost:3000',
+                      'http://localhost:3001',        
+                      'https://fantasyjutsu.com',
+                      'https://www.fantasyjutsu.com'];
+
+app.use(cors({
+    origin: (origin,callback) => {
+        console.log(origin);
+        
+        if(!origin) return callback(null, true);
+
+        if(allowedOrigins.indexOf(origin) === -1){
+            var msg = 'The CORS policy for this site does not ' +
+                      'allow access from the specified Origin.';
+            return callback(new Error(msg), false);
+        }
+        return callback(null, true);
+    }
+}))
+
 
 app.all('*', function (req, res, next) {
-    res.header("Access-Control-Allow-Origin",[ "http://localhost:3000"]);
+     res.header("Access-Control-Allow-Origin","*");
     res.header('Access-Control-Allow-Credentials', true);
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept,Authorization");
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,PATCH')
@@ -115,13 +135,25 @@ server.on('listening', onListening);
  
  
 
-// redisClient.on('error',  (error) => {
-//     log(`${chalk.greenBright(logSymbols.error)} ${chalk.red(error)}`);
-// })
+redisClient.on('error',  (error) => {
+    log(`${chalk.greenBright(logSymbols.error)} ${chalk.red(error)}`);
 
-// redisClient.on('connect', () => {
-//     log(`${chalk.greenBright(logSymbols.success)} Redis connected`);
-// })
+})
+
+redisClient.on('connect', () => {
+    log(`${chalk.greenBright(logSymbols.success)} Redis connected`);
+})
+
+const cronJob = require('cron').CronJob;
+
+const job = new cronJob('* * 23 * * *', function() {
+    redisClient.HDEL("players",(err,res) => {
+        logger.error(err);
+        logger.info(res);
+    })
+})
+
+job.start();
 
 
 // mqtt.publish("/globalStats","connecte",{},{})
@@ -167,17 +199,14 @@ function onListening() {
      mongoose.connect(process.env.DB_HOST,{useNewUrlParser: true, useUnifiedTopology: true });
     
     // redis connection
-
-    // redisClient.on('connect', () => {
-    //     logger.info("connected")
-    // })
+ 
 }
 
 /**
  * database connection settings
  */
 mongoose.connection.on('error', function (err) {
-    console.log('database connection error');
+    
   }); // end mongoose connection error
   
   mongoose.connection.on('open', function (err) {
@@ -189,9 +218,9 @@ mongoose.connection.on('error', function (err) {
     //process.exit(1)
   }); 
 process.on('unhandledRejection', (reason, p) => {
-    console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
+    
     // application specific logging, throwing an error, or other logic here
 });
 
-//console.log(process.env)
+//
 module.exports = app;
