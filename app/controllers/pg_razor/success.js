@@ -9,6 +9,7 @@ const successOrder = async (req,res) => {
     
 try {
    let user = await User.findById(req.user.id).lean().exec().then(response => response)
+   
 
    let activePay = user.activepayment;
    let firstBonus = 0 
@@ -44,10 +45,10 @@ try {
         }).then(response => response)
 
         
-        if(user.firstpay !== true){ 
+        if(user.firstpay !== true && user.refferData && user.refferData.userId !== ''){ 
             User.updateOne({_id:mongoose.mongo.ObjectID(user.refferData.userId)},{
                 $inc:{
-                   'wallet.bonus': 25,
+                   'wallet.bonus': 50,
                     messageCount:1
                 }
             }).then(response => {

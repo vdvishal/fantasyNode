@@ -37,29 +37,61 @@ const post = async (req, res) => {
         .then(response => response)
         .catch(err => res.status(502).json("Error try again later"));
          
-    if(req.body.amount*1 <= userDetails.wallet.bonus){
-        if(userDetails.wallet.balance >= req.body.amount - req.body.amount*1){
-            bonus = req.body.amount*1;
-            balance = req.body.amount - req.body.amount*1;
-        }else{
+
+
+        if(userDetails.stats && userDetails.stats.waggered > 100){
+        if(req.body.amount*0.5 <= userDetails.wallet.bonus){
+            if(userDetails.wallet.balance >= req.body.amount - req.body.amount*0.5){
+                bonus = req.body.amount*0.5;
+                balance = req.body.amount - req.body.amount*0.5;
+            }else{
+                return res.status(202).json({message:"Not enough balance."})
+            }
+        }
+
+        if(req.body.amount*0.5 > userDetails.wallet.bonus){
+            if(userDetails.wallet.balance >= req.body.amount - userDetails.wallet.bonus){
+                bonus = userDetails.wallet.bonus;
+                balance = req.body.amount - userDetails.wallet.bonus;
+            }
+    
+            if(userDetails.wallet.balance + userDetails.wallet.bonus < req.body.amount ){
+                return res.status(202).json({message:"Not enough balance."})
+            }
+        }
+    
+        if(userDetails.wallet.bonus === 0 && userDetails.wallet.balance < req.body.amount){
+            return res.status(202).json({message:"Not enough balance."})
+        }
+    }else{
+        if(req.body.amount*1 <= userDetails.wallet.bonus){
+            if(userDetails.wallet.balance >= req.body.amount - req.body.amount*1){
+                bonus = req.body.amount*1;
+                balance = req.body.amount - req.body.amount*1;
+            }else{
+                return res.status(202).json({message:"Not enough balance."})
+            }
+        }
+
+        if(req.body.amount*1 > userDetails.wallet.bonus){
+            if(userDetails.wallet.balance >= req.body.amount - userDetails.wallet.bonus){
+                bonus = userDetails.wallet.bonus;
+                balance = req.body.amount - userDetails.wallet.bonus;
+            }
+    
+            if(userDetails.wallet.balance + userDetails.wallet.bonus < req.body.amount ){
+                return res.status(202).json({message:"Not enough balance."})
+            }
+        }
+    
+        if(userDetails.wallet.bonus === 0 && userDetails.wallet.balance < req.body.amount){
             return res.status(202).json({message:"Not enough balance."})
         }
     }
 
-    if(req.body.amount*1 > userDetails.wallet.bonus){
-        if(userDetails.wallet.balance >= req.body.amount - userDetails.wallet.bonus){
-            bonus = userDetails.wallet.bonus;
-            balance = req.body.amount - userDetails.wallet.bonus;
-        }
 
-        if(userDetails.wallet.balance + userDetails.wallet.bonus < req.body.amount ){
-            return res.status(202).json({message:"Not enough balance."})
-        }
-    }
 
-    if(userDetails.wallet.bonus === 0 && userDetails.wallet.balance < req.body.amount){
-        return res.status(202).json({message:"Not enough balance."})
-    }
+
 
     if(bonus === 0 && balance === 0){
         balance = req.body.amount
@@ -76,7 +108,7 @@ const post = async (req, res) => {
     await contest.save().then(response => response).catch(resd => res.status(502).send({message:"Error try again later"}))
 
     let order = new Orders({
-        "amount" : parseInt(req.body.amount)*100,
+        "amount" : parseFloat(req.body.amount)*100,
         "status" : "contest_debit",
         "matchId": parseInt(req.body.matchId),
         "contestType": 3,
@@ -94,7 +126,9 @@ const post = async (req, res) => {
         },
         $inc:{
             "wallet.balance":-parseFloat(balance),
-            "wallet.bonus":-parseFloat(bonus)
+            "wallet.bonus":-parseFloat(bonus),
+            "stats.waggered":parseFloat(req.body.amount),
+            "stats.loss":parseFloat(req.body.amount)
         }
     }).then(respo => res.status(200).json({message:"Contest Joined"}))
     

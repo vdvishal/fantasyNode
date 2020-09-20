@@ -42,35 +42,63 @@ const post = async (req, res) => {
         }
     
     const userDetails = await Users.findById(req.user.id)
-        .select('wallet')
+        .select()
         .lean()
         .exec()
         .then(response => response)
         .catch(err => res.status(502).json("Error try again later"));
     
  
-    if(contestDetails.entryFee*1 <= userDetails.wallet.bonus){
-        if(userDetails.wallet.balance >= contestDetails.entryFee - contestDetails.entryFee*1){
-            bonus = contestDetails.entryFee*1;
-            balance = contestDetails.entryFee - contestDetails.entryFee*1;
-        }else{
+
+
+    if(userDetails.stats && userDetails.stats.waggered > 100){
+        if(contestDetails.entryFee*0.5 <= userDetails.wallet.bonus){
+            if(userDetails.wallet.balance >= contestDetails.entryFee - contestDetails.entryFee*0.5){
+                bonus = contestDetails.entryFee*0.5;
+                balance = contestDetails.entryFee - contestDetails.entryFee*0.5;
+            }else{
+                return res.status(202).json({message:"Not enough balance."})
+            }
+        }
+
+        if(contestDetails.entryFee*0.5 > userDetails.wallet.bonus){
+            if(userDetails.wallet.balance >= contestDetails.entryFee - userDetails.wallet.bonus){
+                bonus = userDetails.wallet.bonus;
+                balance = contestDetails.entryFee - userDetails.wallet.bonus;
+            }
+    
+            if(userDetails.wallet.balance + userDetails.wallet.bonus < contestDetails.entryFee ){
+                return res.status(202).json({message:"Not enough balance."})
+            }
+        }
+    
+        if(userDetails.wallet.bonus === 0 && userDetails.wallet.balance < contestDetails.entryFee){
             return res.status(202).json({message:"Not enough balance."})
         }
-    }
-
-    if(contestDetails.entryFee*1 > userDetails.wallet.bonus){
-        if(userDetails.wallet.balance >= contestDetails.entryFee - userDetails.wallet.bonus){
-            bonus = userDetails.wallet.bonus;
-            balance = contestDetails.entryFee - userDetails.wallet.bonus;
+    }else{
+        if(contestDetails.entryFee*1 <= userDetails.wallet.bonus){
+            if(userDetails.wallet.balance >= contestDetails.entryFee - contestDetails.entryFee*1){
+                bonus = contestDetails.entryFee*1;
+                balance = contestDetails.entryFee - contestDetails.entryFee*1;
+            }else{
+                return res.status(202).json({message:"Not enough balance."})
+            }
         }
-
-        if(userDetails.wallet.balance + userDetails.wallet.bonus < contestDetails.entryFee ){
+    
+        if(contestDetails.entryFee*1 > userDetails.wallet.bonus){
+            if(userDetails.wallet.balance >= contestDetails.entryFee - userDetails.wallet.bonus){
+                bonus = userDetails.wallet.bonus;
+                balance = contestDetails.entryFee - userDetails.wallet.bonus;
+            }
+    
+            if(userDetails.wallet.balance + userDetails.wallet.bonus < contestDetails.entryFee ){
+                return res.status(202).json({message:"Not enough balance."})
+            }
+        }
+    
+        if(userDetails.wallet.bonus === 0 && userDetails.wallet.balance < contestDetails.entryFee){
             return res.status(202).json({message:"Not enough balance."})
         }
-    }
-
-    if(userDetails.wallet.bonus === 0 && userDetails.wallet.balance < contestDetails.entryFee){
-        return res.status(202).json({message:"Not enough balance."})
     }
 
     if(bonus === 0 && balance === 0){
@@ -139,7 +167,7 @@ const post = async (req, res) => {
  
 
     let order = new Orders({
-        "amount" : parseInt(contestDetails.entryFee)*100,
+        "amount" : parseFloat(contestDetails.entryFee)*100,
         "status" : "contest_debit",
         "orderId": "Fantasy " + contestDetails.contestName,
         "matchId": parseInt(contestDetails.matchId),
@@ -163,7 +191,9 @@ const post = async (req, res) => {
         },
         $inc:{
             "wallet.balance":-parseFloat(balance),
-            "wallet.bonus":-parseFloat(bonus)
+            "wallet.bonus":-parseFloat(bonus),
+            "stats.waggered":parseFloat(contestDetails.entryFee),
+            "stats.loss":parseFloat(contestDetails.entryFee)
         }
     }).then(respo => res.status(200).json({message:"Contest Joined"}))
 }

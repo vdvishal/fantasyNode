@@ -23,18 +23,21 @@ const getUserId = async (req, res) => {
     if(req.query.type === undefined || req.query.type === ''){
         res.status(400).json("Type is missing")
     }
-    
+    console.log('req.query.type: ', req.query);
     if(req.query.type==="1"){
+        
         cond = {
             starting_at: {
                 $gt: new Date().toISOString()
-            }
+            },
+            gameType:parseInt(req.query.gameType)
         }
     }
 
     if(req.query.type==="2"){
         cond = {
-            isLive:true
+            isLive:true,
+            gameType:parseInt(req.query.gameType)
         }
     }
 
@@ -43,7 +46,8 @@ const getUserId = async (req, res) => {
             isLive:false,
             starting_at: {
                 $lt: new Date().toISOString()
-            }
+            },
+            gameType:parseInt(req.query.gameType)
         }
     }
 
@@ -53,19 +57,23 @@ const getUserId = async (req, res) => {
     .exec()
     .then(response => response)
     .catch(err => {
-        console.log(err)
+        
         res.status(502).json("Error try again later")
     });
     
-    console.log(userDetails)
-
     
-     Matches.find({
+    let page = await Matches.count({
         id:{$in:userDetails.joinedMatch || []},
         ...cond
-    }).then(response => res.status(200).json({data:response}))
+        }).then(response => response)
+
+    
+    await Matches.find({
+        id:{$in:userDetails.joinedMatch || []},
+        ...cond
+    }).skip((parseInt(req.query.page) - 1)*50).limit(50).sort({starting_at:1}).then(response => res.status(200).json({page:Math.ceil(page/50),data:response}))
     .catch(err => {
-        console.log(err)
+        
         res.status(502).json("Error try again later")});
  
     

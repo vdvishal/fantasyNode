@@ -20,6 +20,11 @@ module.exports.setRouter = (app) => {
         users: { 'app': 'qwewqinasdoinoinacino' }
     }),get.getSinglePlayer);
 
+    app.get(`${process.env.BASE_URL}/player/history/:playerId`,basicAuth({
+        users: { 'app': 'qwewqinasdoinoinacino' }
+    }),get.gethistorical);
+
+
     
 }
 

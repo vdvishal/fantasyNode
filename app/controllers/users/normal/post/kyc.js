@@ -27,7 +27,7 @@ try {
     res.status(200).json({message:"Details Updated"});
 
 } catch (error) {
-    console.log(error);
+    
     
     res.status(500).json({message:"Db error"});
 

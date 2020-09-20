@@ -109,8 +109,8 @@ const verifyOTP = (req, res) => {
         User.findById(req.body.id).lean().then(response => {
             
             if(response.OTP.active && moment().unix() - response.OTP.time > 120){
-                console.log(moment().unix());
-                console.log(response.OTP.time);
+                
+                
 
                 
               return res.status(406).json({ message: "OTP expired" });
@@ -144,7 +144,7 @@ const verifyOTP = (req, res) => {
                     const refToken = jwt.sign({ id: req.body.id }, 'ref', { expiresIn: `${process.env.REFTOKEN}`, subject: 'user' });
                     
                     User.updateOne({_id:req.body.id},{$set:{refToken:refToken}}).then().catch()
-                    console.log(response.refferCode);
+                    
 
                     if (response.refferCode) {
                         // Appconfig.findOne({}).then(config => {
@@ -169,8 +169,8 @@ const verifyOTP = (req, res) => {
             if (!user) return res.status(204).json({ message: 'The number is not registered. Please register.' });
 
             if(user.OTP.active && moment().unix() - user.OTP.time > 120){
-                console.log(moment().unix());
-                console.log(response.OTP.time);
+                
+                
               return res.status(406).json({ message: "OTP expired" });
             }
 
@@ -190,12 +190,12 @@ const verifyOTP = (req, res) => {
 const resetPassword = (req, res) => {
 
     User.findById(req.body.verifyId).select('OTP').then(response => {
-         console.log(req.body);
-         console.log(response.OTP);
+         
+         
 
         if(response.OTP.active && moment().unix() - response.OTP.time > 12000){
-            console.log(moment().unix());
-            console.log(response.OTP.time);
+            
+            
 
             
           return res.status(406).json({ message: "OTP expired" });
@@ -222,7 +222,7 @@ const resetPassword = (req, res) => {
 
 
 const checkReferalCode = (data) => {
-    console.log(data);
+    
     
          if (data.refferCode && data.refferCode != "" && data.refferCode != undefined) {
             User.findOne({refCode: data.refferCode}, (err, referrer) => {
@@ -254,8 +254,8 @@ const checkReferalCode = (data) => {
 
 
 const updateReferals = (referralCode,refferId, callBack) => {
-    console.log(referralCode);
-    console.log(refferId);
+    
+    
 
     User.updateOne({ _id: new mongoose.mongo.ObjectId(refferId) }, {
         $push: {
@@ -280,8 +280,8 @@ const updateReferals = (referralCode,refferId, callBack) => {
 }
 
 const updateProfile = (userId, data, callBack) => {
-    console.log(userId);
-    console.log(data);
+    
+    
 
     User.updateOne({ _id: new mongoose.mongo.ObjectId(userId) }, {
         $set: {refferData:data}

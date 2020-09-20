@@ -132,7 +132,7 @@ const login = async (req, res) => {
           res.status(202)
           return res.status(202).json({ message: 'Password is empty' });
         }
-        console.log(user);
+        
         
         if (!hash.comparePassword(user.password, req.body.password)) {
           res.status(202)

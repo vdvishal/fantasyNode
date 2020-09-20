@@ -33,7 +33,7 @@ const getLeaderBoard = async (req, res) => {
             }
         ]).then(response => response)
         
-        console.log(leaderBoard);
+        
         
         let data = leaderBoard.length > 0 ? leaderBoard[0] : [];
 
@@ -121,7 +121,7 @@ const getLeaderBoard = async (req, res) => {
          
         res.status(200).json({data:data.leader,size:data.leaderLength})
     } catch (error) {
-        console.log(error);
+        
         res.status(502).json(error)
 
     }

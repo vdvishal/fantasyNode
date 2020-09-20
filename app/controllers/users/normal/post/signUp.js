@@ -17,7 +17,7 @@ const mongoose = require('mongoose'),
         check('countryCode').isString().notEmpty(),
         check('phone').isString().notEmpty(),
         check('loginType').isInt(),
-        check('refferCode').isString(),
+        check('refferCode').isString().optional(),
      ]
 
     const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
@@ -115,11 +115,11 @@ const hashpassword = (password) => new Promise((resolve, reject) => {
     // hash password
     hash.hashPassword(password, (err, response) => {
         if (err) {
-            console.log(err);
+            
 
             reject(err)
         } else {
-            console.log(response);
+            
             
             resolve(response)
         }

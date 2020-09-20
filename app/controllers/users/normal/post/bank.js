@@ -15,7 +15,7 @@ const schema = Joi.object({
             
             
         const value = await schema.validateAsync(req.body) 
-        console.log(value);
+        
 
         let object = {
             bankName: req.body.bankName,
@@ -37,7 +37,7 @@ const schema = Joi.object({
             if(error.code){
                 res.status(502).json({message:"Error try again later"})
             }else{
-                console.log(error);
+                
                 
                 return res.status(400).json({message:error})
             }

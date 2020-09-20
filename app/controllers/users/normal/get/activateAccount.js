@@ -9,7 +9,7 @@ const activateUser = (req, res) => {
 
     jwt.verify(req.query.token,process.env.Activation_Key,(err,decoded) => {
         if(err){
-            console.log(err.status)
+            
             res.status(498).json({message:"Link Expired"})
         }else{
 

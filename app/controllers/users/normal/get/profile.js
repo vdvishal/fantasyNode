@@ -16,7 +16,7 @@ const moment = require('moment')
     User.findByIdAndUpdate(req.user.id,{$set:{
       lastOnline: moment.now()
     }})
-    .select('email phone fullName userName wallet verifiedKYC refCode messageCount facebookId activated profilePic bank refLink')
+    .select('email phone fullName userName wallet verifiedKYC stats refCode messageCount facebookId activated profilePic bank refLink')
     .lean().exec().then(response => {         
       
       if(response.bank){
@@ -33,7 +33,7 @@ const moment = require('moment')
       //   res.send({message: "database Error"})
       // })
     }).catch(err => {
-      console.log(err)
+      
       res.send({message: "database Error"})
     })
 }

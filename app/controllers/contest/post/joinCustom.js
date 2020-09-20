@@ -28,7 +28,7 @@ const joinCustom = async (req, res) => {
 
  
 
-        console.log(req.body);
+        
         
 
         const errorFormatter = ({ location, msg, param, value, nestedErrors }) => {
@@ -57,28 +57,54 @@ const joinCustom = async (req, res) => {
         }
 
 
-        if (contestData.amount * 1 <= userDetails.wallet.bonus) {
-            if (userDetails.wallet.balance >= contestData.amount - contestData.amount * 1) {
-                bonus = contestData.amount * 1;
-                balance = contestData.amount - contestData.amount * 1;
-            } else {
-                return res.status(202).json({ message: "Not enough balance." })
+        if(userDetails.stats && userDetails.stats.waggered > 100){
+            if(contestData.amount*0.5 <= userDetails.wallet.bonus){
+                if(userDetails.wallet.balance >= contestData.amount - contestData.amount*0.5){
+                    bonus = contestData.amount*0.5;
+                    balance = contestData.amount - contestData.amount*0.5;
+                }else{
+                    return res.status(202).json({message:"Not enough balance."})
+                }
             }
-        }
-
-        if (contestData.amount * 1 > userDetails.wallet.bonus) {
-            if (userDetails.wallet.balance >= contestData.amount - userDetails.wallet.bonus) {
-                bonus = userDetails.wallet.bonus;
-                balance = contestData.amount - userDetails.wallet.bonus;
+    
+            if(contestData.amount*0.5 > userDetails.wallet.bonus){
+                if(userDetails.wallet.balance >= contestData.amount - userDetails.wallet.bonus){
+                    bonus = userDetails.wallet.bonus;
+                    balance = contestData.amount - userDetails.wallet.bonus;
+                }
+        
+                if(userDetails.wallet.balance + userDetails.wallet.bonus < contestData.amount ){
+                    return res.status(202).json({message:"Not enough balance."})
+                }
             }
-
-            if (userDetails.wallet.balance + userDetails.wallet.bonus < contestData.amount) {
-                return res.status(202).json({ message: "Not enough balance." })
+        
+            if(userDetails.wallet.bonus === 0 && userDetails.wallet.balance < contestData.amount){
+                return res.status(202).json({message:"Not enough balance."})
             }
-        }
-
-        if (userDetails.wallet.bonus === 0 && userDetails.wallet.balance < contestData.amount) {
-            return res.status(202).json({ message: "Not enough balance." })
+        }else{
+            if(contestData.amount*1 <= userDetails.wallet.bonus){
+                if(userDetails.wallet.balance >= contestData.amount - contestData.amount*1){
+                    bonus = contestData.amount*1;
+                    balance = contestData.amount - contestData.amount*1;
+                }else{
+                    return res.status(202).json({message:"Not enough balance."})
+                }
+            }
+    
+            if(contestData.amount*1 > userDetails.wallet.bonus){
+                if(userDetails.wallet.balance >= contestData.amount - userDetails.wallet.bonus){
+                    bonus = userDetails.wallet.bonus;
+                    balance = contestData.amount - userDetails.wallet.bonus;
+                }
+        
+                if(userDetails.wallet.balance + userDetails.wallet.bonus < contestData.amount ){
+                    return res.status(202).json({message:"Not enough balance."})
+                }
+            }
+        
+            if(userDetails.wallet.bonus === 0 && userDetails.wallet.balance < contestData.amount){
+                return res.status(202).json({message:"Not enough balance."})
+            }
         }
 
         if (bonus === 0 && balance === 0) {
@@ -137,7 +163,7 @@ const joinCustom = async (req, res) => {
         let order1 = {
             "amount": parseFloat(contestData.amount) * 100,
             "status": "contest_debit",
-            "orderId": 'Custom Duels',
+            "orderId": 'Join custom duel',
             "matchId": parseInt(contestData.matchId),
             "contestType": req.body.contestType,
             "notes": {
@@ -161,12 +187,14 @@ const joinCustom = async (req, res) => {
             },
             $inc: {
                 "wallet.balance": -parseFloat(balance),
-                "wallet.bonus": -parseFloat(bonus)
+                "wallet.bonus": -parseFloat(bonus),
+                "stats.waggered":parseFloat(contestData.amount),
+                "stats.loss":parseFloat(contestData.amount)
             }
         }).then(respo => res.status(200).json({ message: "Contest Joined" }))
 
     } catch (error) {
-        console.log(error);
+        
 
         res.status(502).json({
             message: "Database Error!"
