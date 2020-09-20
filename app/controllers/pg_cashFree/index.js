@@ -1,9 +1,11 @@
-const Razorpay = require('razorpay');
+const cashfree = require('cashfree-sdk');
 const moment = require('moment');
 const mongoose = require('mongoose');
  
 const User = mongoose.model('Users');
 const Orders = mongoose.model('Orders');
+
+const axios = require('axios');
 
  
 var instance = new Razorpay({
@@ -11,7 +13,7 @@ var instance = new Razorpay({
     key_secret: process.env.RAZOR_SECRET
   })
 
-
+  /api/v1/order/create
 
   const createOrder = (req,res) => {
 
@@ -20,14 +22,26 @@ var instance = new Razorpay({
     }
       
     var options = {
-        amount: parseFloat(req.body.amount)*100,  // amount in the smallest currency unit
+        appId:process.env.CASHFREE_APP_ID,
+        secretKey:process.env.CASHFREE_SECRET,
+        orderAmount: parseInt(req.body.amount)*100,  // amount in the smallest currency unit
         currency: "INR",
-        receipt: `receipt_${moment().unix()}`,
+        orderId: `receipt_${moment().unix()}`,
         payment_capture:1,
         notes: {
           userId: req.user.id
         }
       };
+
+      axios({
+        method:"POST",
+        url:"https://test.cashfree.com/",
+        headers:{
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data:options
+      })
+
 
     instance.orders.create(options, function(err, order) {
         if(err){

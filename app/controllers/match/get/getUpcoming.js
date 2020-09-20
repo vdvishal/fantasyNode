@@ -22,6 +22,8 @@ const get = (req, res) => {
             res.status(200).json({match:result}))
         .catch(err => res.status(502).json(err))
     }
+
+    
 }
 
 

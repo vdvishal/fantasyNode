@@ -16,14 +16,9 @@ const moment = require('moment')
     User.findByIdAndUpdate(req.user.id,{$set:{
       lastOnline: moment.now()
     }})
-    .select('email phone fullName userName wallet verifiedKYC stats refCode messageCount facebookId activated profilePic bank refLink')
+    .select('email phone fullName userName wallet verifiedKYC stats bankAccountId vpa beneficiaryId refCode messageCount facebookId activated profilePic refLink')
     .lean().exec().then(response => {         
-      
-      if(response.bank){
-      response.bank.IFSC = "XXXXXXX";
-      response.bank.accNumber = "XXXXXXX" + '-' + response.bank.accNumber.slice(3,7);
-      response.bank.image = ''
-      }
+ 
       res.send({message: "User profile",data:{...response}})
 
       //  OtherUserStats.findOne({userId:req.user.id}).lean().then(responseX => {
