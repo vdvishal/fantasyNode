@@ -2,10 +2,12 @@ const jwt = require('jsonwebtoken');
 
 const authenticateToken = (req, res, next) => {
     var token = req.headers['authorization'];
-      console.log('token_cookie',token)
 
-    if (token === undefined || token == '' || token == null){
-        console.log('token_cookie', token)
+      console.log('token_cookie',typeof token)
+
+    if (token === undefined || token == '' || token == null || token === "undefined"){
+        console.log('token: ', token);
+ 
 
          return res.status(403).send({ auth: false, message: 'No token provided.' });
     }
