@@ -12,7 +12,8 @@ const user =  new Schema({
     name: String,
     teams: Object,
     start_date:Object,
-    status:String
+    status:String,
+    isOnsite:Boolean,
 },{ strict: false,timestamps:true })
 
 mongoose.model('Matches', user);

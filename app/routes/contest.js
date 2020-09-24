@@ -62,5 +62,9 @@ module.exports.setRouter = (app) => {
 
     app.patch(`${process.env.BASE_URL}/contest/join/custom`,isAuth,post.joinCustom)
 
+
+    // detele 
+
+    app.delete(`${process.env.BASE_URL}/contest`,isAuth,contest.deleteContest)
 }
 
