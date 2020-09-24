@@ -18,7 +18,7 @@ const changePassword = async (req, res) => {
 
     if(bcrypt.comparePassword(req.body.oldPassword,userDetails.password)){
         await bcrypt.hashPassword(req.body.password, (err, pass) => {
-            User.updateOne({ _id: req.user.id }, {
+            User.updateOne({ _id: mongoose.mongo.ObjectId(req.user.id),activated:true }, {
                 $set: {
                     password: pass
                 }

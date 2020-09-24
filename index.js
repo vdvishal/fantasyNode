@@ -35,7 +35,9 @@ const fork = require('child_process').fork;
 
 
 
-// const mqtt = require('./app/libraries/mqtt')
+const mqtt = require('./app/libraries/mqtt')
+ 
+
 
 const log = console.log;
 
@@ -75,6 +77,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // app.use(i18n.init);
 var allowedOrigins = ['http://localhost:3000',
+                        'https://035af56114ed.ngrok.io',
                       'https://fantasyjutsu.com',
                       'https://www.fantasyjutsu.com'];
 

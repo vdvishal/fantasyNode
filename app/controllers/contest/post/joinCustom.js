@@ -3,8 +3,8 @@ const Contest = mongoose.model('CustomContest');
 const Orders = mongoose.model('Orders');
 const Users = mongoose.model('Users');
 const FantasyPlayer = mongoose.model('FantasyPlayer');
-
-const { check, validationResult } = require('express-validator')
+var client = require('../../../libraries/mqtt')
+ const { check, validationResult } = require('express-validator')
 const
     validator = [
         check('contestId').isMongoId(),
@@ -17,6 +17,13 @@ const
  *  
  * @param {*} res 
  */
+ 
+
+
+
+ 
+ 
+
 
 
 const joinCustom = async (req, res) => {
@@ -160,6 +167,22 @@ const joinCustom = async (req, res) => {
             }
         }
 
+
+
+
+
+        const check = await Contest.findOneAndUpdate({
+            _id: mongoose.mongo.ObjectId(req.body.contestId),
+            open: true
+        }, obj).then(response => response)
+
+         if(check === null){
+            return res.status(202).json({ message: "Contest full, Join another contest" })
+        }
+
+        mqtt_publish(contestData.matchId+"reload",`${contestData.contestType}`,{qos:1})
+
+
         let order1 = {
             "amount": parseFloat(contestData.amount) * 100,
             "status": "contest_debit",
@@ -172,14 +195,10 @@ const joinCustom = async (req, res) => {
         }
  
 
-        Orders.insertMany([
-            order1
-        ]).then(response => response)
+            Orders.insertMany([
+                order1
+            ]).then(response => response)
 
-
-        await Contest.updateOne({
-            _id: mongoose.mongo.ObjectId(req.body.contestId),
-        }, obj).then(response => response)
 
         await Users.updateOne({ _id: req.user.id }, {
             $addToSet: {
@@ -194,6 +213,7 @@ const joinCustom = async (req, res) => {
         }).then(respo => res.status(200).json({ message: "Contest Joined" }))
 
     } catch (error) {
+        console.log('error: ', error);
         
 
         res.status(502).json({
@@ -204,6 +224,15 @@ const joinCustom = async (req, res) => {
 
 }
 
-
+function mqtt_publish(topic, message, options) {
+    console.log('topic: ', topic);
+    console.log('message: ', message);
+        
+    
+    client.publish(topic, message, { qos: (options.qos) ? options.qos : 0 },(err,res) => {
+        console.log(res);
+        
+    })
+}
 
 module.exports = joinCustom

@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Contest = mongoose.model('CustomContest');
 const Users = mongoose.model('Users');
 const FantasyPlayer = mongoose.model('FantasyPlayer');
+var client = require('../../../libraries/mqtt')
 
 const Orders = mongoose.model('Orders');
 
@@ -210,6 +211,8 @@ const custom = async (req, res) => {
                 "userId": req.user.id.toString()
             }
         }
+
+        client.publish(req.body.matchId+'reload',`${req.body.contestType}`,{qos:1})
  
 
         Orders.insertMany([
@@ -230,6 +233,7 @@ const custom = async (req, res) => {
 
 
     } catch (error) {
+        console.log('error: ', error);
         
 
         res.status(502).json({

@@ -18,7 +18,8 @@ const validator = [
  */
 let userId;
 const login = async (req, res) => {
-
+  console.log(req.body);
+  
   const errorFormatter = ({ location, msg, param, value, nestedErrors }) => {
     return `${location}[${param}]: ${msg}`;
   };

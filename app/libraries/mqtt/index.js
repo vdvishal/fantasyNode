@@ -37,6 +37,8 @@ client.on('reconnect', function () {
 
 function mqtt_publish(topic, message, options) {
     client.publish(topic, message, { qos: (options.qos) ? options.qos : 0 },(err,res) => {
+        console.log('err: ', err);
+        console.log('res: ', res);
 
     })
 }

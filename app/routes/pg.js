@@ -9,6 +9,8 @@ const GenSign = require('../controllers/pg_cashFree/generate_signature')
 const isAuth = require('../middlewares/jwt/auth')
 
 const webhook = require('../controllers/webhook')
+const redirect = require('../controllers/pg_cashFree/success')
+
 
 module.exports.setRouter = (app) => {
     app.post(`${process.env.BASE_URL}/payment/`,isAuth,pg);
@@ -29,6 +31,8 @@ module.exports.setRouter = (app) => {
     app.get(`${process.env.BASE_URL}/gensign`,isAuth,GenSign);//,isAuth
 
     app.post(`${process.env.BASE_URL}/webhook`,webhook);//,isAuth
+    
+    app.post(`${process.env.BASE_URL}/redirect`,redirect);//,isAuth
 
 }
 

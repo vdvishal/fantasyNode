@@ -11,7 +11,7 @@ const Orders = mongoose.model('Orders');
 
 
   const webHook = async (req,res) => {
-    console.log(req.body);
+    console.log(req.headers);
     try {
       
 
@@ -19,8 +19,7 @@ const Orders = mongoose.model('Orders');
       'activepayment.id':req.body.orderId
     }).lean().then(response => response)
 
-    console.log(userDetail);
-    
+     
    let activePay = userDetail.activepayment;
    let firstBonus = 0 
 
@@ -39,7 +38,7 @@ const Orders = mongoose.model('Orders');
 
         if(userDetail.activepayment.status === 'created' && userDetail.activepayment.id === req.body.orderId){
           if(userDetail.firstpay !== true){
-            firstBonus = (activePay.amount/100)*0.5;
+            firstBonus = (activePay.amount/100)*1;
 
             if(firstBonus > 50){
                 firstBonus = 50

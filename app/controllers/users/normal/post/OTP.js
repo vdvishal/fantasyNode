@@ -36,7 +36,7 @@ const sendOTP = (req, res) => {
             // send mail            
         })
     }else if(req.body.type === 2){
-        User.findOne({ "phone.phone": req.body.number }, 'email').lean().exec()
+        User.findOne({ "phone.phone": req.body.number,activated:true }, 'email').lean().exec()
         .then(user => {
             if (!user) return res.status(204).json({ message: 'The number is not registered. Please register.' });
 
