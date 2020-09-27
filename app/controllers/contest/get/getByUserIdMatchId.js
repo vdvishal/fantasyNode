@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const Contest = mongoose.model('CustomContest');
 const UnderOverContest = mongoose.model('UnderOverContest');
+const UnderOverContest2 = mongoose.model('UnderOverContestType2');
+
 const MatchUpContest = mongoose.model('MatchUpContest');
 const FantasyJoinedUsers = mongoose.model('FantasyJoinedUsers');
 const Matches = mongoose.model('Matches');
@@ -114,6 +116,99 @@ const getUserId = async (req, res) => {
         }
         ]).exec()
         .then(response => response)
+        let con5  = await UnderOverContest2.aggregate([
+            {
+                $match:{userId: mongoose.mongo.ObjectID(req.user.id),matchId:parseInt(req.params.matchId)}
+            },
+            {
+                $sort:{
+                    "_id":-1
+                }
+             },
+            {
+                $project:{
+                        selectedTeam: { $objectToArray: "$selectedTeam"},
+                        amount:1,
+                         
+                        winner:1,
+       
+                        payout:{ $objectToArray: "$winner"},
+                    }
+             },
+             { "$unwind": "$selectedTeam" },
+             {
+                $lookup: {
+                    from: 'contests',
+                    localField: 'selectedTeam.v.contestId',
+                    foreignField: '_id',
+                    as: 'contest'
+                }
+            },
+            {
+                $group: {
+                    _id:"$_id",
+                    contest: {
+                        $addToSet: {$arrayElemAt:["$contest",0]}
+                    },
+                    amount: {
+                        $addToSet: "$amount"
+                    },
+                    selectedTeam: {
+                        $push: "$selectedTeam"
+                    },
+                    winner:{
+                        $addToSet: "$winner"
+                    },
+                    payout:{
+                        $addToSet: "$payout"
+                    },
+                    players:{
+                        $addToSet: "$players"
+                    },
+                }
+            },
+            {
+                $project: {
+                    _id:1,
+                    contest: 1,
+                    amount:{$arrayElemAt:["$amount",0]},
+                    selectedTeam: { $arrayToObject: "$selectedTeam"},
+                    winner:{$arrayElemAt:["$winner",0]},
+                    payout:{$arrayElemAt:["$payout",0]},
+                    players:{$arrayElemAt:["$players",0]},
+                    
+                }
+            },
+            {
+                $project: {
+                    _id:1,
+                    contest: 1,
+                    wonContest:{$filter: {
+                        input: "$payout",
+                        as: "item",
+                        cond: { $eq: [ "$$item.v", 1 ] }
+                    }},
+                    inPlayContest:{$filter: {
+                        input: "$contest",
+                        as: "item",
+                        cond: { $eq: [ "$$item.status", "notstarted" ] }
+                    }},
+                    amount:1,
+                    selectedTeam: 1,
+                    winner:1,
+                    players:1,
+                    lostContest:{$filter: {
+                        input: "$payout",
+                        as: "item",
+                        cond: { $eq: [ "$$item.v", 0 ] }
+                    }},
+                }
+            },
+            {
+                $addFields: { status: matchDetail.status }
+            }
+            ]).exec()
+            .then(response => response)
 
     let con2  = await MatchUpContest.aggregate([
         {
@@ -281,7 +376,7 @@ const getUserId = async (req, res) => {
         }).sort({amount:-1}).then(response => response)
             
         
-    res.status(200).json({underOver:con1,comboMatch:con2,fantasy:con3,custom:con4})
+    res.status(200).json({underOver:con1,underOver2:con5,comboMatch:con2,fantasy:con3,custom:con4})
 }
 
 module.exports = getUserId

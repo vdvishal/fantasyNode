@@ -18,7 +18,7 @@ const get = (req, res) => {
     }else{
         
 
-        match.find({starting_at:{$gt: moment().toDate().toISOString()},gameType:parseInt(req.query.gameType)}).sort({starting_at:1}).exec().then(result => 
+        match.find({starting_at:{$gt: moment().toDate().toISOString()},gameType:parseInt(req.query.gameType),isOnsite:true}).sort({starting_at:1}).exec().then(result => 
             res.status(200).json({match:result}))
         .catch(err => res.status(502).json(err))
     }

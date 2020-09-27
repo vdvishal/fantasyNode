@@ -40,8 +40,8 @@ const Orders = mongoose.model('Orders');
           if(userDetail.firstpay !== true){
             firstBonus = (activePay.amount/100)*1;
 
-            if(firstBonus > 50){
-                firstBonus = 50
+            if(firstBonus > 25){
+                firstBonus = 25
             }
          }
 
@@ -113,7 +113,7 @@ const Orders = mongoose.model('Orders');
 
     } catch (error) {
       console.log('error: ', error);
-        
+      return res.send("done")
     }
   }
 

@@ -18,7 +18,7 @@ const moment = require('moment')
     }})
     .select('email phone fullName userName wallet verifiedKYC stats bankAccountId vpa beneficiaryId refCode messageCount facebookId activated profilePic refLink')
     .lean().exec().then(response => {         
- 
+      
       res.send({message: "User profile",data:{...response}})
 
       //  OtherUserStats.findOne({userId:req.user.id}).lean().then(responseX => {

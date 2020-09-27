@@ -4,8 +4,7 @@ const mongoose = require('mongoose');
  
 const User = mongoose.model('Users');
 const Orders = mongoose.model('Orders');
-
-#
+ 
 
 const genSign = async (req,res) => {
 
@@ -32,8 +31,8 @@ const genSign = async (req,res) => {
             "customerName":userDetail.fullName.length === 0 ? "New User" : userDetail.fullName,
             "customerEmail":userDetail.email,
             "customerPhone":userDetail.phone.phone,
-            "returnUrl":"https://8428bc08bed8.ngrok.io/api/v1/redirect",
-            "notifyUrl": "https://8428bc08bed8.ngrok.io/api/v1/webhook" //"https://api.fantasyjutsu.com/api/v1/webhook",
+            "returnUrl":"https://509f94b03734.ngrok.io/api/v1/redirect",
+            "notifyUrl": "https://509f94b03734.ngrok.io/api/v1/webhook" //"https://api.fantasyjutsu.com/api/v1/webhook",
         }
  
         let signatureData = ''

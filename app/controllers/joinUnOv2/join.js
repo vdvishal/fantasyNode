@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const UnderOverContest = mongoose.model('UnderOverContest');
+const UnderOverContest = mongoose.model('UnderOverContestType2');
 const Users = mongoose.model('Users');
 const Orders = mongoose.model('Orders');
 const Matches = mongoose.model('Matches');
@@ -17,6 +17,9 @@ const post = async (req, res) => {
     let bonus = 0;
     let balance = 0;
 
+    if(Object.keys(dt.selectedTeam) < 3){
+        return res.status(202).json({message:"Select a minimum of 3"})
+    }
      
     const MatchDetails = await Matches.findOne({id:parseInt(req.body.matchId)}).lean()
     .exec()
@@ -107,8 +110,8 @@ const post = async (req, res) => {
         "amount" :  parseFloat(req.body.amount)*100,
         "status" : "contest_debit",
         "matchId": parseInt(req.body.matchId),
-        "contestType": 1,
-        "orderId": "1/3 Under/Over",
+        "contestType": 2,
+        "orderId": "1/2 Under/Over",
         "notes" : {
             "userId" : req.user.id
         }

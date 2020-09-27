@@ -5,7 +5,7 @@ const mongoose = require('mongoose'),
     moment = require('moment'),
     Orders = mongoose.model('Orders'),
     User = mongoose.model('Users');
-
+    const mqtt = require('../../../libraries/mqtt')
     const cronJob = require('cron').CronJob;
 
 
@@ -22,7 +22,15 @@ const payout = async (req,res) => {
     try {
     
     const userDetails = await User.findById(req.user.id).lean().then(response => response);
- 
+        
+    if(userDetails.verifiedKYC === false || userDetails.verifiedKYC === null){
+        return res.status(202).json({message:"KYC unverified"});
+    }
+
+
+    if(userDetails.wallet.balance - userDetails.wallet.withdrawal < 50){
+        return res.status(202).json({message:"You must deposit a minimum of ₹50 to withdraw"});
+    }
     
     if(userDetails.wallet.widthraw >= req.body.amount){
         return res.status(202).json({message:"Amount is greater than available balance"})
@@ -32,16 +40,21 @@ const payout = async (req,res) => {
         method:"POST",
         url:"https://payout-gamma.cashfree.com/payout/v1/authorize",
         headers:{
-            "X-Client-Id":"CF30042FEZ9R3AWFS2M2UI",
-            "X-Client-Secret":"7b9d7accd44a6c575a87f1179041e9063b892afb"
+            "X-Client-Id":process.env.CASHFREE_PAYOUT_APP_ID,
+            
+            "X-Client-Secret":process.env.CASHFREE_PAYOUT_SECRET
         }
-    }).then(response => response.data.data.token)
- 
+    }).then(response => response.data)
+    
+    if(token.status === 'ERROR'){
+        return res.status(202).json({message:token.message})
+    }
+
     let requestTransfer = await axios({
         method:"POST",
         url:"https://payout-gamma.cashfree.com/payout/v1/requestAsyncTransfer",
         headers:{
-            Authorization:`Bearer ${token}`,
+            Authorization:`Bearer ${token.data.token}`,
             "Content-Type":"application/json"
         },
         data:{
@@ -76,57 +89,82 @@ const payout = async (req,res) => {
  
     console.log('requestTransfer: ', requestTransfer);
 
-    const job = new cronJob('*/15 * * * * *', function() {
+    const job = new cronJob('*/30 * * * * *', function() {
         
         axios({
             method:"GET",
             url:`https://payout-gamma.cashfree.com/payout/v1/getTransferStatus?referenceId=${requestTransfer.data.referenceId}`,
             headers:{
-                Authorization:`Bearer ${token}`,
+                Authorization:`Bearer ${token.data.token}`,
                 "Content-Type":"application/json"
                 }
             }).then(response => {
                 console.log('response: ', response.data);
                 if(response.data.subCode === '200'){
-                    job.stop();
-                    User.updateOne({_id:mongoose.mongo.ObjectId(req.user.id)},{
-                        $inc:{
-                       'wallet.balance': balance >= 0 ? -1*req.body.amount : userDetails.wallet.balance,
-                       'wallet.withdrawal': withdrawal >= 0 ? -1*req.body.amount : userDetails.wallet.withdrawal,
-                       messageCount:1
-                           }
-                     }).lean().then(response => {
+                    if (response.data.data.transfer.status === 'SUCCESS') {
                         job.stop();
-                  });
+                        User.updateOne({_id:mongoose.mongo.ObjectId(req.user.id)},{
+                            $inc:{
+                           'wallet.balance': balance >= 0 ? -1*req.body.amount : userDetails.wallet.balance,
+                           'wallet.withdrawal': withdrawal >= 0 ? -1*req.body.amount : userDetails.wallet.withdrawal,
+                           messageCount:1
+                               }
+                         }).lean().then(response => {
+                            job.stop();
+                      });
+    
+                      let order = new Orders({
+                        "amount" : parseFloat(req.body.amount)*100,
+                        "status" : "Withdraw",
+                        "matchId": 0,
+                        "contestType": 10,
+                        "orderId": requestTransfer.data.referenceId,
+                        "notes" : {
+                            "userId" : req.user.id
+                        }
+                      })
+    
+                      order.save().then().catch();
 
-                  let order = new Orders({
-                    "amount" : parseFloat(req.body.amount)*100,
-                    "status" : "Withdraw",
-                    "matchId": 0,
-                    "contestType": 10,
-                    "orderId": requestTransfer.data.referenceId,
-                    "notes" : {
-                        "userId" : req.user.id
+                      mqtt.publish('withdraw',JSON.stringify({message:"Withdrawal executed",amount:balance >= 0 ? balance : 0}),{})
+                    }else{
+                        job.stop();
+                        let order = new Orders({
+                            "amount" : parseFloat(req.body.amount)*100,
+                            "status" : "Withdrawal Failed",
+                            "matchId": 0,
+                            "contestType": 10,
+                            "orderId":"Withdrawal failed refId: " + requestTransfer.data.referenceId,
+                            "notes" : {
+                                "userId" : req.user.id
+                            }
+                          })
+        
+                         order.save().then().catch();
+                         mqtt.publish('withdraw',JSON.stringify({message:"Withdrawal failed",amount:0}),{})
+
                     }
-                  })
+                
 
-                  order.save().then().catch()
 
                 }
 
                 if(response.data.status === 'ERROR'){
+                    job.stop();
                     let order = new Orders({
                         "amount" : parseFloat(req.body.amount)*100,
                         "status" : "Withdrawal Failed",
                         "matchId": 0,
                         "contestType": 10,
-                        "orderId":requestTransfer.data.referenceId,
+                        "orderId":"Withdrawal refId: " + requestTransfer.data.referenceId,
                         "notes" : {
                             "userId" : req.user.id
                         }
                       })
     
                      order.save().then().catch()
+                     mqtt.publish('withdraw',JSON.stringify({message:"Withdrawal failed",amount:0}),{})
+
                 }
             })
 

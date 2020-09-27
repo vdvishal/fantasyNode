@@ -10,6 +10,8 @@ const joinThirdContest = require('../controllers/joinThirdContest')
 
 const joinUnderOverContest = require('../controllers/joinUnderOverContest')
 
+const joinUnderOverContest2 = require('../controllers/joinUnOv2')
+
 const fantasyJoinContest = require('../controllers/fantasyJoinContest')
 
 const fantasypatchContest = require('../controllers/fantasyJoinContest/patch')
@@ -49,6 +51,8 @@ module.exports.setRouter = (app) => {
     app.post(`${process.env.BASE_URL}/contest/join`,isAuth,post.join)
 
     app.post(`${process.env.BASE_URL}/contest/join/underover`,isAuth, joinUnderOverContest)
+
+    app.post(`${process.env.BASE_URL}/contest/join/underover/2`,isAuth, joinUnderOverContest2)
 
     app.post(`${process.env.BASE_URL}/contest/join/vs`,isAuth,post.joinVs)
 

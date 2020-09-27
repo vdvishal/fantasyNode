@@ -12,13 +12,39 @@ const _ = require('lodash');
  */
 
 
-const get = (req, res) => {
+const get = async (req, res) => {
  
-    Contest.find({matchId:parseInt(req.params.matchId),contestType:1})
-        .sort({"playerInfo.fullname":1})
-        .lean()
-        .then(arr2 =>res.status(200).json({data:[{_id:1,contest:arr2}]}))
-        .catch(err => err)
+    // await Contest.find({matchId:parseInt(req.params.matchId),contestType:1})
+    //     .sort({"playerInfo.fullname":1})
+    //     .lean()
+    //     .then(arr2 =>res.status(200).json({data:[{_id:1,contest:arr2}]}))
+    //     .catch(err => err)
+
+    // await Contest.find({matchId:parseInt(req.params.matchId),contestType:2})
+    //     .sort({"playerInfo.fullname":1})
+    //     .lean()
+    //     .then(arr2 =>res.status(200).json({data:[{_id:1,contest:arr2}]}))
+    //     .catch(err => err)
+
+    await Contest.aggregate([
+        {
+            $match:{
+                $or:[
+                    {matchId:parseInt(req.params.matchId),contestType:1},
+                    {matchId:parseInt(req.params.matchId),contestType:2}
+                ]
+            }
+        },
+        {$sort:  {'playerInfo.fullname': 1}}, 
+        {
+            $group:{
+                _id:"$contestType",
+                contest:{
+                    $push:"$$ROOT"
+                }
+            }
+        },
+    ]).then(response => res.status(200).json({data:response}))
 }
 
 module.exports = get

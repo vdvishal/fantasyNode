@@ -27,17 +27,21 @@ const beneficiaries = async (req, res) => {
         method:"POST",
         url:"https://payout-gamma.cashfree.com/payout/v1/authorize",
         headers:{
-            "X-Client-Id":"CF30042FEZ9R3AWFS2M2UI",
-            "X-Client-Secret":"7b9d7accd44a6c575a87f1179041e9063b892afb"
+            "X-Client-Id":process.env.CASHFREE_PAYOUT_APP_ID,
+            
+            "X-Client-Secret":process.env.CASHFREE_PAYOUT_SECRET
         }
-    }).then(response => response.data.data.token)
+    }).then(response => response.data)
     console.log('token: ', token);
- 
+    if(token.status === 'ERROR'){
+        return res.status(202).json({message:token.message})
+    }
+
     let requestTransfer = await axios({
         method:"POST",
         url:"https://payout-gamma.cashfree.com/payout/v1/addBeneficiary", //requestAsyncTransfer",
         headers:{
-            Authorization:`Bearer ${token}`,
+            Authorization:`Bearer ${token.data.token}`,
             "Content-Type":"application/json"
         },
         data:{
