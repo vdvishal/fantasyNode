@@ -15,7 +15,9 @@ module.exports.setRouter = (app) => {
     // get --> byUserId
     app.get(`${process.env.BASE_URL}/match/user`,isAuth,getByUserId);
 
-    app.patch(`${process.env.BASE_URL}/match`,isAuth,patch);
+    app.patch(`${process.env.BASE_URL}/match`,isAuth,patch.patch);
+
+    app.patch(`${process.env.BASE_URL}/match/runout`,patch.runOut);
 
 }
 
