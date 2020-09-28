@@ -7,6 +7,8 @@ let matchUps = require('./matchUps')
 let getFantasyContest = require('./getFantasyContest')
 let getCustom = require('./getCustom')
 
+let getCount = require('./getCount')
+
 module.exports = {
     get,
     getById,
@@ -14,5 +16,7 @@ module.exports = {
     matchUps,
     getFantasyContest,
     leaderBoard,
-    getCustom
+    getCustom,
+    
+    getCount
 }

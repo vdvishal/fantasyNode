@@ -23,12 +23,15 @@ const getUserId = async (req, res) => {
 
     let con1  = await UnderOverContest.aggregate([
         {
-            $match:{userId: mongoose.mongo.ObjectID(req.user.id),matchId:parseInt(req.params.matchId)}
+            $match:{matchId:parseInt(req.params.matchId)}
         },
         {
             $sort:{
                 "_id":-1
             }
+         },
+         {
+            $limit:100
          },
         {
             $project:{
@@ -117,8 +120,11 @@ const getUserId = async (req, res) => {
 
     let con2  = await MatchUpContest.aggregate([
         {
-            $match:{userId: mongoose.mongo.ObjectID(req.user.id),matchId:parseInt(req.params.matchId)}
+            $match:{matchId:parseInt(req.params.matchId)}
         },
+        {
+            $limit:100
+         },
         {
             $project:{
                 selectedTeam:{ $objectToArray: "$selectedTeam"},	
@@ -222,7 +228,7 @@ const getUserId = async (req, res) => {
 
     let con3  = await FantasyJoinedUsers.aggregate([
         {
-            $match: { userId:  mongoose.mongo.ObjectID(req.user.id),matchId:parseInt(req.params.matchId)}
+            $match: {  matchId:parseInt(req.params.matchId)}
         },
         {
             "$limit":100
@@ -269,16 +275,8 @@ const getUserId = async (req, res) => {
         .then(response => response)
 
         let con4  = await Contest.find({
-            matchId: parseInt(req.params.matchId),
-            $or: [            
-                    {
-                        "users.player1": mongoose.mongo.ObjectID(req.user.id)
-                    },
-                    {
-                        "users.player2": mongoose.mongo.ObjectID(req.user.id)
-                    },
-                ]
-        }).sort({amount:-1}).then(response => response)
+            matchId: parseInt(req.params.matchId)
+        }).limit(100).sort({amount:-1}).then(response => response)
             
         
     res.status(200).json({underOver:con1,comboMatch:con2,fantasy:con3,custom:con4})

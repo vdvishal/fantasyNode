@@ -4,7 +4,7 @@ const patch = require('../controllers/match/patch')
 const isAuth = require('../middlewares/jwt/auth')
 const basicAuth = require('express-basic-auth')
 
-const { getUpcoming,getByUserId } = match
+const { getUpcoming,getByUserId,completed } = match
  
 
 module.exports.setRouter = (app) => {
@@ -15,9 +15,12 @@ module.exports.setRouter = (app) => {
     // get --> byUserId
     app.get(`${process.env.BASE_URL}/match/user`,isAuth,getByUserId);
 
+    app.get(`${process.env.BASE_URL}/match/completed`,isAuth,completed);
+
+
     app.patch(`${process.env.BASE_URL}/match`,isAuth,patch.patch);
 
-    app.patch(`${process.env.BASE_URL}/match/runout`,patch.runOut);
+    app.patch(`${process.env.BASE_URL}/match/runout`,isAuth,patch.runOut);
 
 }
 

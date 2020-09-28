@@ -47,21 +47,23 @@ const getUserId = async (req, res) => {
         }
     }
 
-    const userDetails = await Users.findById(req.user.id)
-    .select('joinedMatch')
-    .lean()
-    .exec()
-    .then(response => response)
-    .catch(err => {
-        
-        res.status(502).json("Error try again later")
-    });
+    if(req.query.type==="4"){
+        cond = {
+            isLive:false,
+            pending:{$ne:false},
+            paid:{$ne:true},
+            starting_at: {
+                $lt: new Date().toISOString()
+            }
+        }
+    }
+
+ 
     
     
 
     
      Matches.find({
-        id:{$in:userDetails.joinedMatch || []},
         ...cond
     }).sort({starting_at:1}).then(response => res.status(200).json({data:response}))
     .catch(err => {

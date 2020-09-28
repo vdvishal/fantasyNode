@@ -27,6 +27,10 @@ module.exports.setRouter = (app) => {
 
     app.get(`${process.env.BASE_URL}/contest/user/:matchId`,isAuth,get.getUserId); //isAuth,
 
+    app.get(`${process.env.BASE_URL}/contest/count/:matchId`,isAuth,get.getCount); //isAuth,
+
+    
+
     app.get(`${process.env.BASE_URL}/contest/matchUps/:matchId`,basicAuth({
         users: { 'app': 'qwewqinasdoinoinacino' }
     }),get.matchUps);
