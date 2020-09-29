@@ -6,7 +6,7 @@ const isAuth = require('../middlewares/jwt/auth')
 
 const {get, post, patch} = require("./../controllers/users").account;
 const {signUp,login,resetPassword,changePassword,logout,kyc,bank,withdraw} = post
-const { profile, activateAccount,refToken} = get
+const { profile, activateAccount,refToken,transaction} = get
 const { patchProfile } = patch
  
 
@@ -30,7 +30,8 @@ module.exports.setRouter = (app) => {
 
     app.get(`${baseUrl}/transactions`,isAuth,profile.profile)
 
- 
+    app.get(`${process.env.BASE_URL}/payment/transaction`,isAuth,transaction);
+
 
     app.patch(`${baseUrl}/profile`,isAuth,patchProfile.patch)
 

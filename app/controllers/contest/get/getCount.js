@@ -8,8 +8,7 @@ const Orders = mongoose.model('Orders');
 
 
 module.exports = async (req, res) => {
-    let matchDetail = await Matches.findOne({id:parseInt(req.params.matchId)}).lean().exec().then(response => response)
-    
+     
     let type = await Orders.aggregate([
         [
             {

@@ -1,5 +1,6 @@
 const fantasyPlayer = require('../controllers/fantasyPlayer')
 const basicAuth = require('express-basic-auth')
+const isAuth = require('../middlewares/jwt/auth')
 
 const { get,post } = fantasyPlayer;
 
@@ -24,7 +25,7 @@ module.exports.setRouter = (app) => {
         users: { 'app': 'qwewqinasdoinoinacino' }
     }),get.gethistorical);
 
-
+    app.post(`${process.env.BASE_URL}/fantasyPlayer`,isAuth,post);
     
 }
 

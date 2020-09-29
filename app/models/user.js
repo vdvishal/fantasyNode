@@ -19,7 +19,17 @@ const user =  new Schema({
     refLink: String,
     verifiedKYC: { type: Boolean, default: false },
     activated: { type: Boolean, default: false },
-    wallet: Object,
+    wallet: {
+      balance:Number,
+      bonus:Number,
+      withdrawal:Number
+    },
+    passwordOTP: Object,
+    stats:{
+      "loss" : Number,
+      "waggered" : Number,
+      "profit" : Number,
+    },
     OTP: Object,
     blacklist: Array,
     banned: {type:Boolean,default:false},

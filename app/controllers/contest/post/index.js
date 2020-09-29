@@ -1,11 +1,7 @@
-let join = require('./join')
-let joinCustom = require('./joinCustom')
-let createCustom = require('./custom')
-let joinVs = require('./joinVs')
+const count = require('./count')
+const create = require('./create')
 
 module.exports = {
-    join, 
-    joinCustom,
-    createCustom,
-    joinVs 
+    count,
+    create
 }

@@ -7,6 +7,8 @@ require('dotenv').config({ path: './.env' })
 const Sentry = require('@sentry/node');
 const statusMonitor = require('express-status-monitor')();
 
+const { Worker, isMainThread } = require('worker_threads');
+
  
 const helmet = require('helmet')
 
@@ -110,8 +112,8 @@ app.use(morgan("dev"))
  
 app.use(require('express-status-monitor')())
 //Custom middleware
-Sentry.init({ dsn: 'https://7315e837b57b48999d9654123e111005@o431193.ingest.sentry.io/5381542' });
-app.use(Sentry.Handlers.requestHandler());
+// Sentry.init({ dsn: 'https://7315e837b57b48999d9654123e111005@o431193.ingest.sentry.io/5381542' });
+// app.use(Sentry.Handlers.requestHandler());
 
  
 fs.readdirSync(models).forEach(function (file) {
@@ -154,6 +156,20 @@ const job = new cronJob('* * 23 * * *', function() {
 })
 
 job.start();
+
+
+if (isMainThread) {
+    console.log(chalk.blueBright("workers"));
+
+   new Worker(__dirname + "/app/workers/checkTimer.js");
+    new Worker(__dirname + "/app/workers/liveUpdate.js");
+    new Worker(__dirname + "/app/workers/livestatsupdate.js");
+    //  new Worker(__dirname + "/app/workers/contestCompleteCalc.js");
+  } else {
+    // When a message from the parent thread is received, send it back:
+    console.log(chalk.blueBright("workers"));
+    
+  }
 
 
 // mqtt.publish("/globalStats","connecte",{},{})
