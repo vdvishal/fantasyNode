@@ -28,11 +28,11 @@ const payout = async (req,res) => {
     }
 
 
-    if(userDetails.wallet.balance - userDetails.wallet.withdrawal < 50){
+    if(userDetails.wallet.deposited < 50){
         return res.status(202).json({message:"You must deposit a minimum of ₹50 to withdraw"});
     }
     
-    if(userDetails.wallet.widthraw >= req.body.amount){
+    if(userDetails.wallet.widthraw <= req.body.amount){
         return res.status(202).json({message:"Amount is greater than available balance"})
     }
 
@@ -58,8 +58,8 @@ const payout = async (req,res) => {
             "Content-Type":"application/json"
         },
         data:{
-            "beneId": userDetails.beneficiaryId,// userDetails.beneId ,
-            "amount": req.body.amount || 1,
+            "beneId": req.body.transferMode === 2 ? userDetails.beneficiaryId : userDetails.beneficiaryId,// userDetails.beneId ,
+            "amount": req.body.amount || 0,
             "transferId": moment().valueOf(),
             transferMode:req.body.transferMode === 1 ? "banktransfer" : 
             req.body.transferMode === 2 ? "upi" : 
@@ -105,8 +105,8 @@ const payout = async (req,res) => {
                         job.stop();
                         User.updateOne({_id:mongoose.mongo.ObjectId(req.user.id)},{
                             $inc:{
-                           'wallet.balance': balance >= 0 ? -1*req.body.amount : userDetails.wallet.balance,
-                           'wallet.withdrawal': withdrawal >= 0 ? -1*req.body.amount : userDetails.wallet.withdrawal,
+                           'wallet.balance': balance >= 0 ? -1*req.body.amount : -userDetails.wallet.balance,
+                           'wallet.withdrawal': withdrawal >= 0 ? -1*req.body.amount : -userDetails.wallet.withdrawal,
                            messageCount:1
                                }
                          }).lean().then(response => {
@@ -126,7 +126,7 @@ const payout = async (req,res) => {
     
                       order.save().then().catch();
 
-                      mqtt.publish('withdraw',JSON.stringify({message:"Withdrawal executed",amount:balance >= 0 ? balance : 0}),{})
+                      mqtt.publish(`withdraw_${req.user.id}`,JSON.stringify({message:"Withdrawal Successfull",amount:balance >= 0 ? balance : 0}),{})
                     }else{
                         job.stop();
                         let order = new Orders({
@@ -161,7 +161,8 @@ const payout = async (req,res) => {
                             "userId" : req.user.id
                         }
                       })
-    
+                      mqtt.publish(`withdraw_${req.user.id}`,JSON.stringify({message:"Withdrawal failed",amount:userDetails.wallet.balance}),{})
+
                      order.save().then().catch()
                      mqtt.publish('withdraw',JSON.stringify({message:"Withdrawal failed",amount:0}),{})
 

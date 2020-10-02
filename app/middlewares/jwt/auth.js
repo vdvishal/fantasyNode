@@ -2,8 +2,10 @@ const jwt = require('jsonwebtoken');
 
 const authenticateToken = (req, res, next) => {
     var token = req.headers['authorization'];
+    // console.log('req.headers: ', req.headers);
 
       console.log('token_cookie',typeof token)
+ 
 
     if (token === undefined || token == '' || token == null || token === "undefined"){
         console.log('token: ', token);
@@ -14,11 +16,10 @@ const authenticateToken = (req, res, next) => {
 
     jwt.verify(token, process.env.Access_key, function (err, decoded) {
         if (err) {
-            if (err['message'] == "jwt expired") {
+            if (err['message'] == "jwt expired" || err['message'] == "invalid signature") {
                 return res.status(403).send({ message: 'Token Expired' });
             }
-            else {
-                 
+            else { 
                 return res.status(500).send({ auth: false, message: err.message, err: err });
             }
         }

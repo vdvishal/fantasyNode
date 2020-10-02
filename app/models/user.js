@@ -19,7 +19,17 @@ const user =  new Schema({
     refLink: String,
     verifiedKYC: { type: Boolean, default: false },
     activated: { type: Boolean, default: false },
-    wallet: Object,
+    wallet: {
+      balance:Number,
+      deposited:Number,
+      bonus:Number,
+      withdrawal:Number
+    },
+    stats:{
+      "loss" : Number,
+      "waggered" : Number,
+      "profit" : Number,
+    },
     OTP: Object,
     blacklist: Array,
     banned: {type:Boolean,default:false},
@@ -30,7 +40,7 @@ const user =  new Schema({
     googleId: String, 
     facebookId: String,
     status:Intl,
-    messageCount:{type:Number,default:2},
+    messageCount:{type:Number,default:1},
     refferCode: String,
     lastOnline: {type:Date,default:moment.now()},
     KYC:{}

@@ -35,7 +35,6 @@ const Orders = mongoose.model('Orders');
     console.log('req.body.signature: ', req.body.signature);
 
     if(sign ===  req.body.signature){
-
         if(userDetail.activepayment.status === 'created' && userDetail.activepayment.id === req.body.orderId){
           if(userDetail.firstpay !== true){
             firstBonus = (activePay.amount/100)*1;
@@ -48,6 +47,7 @@ const Orders = mongoose.model('Orders');
         await User.updateOne({_id:mongoose.mongo.ObjectID(userDetail._id)},{
             $inc:{
                 'wallet.balance': activePay.amount/100,
+                'wallet.deposited': activePay.amount/100,
                 'wallet.bonus': firstBonus,
                 messageCount:1
             },

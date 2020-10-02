@@ -78,6 +78,8 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 // app.use(i18n.init);
 var allowedOrigins = ['http://localhost:3000',
                         'https://*.ngrok.io',
+                        'https://test.cashfree.com',
+                        
                       'https://fantasyjutsu.com',
                       'https://www.fantasyjutsu.com'];
 

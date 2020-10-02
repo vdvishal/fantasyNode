@@ -9,12 +9,17 @@ const Orders = mongoose.model('Orders');
 const genSign = async (req,res) => {
 
     try {
+        console.log('req.query: ', req.query);
+        if(req.query.amount === ''){
+            return res.status(202).json({message:"Amount must be valid"})
+         }
+
         if(req.query.amount.match(/[A-Za-z]/)){
            return res.status(202).json({message:"Amount must be valid"})
         }
 
-        if(parseFloat(req.query.amount) <= 24 ){
-            return res.status(202).json({message:"Minimum deposit is ₹25"})
+        if(parseFloat(req.query.amount) < 10 ){
+            return res.status(202).json({message:"Minimum deposit is ₹10"})
          }
 
     let userDetail = await User.findById(req.user.id).then(response => response)
@@ -31,8 +36,8 @@ const genSign = async (req,res) => {
             "customerName":userDetail.fullName.length === 0 ? "New User" : userDetail.fullName,
             "customerEmail":userDetail.email,
             "customerPhone":userDetail.phone.phone,
-            "returnUrl":"https://509f94b03734.ngrok.io/api/v1/redirect",
-            "notifyUrl": "https://509f94b03734.ngrok.io/api/v1/webhook" //"https://api.fantasyjutsu.com/api/v1/webhook",
+            "returnUrl":"https://7f48b19dad0e.ngrok.io/api/v1/redirect",
+            "notifyUrl": "https://7f48b19dad0e.ngrok.io/api/v1/webhook" //"https://api.fantasyjutsu.com/api/v1/webhook",
         }
  
         let signatureData = ''

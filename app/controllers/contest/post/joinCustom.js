@@ -188,7 +188,7 @@ const joinCustom = async (req, res) => {
             "status": "contest_debit",
             "orderId": 'Join custom duel',
             "matchId": parseInt(contestData.matchId),
-            "contestType": req.body.contestType,
+            "contestType": contestData.contestType,
             "notes": {
                 "userId": req.user.id.toString()
             }
