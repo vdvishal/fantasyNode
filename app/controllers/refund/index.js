@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 require('../../models/contest')
+const Match = mongoose.model('Matches');
+
 let FantasyContest = mongoose.model('FantasyContest');
 let MatchUpContest = mongoose.model('MatchUpContest');
 let UnderOverContest = mongoose.model('UnderOverContest');
@@ -16,6 +18,19 @@ const moment = require('moment')
 
 const post = async (req, res) => {
     let count = 0
+    let m = await Match.findOne({
+       
+        id: parseInt(req.body.matchId)
+        
+        // isLive: true,isFinished:true
+    }).lean().select("id paid status").exec().then(matches => matches)
+    console.log('m: ', m);
+    if(m.status !== 'Aban.' || m.status !== "Cancl." || m.paid == true){
+      res.status(202)
+      return res.send({message:"This match can't be refunded"})
+    }
+
+    
     await MatchUpContest.find({ matchId: parseInt(req.body.matchId) })
     
         .lean()
@@ -193,7 +208,15 @@ const post = async (req, res) => {
         }).then()
         console.log('FantasyContest: ');
 
-    
+        await Match.updateOne({
+            id: parseInt(workerData.id)
+        }, {
+            $set: {
+                pending: false,
+                paid: true,
+            }
+        }).then()
+
     res.status(200).json({message:"Done"})
 
 }

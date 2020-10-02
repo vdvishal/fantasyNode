@@ -110,7 +110,7 @@ module.exports = async (req, res) => {
             }
           ]
     ])
-
-    res.status(200).json([...type,type2[0]])
+    type2 = type2.length > 0 ?  type2[0] : {}
+    res.status(200).json([...type,type2])
 }
 

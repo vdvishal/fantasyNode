@@ -73,10 +73,11 @@ const getMatch = async (id) => {
 
         await Match.find({
             id: parseInt(workerData.id)
+            
             // isLive: true,isFinished:true
         }).lean().select("id").exec().then(matches => {
 
-
+            console.log('workerData: ', workerData);
 
             if (matches.length > 0) {
 
@@ -136,6 +137,7 @@ const getMatch = async (id) => {
 
 
         if (completed.length === 0) {
+            console.log(chalk.green('matchUpdate completed: 0'));
 
             retry = true
             return

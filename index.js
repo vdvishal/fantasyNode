@@ -12,7 +12,6 @@ const { Worker, isMainThread } = require('worker_threads');
  
 const helmet = require('helmet')
 
-const redisClient = require('./app/libraries/redis/redis');
  
 
 const cookieParser = require('cookie-parser');
@@ -77,7 +76,8 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // app.use(i18n.init);
 var allowedOrigins = ['http://localhost:3000',
-                      'http://localhost:3001',        
+                      'http://localhost:3001',
+                      'http://localhost:4200',  
                       'https://fantasyjutsu.com',
                       'https://www.fantasyjutsu.com'];
 
@@ -137,34 +137,42 @@ server.on('listening', onListening);
  
  
 
-redisClient.on('error',  (error) => {
-    log(`${chalk.greenBright(logSymbols.error)} ${chalk.red(error)}`);
 
-})
-
-redisClient.on('connect', () => {
-    log(`${chalk.greenBright(logSymbols.success)} Redis connected`);
-})
 
 const cronJob = require('cron').CronJob;
 
-const job = new cronJob('* * 23 * * *', function() {
-    redisClient.HDEL("players",(err,res) => {
-        logger.error(err);
-        logger.info(res);
-    })
-})
+// const job = new cronJob('* * 23 * * *', function() {
+//     redisClient.HDEL("players",(err,res) => {
+//         logger.error(err);
+//         logger.info(res);
+//     })
+// })
 
-job.start();
+// job.start();
+
+try {
+    const redisClient = require('./app/libraries/redis/redis');
+
+    redisClient.on('error',  (error) => {
+        log(`${chalk.greenBright(logSymbols.error)} ${chalk.red(error)}`);
+    
+    })
+    
+    redisClient.on('connect', () => {
+        log(`${chalk.greenBright(logSymbols.success)} Redis connected`);
+    })
+} catch (error) {
+    console.log('error: ', error);
+    
+}
 
 
 if (isMainThread) {
     console.log(chalk.blueBright("workers"));
 
-   new Worker(__dirname + "/app/workers/checkTimer.js");
-    new Worker(__dirname + "/app/workers/liveUpdate.js");
+//    new Worker(__dirname + "/app/workers/checkTimer.js");
+//     new Worker(__dirname + "/app/workers/liveUpdate.js");
     new Worker(__dirname + "/app/workers/livestatsupdate.js");
-    //  new Worker(__dirname + "/app/workers/contestCompleteCalc.js");
   } else {
     // When a message from the parent thread is received, send it back:
     console.log(chalk.blueBright("workers"));

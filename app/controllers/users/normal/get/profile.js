@@ -107,9 +107,9 @@ const moment = require('moment')
     .select('email phone fullName userName wallet verifiedKYC stats bankAccountId vpa beneficiaryId refCode messageCount facebookId activated profilePic refLink')
     .lean().exec().then(response => {    
       console.log('statsTotal: ', statsTotal[0]);     
-      response.wallet.balance =  statsTotal[0].profit
-      response.wallet.bonus =  allStats[0].bonus
-      response.wallet.withdrawal =  allStats[0].withdrawal
+      response.wallet.balance = statsTotal[0] ? statsTotal[0].profit : 0
+      response.wallet.bonus = allStats[0] ?  allStats[0].bonus : 0
+      response.wallet.withdrawal =   allStats[0] ?   allStats[0].withdrawal : 0
 
       res.send({message: "User profile",data:{...response,statsTotal:statsTotal[0]}})
 
@@ -120,6 +120,7 @@ const moment = require('moment')
       //   res.send({message: "database Error"})
       // })
     }).catch(err => {
+      console.log('err: ', err);
       
       res.send({message: "database Error"})
     })

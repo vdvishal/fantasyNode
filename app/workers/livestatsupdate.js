@@ -3,6 +3,8 @@ mongoose.connect(process.env.DB_HOST, { useNewUrlParser: true, useUnifiedTopolog
 
 require('../models/matches');
 require('../models/fantasyPlayer');
+const redis = require('../libraries/redis/redis');
+const sms = require('../libraries/twilio');
 
 const match = mongoose.model('Matches');
 const axios = require('axios')
@@ -33,6 +35,7 @@ async function liveUpdate() {
     console.log(liveMatches.length);
     
       let liveUpdate = []
+      
 
     for (const matchDetail of liveMatches) {
 
@@ -104,37 +107,78 @@ async function liveUpdate() {
         })
     }
 
-    if(liveIdArr.length === 0 ){
-      liveIdArr = liveUpdate
+        
+    let liveMatch =  await getMatch().then(response => response)  
+
+    if(liveMatch){
+      console.log('liveMatch: ', liveMatch);
+
     }
 
-    if(liveUpdate.sort().toString() === liveIdArr.sort().toString()){
-      liveIdArr = liveUpdate
+    
+ 
+    if(liveMatch.length === 0 ){
+      redis.HMSET('match','live',JSON.stringify(liveUpdate),(err,res) => {
+        console.log('err: ', err);
+        console.log(res);
+      })
     }else{
+      
+      if(liveUpdate.length !== liveMatch.length){
+          liveMatch.forEach(matchId => {
+            if(liveUpdate.indexOf(matchId) < 0){
+              sms(6003633574,`Update and dispatch match: ${matchId}`)
+                 match.updateOne(
+                    {id:matchId},
+                    {
+                      $set:{
+                        isFinished:true
+                      }
+                    })
+                  .then(response => {
+                    console.log(response);
+                    redis.HMSET('match','live',JSON.stringify(liveUpdate),(err,res) => {
+                      console.log('err: ', err);
+                      console.log(res);
+                    })
+                  })
 
-      for (const id of liveIdArr) {
-        if(liveUpdate.indexOf(id) < 0){
-          await match.updateOne(
-            {id:id},
-            {
-              $set:{
-                isFinished:true
-              }
-            })
-          .then(response => {
-            console.log(response);
-            liveIdArr = liveUpdate
+
+            }
           })
-          .catch(err => {
-            console.log(err);
-            
-          }) 
         }
-      }
+    }
+
+
+ 
+
+    // if(liveUpdate.sort().toString() === liveIdArr.sort().toString()){
+    //   liveIdArr = liveUpdate
+    // }else{
+
+    //   for (const id of liveIdArr) {
+    //     if(liveUpdate.indexOf(id) < 0){
+    //       await match.updateOne(
+    //         {id:id},
+    //         {
+    //           $set:{
+    //             isFinished:true
+    //           }
+    //         })
+    //       .then(response => {
+    //         console.log(response);
+    //         liveIdArr = liveUpdate
+    //       })
+    //       .catch(err => {
+    //         console.log(err);
+            
+    //       }) 
+    //     }
+    //   }
 
       
 
-    }
+    // }
     
 
     
@@ -162,4 +206,9 @@ const job = new cronJob('*/60 * * * * *', function() {
 job.start();
 liveUpdate().then().catch()
 
-
+const getMatch = () => new Promise((resolve,reject) => {
+  redis.HGET('match','live',(err,res) => {
+    console.log('err: HGET', err);
+    resolve(JSON.parse(res))
+  })
+})
