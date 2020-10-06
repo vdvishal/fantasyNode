@@ -25,7 +25,7 @@ module.exports.setRouter = (app) => {
         users: { 'app': 'qwewqinasdoinoinacino' }
     }),get.gethistorical);
 
-    app.post(`${process.env.BASE_URL}/fantasyPlayer`,isAuth,post);
+    app.post(`${process.env.BASE_URL}/fantasyPlayer` ,post);//
     
 }
 

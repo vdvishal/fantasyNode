@@ -1,6 +1,12 @@
 const mongoose = require('mongoose');
 require('../models/contest');
 require('../models/CustomContest');
+require('../models/fantasyContest');
+require('../models/fantasyJoinedContest');
+require('../models/matches');
+require('../models/fantasyPlayer');
+require('../models/appStats');
+
 
 mongoose.connect(process.env.DB_HOST, { useNewUrlParser: true, useUnifiedTopology: true });
 
@@ -11,24 +17,28 @@ let FantasyPlayer = mongoose.model('FantasyPlayer');
 
 let Contest = mongoose.model('Contest');
 let CustomContest = mongoose.model('CustomContest');
+let FantasyContest = mongoose.model('FantasyContest');
+
+let FantasyJoinedUsers = mongoose.model('FantasyJoinedUsers');
+let AppStats = mongoose.model('AppStats');
 
 
-module.exports = async (lineUpArr, matchId) => {
+module.exports = (async (lineUpArr, matchId) => {
     let updatArr = [];
     try {
-        
  
-    // let matchDetail = await match.findOne({ id: parseInt(matchId) }).select('-balls').lean().exec().then(response => response)
-
+    let matchDetail = await match.findOne({ id: parseInt(matchId) }).select('-balls').lean().exec().then(response => response)
+    
+    let lineUpArr = matchDetail.lineup
 
     lineUpArr.forEach(player => {
         updatArr.push(new Promise((resolve, reject) => {
             FantasyPlayer.updateOne({
                 "matchId": parseInt(matchId),
-                [`players.${(player.lineup.team_id).toString()}.${player.position.name}.${(player.id).toString()}`]: { $exists: true }
+                [`players.${(player.lineup.team_id).toString()}.${(player.id).toString()}`]: { $exists: true }
             },{
                 $set: {
-                    [`players.${(player.lineup.team_id).toString()}.${player.position.name}.${(player.id).toString()}.isPlaying`]: true
+                    [`players.${(player.lineup.team_id).toString()}.${(player.id).toString()}.isPlaying`]: true
                 }
             }).then(response => resolve(response)).catch(err => reject(err))
         }))
@@ -48,11 +58,7 @@ module.exports = async (lineUpArr, matchId) => {
     //     return {message:true}
     // }else{
          
-    await match.updateOne({ id: parseInt(matchId) }, {
-        $set: {
-            isLineupUpdated: true
-        }
-    }).then(response => ("Updated")).catch(err => console.log(err))
+
     // }
 
     let updatedFantasyPlayer = await FantasyPlayer.aggregate([
@@ -72,10 +78,7 @@ module.exports = async (lineUpArr, matchId) => {
         .catch(err => err)
      updatedFantasyPlayer = updatedFantasyPlayer[0]
     let allPlayer = {
-        ...updatedFantasyPlayer.players[0].v.Batsman, ...updatedFantasyPlayer.players[1].v.Batsman,
-        ...updatedFantasyPlayer.players[0].v.Bowler, ...updatedFantasyPlayer.players[1].v.Bowler,
-        ...updatedFantasyPlayer.players[0].v.Wicketkeeper, ...updatedFantasyPlayer.players[1].v.Wicketkeeper,
-        ...updatedFantasyPlayer.players[0].v.Allrounder, ...updatedFantasyPlayer.players[1].v.Allrounder
+        ...updatedFantasyPlayer.players[0].v, ...updatedFantasyPlayer.players[1].v
     }
 
     let updateContest = [];
@@ -192,11 +195,53 @@ module.exports = async (lineUpArr, matchId) => {
 
     })
 
-    let response2 = await Promise.all(updateContest).then(response => ("Updated")).catch(err => ("err"))
+    await Promise.all(updateContest).then(response => ("Updated")) 
 
+     // FANTASY CONTEST
+    await FantasyContest.find({
+        isFull:false,
+        matchId:parseInt(matchId),
+    })
+    .lean()
+    .cursor()
+    .eachAsync(async function (doc, i) {
+ 
+ 
+        await refundUser(doc).then(response => response)
+ 
+    }).then(response => ("Updated")) 
+
+    await match.updateOne({ id: parseInt(matchId) }, {
+        $set: {
+            isLineupUpdated: true
+        }
+    }).then(response => ("Updated")).catch(err => console.log(err))
 }
     catch (error) {
         console.log('===============',error)
     }
 
-}   
+})()   
+
+
+
+const refundUser = (contest) => new Promise((resolve,reject) => {
+ 
+
+    if(contest.totalJoined === 0){
+        FantasyContest.updateOne({
+            _id:mongoose.mongo.ObjectID(contest._id.toString())
+        },{
+            status:"Discarded"
+        }).then(response => resolve(true)).catch(err => reject(err))
+    }else if(contest.totalSpots === 2 || contest.totalSpots === 3 || (contest.totalSpots === 4 && contest.totalJoined < 3)){
+        FantasyContest.updateOne({
+            _id:mongoose.mongo.ObjectID(contest._id.toString())
+        },{
+            status:"Discarded"
+        }).then(response => resolve(true)).catch(err => reject(err))
+    }else{
+        resolve(true)
+    }
+
+})

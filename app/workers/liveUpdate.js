@@ -159,17 +159,17 @@ const countPoints = (matchData) => new Promise((resolve, reject) => {
 
                     lineUp.forEach(player => {
                         let pos = player.position.name;
-                        if(players.players[(parseInt(player['lineup']['team_id'])).toString()][pos][player.id] === undefined){
-                            players.players[(parseInt(player['lineup']['team_id'])).toString()][player.position.name][player.id] = player
+                        if(players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id] === undefined){
+                            players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id] = player
                         }
-                        players.players[(parseInt(player['lineup']['team_id'])).toString()][player.position.name][player.id]['points'] = 2
-                        players.players[(parseInt(player['lineup']['team_id'])).toString()][player.position.name][player.id]['catchStump'] = 0
+                        players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id]['points'] = 2
+                        players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id]['catchStump'] = 0
                     })
 
                     batting.forEach(player => {
-                        // players.players[visitorteam_id][player.catchstump.position.name][player.catchstump.id]['points'] =
+                        // players.players[visitorteam_id][player.catchstump.id]['points'] =
 
-                        players.players[player['team_id']][player.batsman.position.name][player.batsman.id]['battingScoreCard'] = player;
+                        players.players[player['team_id']][player.batsman.id]['battingScoreCard'] = player;
 
                         let points = player.score * 1 + player.four_x * 1 + player.six_x * 2
                         points += player.score >= 50 ? 8 : 0
@@ -197,31 +197,31 @@ const countPoints = (matchData) => new Promise((resolve, reject) => {
                             }
                         }
 
-                        players.players[player['team_id']][player.batsman.position.name][player.batsman.id]['points'] += points;
+                        players.players[player['team_id']][player.batsman.id]['points'] += points;
 
                         if (player['team_id'] === localteam_id && player.bowler !== null) {
-                            players.players[visitorteam_id][player.bowler.position.name][player.bowler.id]['points'] += 25;
+                            players.players[visitorteam_id][player.bowler.id]['points'] += 25;
         
                         }
         
                         if (player.catchstump !== null && player['team_id'] === localteam_id) {
-                            players.players[visitorteam_id][player.catchstump.position.name][player.catchstump.id]['points'] += 12;
+                            players.players[visitorteam_id][player.catchstump.id]['points'] += 12;
         
-                            players.players[visitorteam_id][player.catchstump.position.name][player.catchstump.id]['catchStump'] =  players.players[visitorteam_id][player.catchstump.position.name][player.catchstump.id]['catchStump'] ?
-                                                                                    players.players[visitorteam_id][player.catchstump.position.name][player.catchstump.id]['catchStump'] +  1 : 1
+                            players.players[visitorteam_id][player.catchstump.id]['catchStump'] =  players.players[visitorteam_id][player.catchstump.id]['catchStump'] ?
+                                                                                    players.players[visitorteam_id][player.catchstump.id]['catchStump'] +  1 : 1
                         }
         
                         if (player['team_id'] === visitorteam_id && player.bowler !== null) {
-                            //  console.log(players.players[visitorteam_id][player.catchstump.position.name] );
+                            //  console.log(players.players[visitorteam_id] );
         
-                            players.players[localteam_id][player.bowler.position.name][player.bowler.id]['points'] += 25;
+                            players.players[localteam_id][player.bowler.id]['points'] += 25;
                         }
         
         
                         if (player.catchstump !== null && player['team_id'] === visitorteam_id) {
-                            players.players[localteam_id][player.catchstump.position.name][player.catchstump.id]['points'] += 12;
-                            players.players[localteam_id][player.catchstump.position.name][player.catchstump.id]['catchStump'] = players.players[localteam_id][player.catchstump.position.name][player.catchstump.id]['catchStump'] ?
-                                                                                players.players[localteam_id][player.catchstump.position.name][player.catchstump.id]['catchStump'] +  1 : 1;
+                            players.players[localteam_id][player.catchstump.id]['points'] += 12;
+                            players.players[localteam_id][player.catchstump.id]['catchStump'] = players.players[localteam_id][player.catchstump.id]['catchStump'] ?
+                                                                                players.players[localteam_id][player.catchstump.id]['catchStump'] +  1 : 1;
                         }
 
 
@@ -232,7 +232,7 @@ const countPoints = (matchData) => new Promise((resolve, reject) => {
 
         
         
-                        players.players[player['team_id']][player.bowler.position.name][player.bowler.id]['bowlingScoreCard'] = player;
+                        players.players[player['team_id']][player.bowler.id]['bowlingScoreCard'] = player;
 
 
 
@@ -260,7 +260,7 @@ const countPoints = (matchData) => new Promise((resolve, reject) => {
 
                         points += eco;
 
-                        players.players[player['team_id']][player.bowler.position.name][player.bowler.id]['points'] += points;
+                        players.players[player['team_id']][player.bowler.id]['points'] += points;
                     })
             }
 
@@ -269,15 +269,15 @@ const countPoints = (matchData) => new Promise((resolve, reject) => {
 
                 lineUp.forEach(player => {
                     let pos = player.position.name;
-                    if(players.players[(parseInt(player['lineup']['team_id'])).toString()][pos][player.id] === undefined){
-                        players.players[(parseInt(player['lineup']['team_id'])).toString()][player.position.name][player.id] = player
+                    if(players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id] === undefined){
+                        players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id] = player
                     }
-                    players.players[(parseInt(player['lineup']['team_id'])).toString()][player.position.name][player.id]['points'] = 2
+                    players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id]['points'] = 2
                 })
 
                 batting.forEach(player => {
     
-                    players.players[player['team_id']][player.batsman.position.name][player.batsman.id]['battingScoreCard'] = player;
+                    players.players[player['team_id']][player.batsman.id]['battingScoreCard'] = player;
 
                     let points = player.score * 1 + player.four_x * 1 + player.six_x * 2
                     points += player.score >= 50 ? 4 : 0
@@ -305,32 +305,32 @@ const countPoints = (matchData) => new Promise((resolve, reject) => {
                         }
                     }
 
-                    players.players[player['team_id']][player.batsman.position.name][player.batsman.id]['points'] += points;
+                    players.players[player['team_id']][player.batsman.id]['points'] += points;
 
 
                     if (player['team_id'] === localteam_id && player.bowler !== null) {
-                        players.players[visitorteam_id][player.bowler.position.name][player.bowler.id]['points'] += 25;
+                        players.players[visitorteam_id][player.bowler.id]['points'] += 25;
     
                     }
     
                     if (player.catchstump !== null && player['team_id'] === localteam_id) {
-                        players.players[visitorteam_id][player.catchstump.position.name][player.catchstump.id]['points'] += 12;
+                        players.players[visitorteam_id][player.catchstump.id]['points'] += 12;
     
-                        players.players[visitorteam_id][player.catchstump.position.name][player.catchstump.id]['catchStump'] =  players.players[visitorteam_id][player.catchstump.position.name][player.catchstump.id]['catchStump'] ?
-                                                                                players.players[visitorteam_id][player.catchstump.position.name][player.catchstump.id]['catchStump'] +  1 : 1
+                        players.players[visitorteam_id][player.catchstump.id]['catchStump'] =  players.players[visitorteam_id][player.catchstump.id]['catchStump'] ?
+                                                                                players.players[visitorteam_id][player.catchstump.id]['catchStump'] +  1 : 1
                     }
     
                     if (player['team_id'] === visitorteam_id && player.bowler !== null) {
-                        //  console.log(players.players[visitorteam_id][player.catchstump.position.name] );
+                        //  console.log(players.players[visitorteam_id] );
     
-                        players.players[localteam_id][player.bowler.position.name][player.bowler.id]['points'] += 25;
+                        players.players[localteam_id][player.bowler.id]['points'] += 25;
                     }
     
     
                     if (player.catchstump !== null && player['team_id'] === visitorteam_id) {
-                        players.players[localteam_id][player.catchstump.position.name][player.catchstump.id]['points'] += 12;
-                        players.players[localteam_id][player.catchstump.position.name][player.catchstump.id]['catchStump'] = players.players[localteam_id][player.catchstump.position.name][player.catchstump.id]['catchStump'] ?
-                                                                            players.players[visitorteam_id][player.catchstump.position.name][player.catchstump.id]['catchStump'] +  1 : 1;
+                        players.players[localteam_id][player.catchstump.id]['points'] += 12;
+                        players.players[localteam_id][player.catchstump.id]['catchStump'] = players.players[localteam_id][player.catchstump.id]['catchStump'] ?
+                                                                            players.players[visitorteam_id][player.catchstump.id]['catchStump'] +  1 : 1;
                     }
 
 
@@ -343,7 +343,7 @@ const countPoints = (matchData) => new Promise((resolve, reject) => {
 
     
     
-                    players.players[player['team_id']][player.bowler.position.name][player.bowler.id]['bowlingScoreCard'] = player;
+                    players.players[player['team_id']][player.bowler.id]['bowlingScoreCard'] = player;
 
 
 
@@ -371,7 +371,7 @@ const countPoints = (matchData) => new Promise((resolve, reject) => {
 
                     points += eco;
 
-                    players.players[player['team_id']][player.bowler.position.name][player.bowler.id]['points'] += points;
+                    players.players[player['team_id']][player.bowler.id]['points'] += points;
                 })
             }
 
@@ -380,15 +380,15 @@ const countPoints = (matchData) => new Promise((resolve, reject) => {
 
                 lineUp.forEach(player => {
                     let pos = player.position.name;
-                    if(players.players[(parseInt(player['lineup']['team_id'])).toString()][pos][player.id] === undefined){
-                        players.players[(parseInt(player['lineup']['team_id'])).toString()][player.position.name][player.id] = player
+                    if(players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id] === undefined){
+                        players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id] = player
                     }
-                    players.players[(parseInt(player['lineup']['team_id'])).toString()][player.position.name][player.id]['points'] = 2
+                    players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id]['points'] = 2
                 })
 
                 batting.forEach(player => {
     
-                    players.players[player['team_id']][player.batsman.position.name][player.batsman.id]['battingScoreCard'] = player;
+                    players.players[player['team_id']][player.batsman.id]['battingScoreCard'] = player;
 
                     let points = player.score * 1 + player.four_x * 1 + player.six_x * 2
                     points += player.score >= 50 ? 4 : 0
@@ -404,32 +404,32 @@ const countPoints = (matchData) => new Promise((resolve, reject) => {
 
  
 
-                    players.players[player['team_id']][player.batsman.position.name][player.batsman.id]['points'] += points;
+                    players.players[player['team_id']][player.batsman.id]['points'] += points;
 
 
                     if (player['team_id'] === localteam_id && player.bowler !== null) {
-                        players.players[visitorteam_id][player.bowler.position.name][player.bowler.id]['points'] += 20;
+                        players.players[visitorteam_id][player.bowler.id]['points'] += 20;
     
                     }
     
                     if (player.catchstump !== null && player['team_id'] === localteam_id) {
-                        players.players[visitorteam_id][player.catchstump.position.name][player.catchstump.id]['points'] += 12;
+                        players.players[visitorteam_id][player.catchstump.id]['points'] += 12;
     
-                        players.players[visitorteam_id][player.catchstump.position.name][player.catchstump.id]['catchStump'] =  players.players[visitorteam_id][player.catchstump.position.name][player.catchstump.id]['catchStump'] ?
-                                                                                players.players[visitorteam_id][player.catchstump.position.name][player.catchstump.id]['catchStump'] +  1 : 1
+                        players.players[visitorteam_id][player.catchstump.id]['catchStump'] =  players.players[visitorteam_id][player.catchstump.id]['catchStump'] ?
+                                                                                players.players[visitorteam_id][player.catchstump.id]['catchStump'] +  1 : 1
                     }
     
                     if (player['team_id'] === visitorteam_id && player.bowler !== null) {
-                        //  console.log(players.players[visitorteam_id][player.catchstump.position.name] );
+                        //  console.log(players.players[visitorteam_id] );
     
-                        players.players[localteam_id][player.bowler.position.name][player.bowler.id]['points'] += 20;
+                        players.players[localteam_id][player.bowler.id]['points'] += 20;
                     }
     
     
                     if (player.catchstump !== null && player['team_id'] === visitorteam_id) {
-                        players.players[localteam_id][player.catchstump.position.name][player.catchstump.id]['points'] += 12;
-                        players.players[localteam_id][player.catchstump.position.name][player.catchstump.id]['catchStump'] = players.players[localteam_id][player.catchstump.position.name][player.catchstump.id]['catchStump'] ?
-                                                                            players.players[visitorteam_id][player.catchstump.position.name][player.catchstump.id]['catchStump'] +  1 : 1;
+                        players.players[localteam_id][player.catchstump.id]['points'] += 12;
+                        players.players[localteam_id][player.catchstump.id]['catchStump'] = players.players[localteam_id][player.catchstump.id]['catchStump'] ?
+                                                                            players.players[visitorteam_id][player.catchstump.id]['catchStump'] +  1 : 1;
                     }
 
 
@@ -442,7 +442,7 @@ const countPoints = (matchData) => new Promise((resolve, reject) => {
 
     
     
-                    players.players[player['team_id']][player.bowler.position.name][player.bowler.id]['bowlingScoreCard'] = player;
+                    players.players[player['team_id']][player.bowler.id]['bowlingScoreCard'] = player;
 
 
 
@@ -456,7 +456,7 @@ const countPoints = (matchData) => new Promise((resolve, reject) => {
 
                     points += eco;
 
-                    players.players[player['team_id']][player.bowler.position.name][player.bowler.id]['points'] += points;
+                    players.players[player['team_id']][player.bowler.id]['points'] += points;
                 })
             }
 
@@ -464,10 +464,7 @@ const countPoints = (matchData) => new Promise((resolve, reject) => {
             FantasyPlayer.updateOne({ matchId: parseInt(matchData.id) }, players).then(response => {
  
                 let allPlayers = {
-                    ...players.players[players.localTeam].Allrounder, ...players.players[players.visitorTeam].Allrounder,
-                    ...players.players[players.localTeam].Batsman, ...players.players[players.visitorTeam].Batsman,
-                    ...players.players[players.localTeam].Wicketkeeper, ...players.players[players.visitorTeam].Wicketkeeper,
-                    ...players.players[players.localTeam].Bowler, ...players.players[players.visitorTeam].Bowler
+                    ...players.players[players.localTeam], ...players.players[players.visitorTeam]
                 }
                 let count = [];
 
@@ -476,16 +473,7 @@ const countPoints = (matchData) => new Promise((resolve, reject) => {
                     matchDetail:matchData,
                     localTeam:players.localTeam,
                     visitorTeam:players.visitorTeam,
-                    players:{
-                        [players.localTeam]:{...players.players[players.localTeam].Allrounder,
-                            ...players.players[players.localTeam].Batsman,
-                            ...players.players[players.localTeam].Wicketkeeper,
-                            ...players.players[players.localTeam].Bowler},
-                        [players.visitorTeam]:{...players.players[players.visitorTeam].Allrounder,
-                            ...players.players[players.visitorTeam].Batsman,
-                            ...players.players[players.visitorTeam].Wicketkeeper,
-                            ...players.players[players.visitorTeam].Bowler},
-                    }
+                    players:players
         
                 }
                 

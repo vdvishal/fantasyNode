@@ -52,12 +52,19 @@ const getMatch = async () => {
         let up = []
         let axiosR = []
         let matches = await match.find({
+            
             $or:[
                 {
                     isLive:{
                         $ne:true
                     },
                     "status":'NS'
+                },
+                {
+                    isLive:{
+                        $ne:true
+                    },
+                    "status":'Postp.'
                 },
                 {
                     isLive:{
@@ -81,10 +88,12 @@ const getMatch = async () => {
         
         
          
-        matches.forEach(element => {
-            console.log(moment(element.starting_at).unix() -  moment().unix() <= moment().unix());
-            
+        matches.forEach(element => {            
             if(moment(element.starting_at).unix() <= moment().unix()){
+                
+
+                console.log("moment(element.starting_at).unix() -  moment().unix() <= moment().unix()");
+
                         axiosR.push(new Promise((resolve,reject) => {
                             instance.get(`/fixtures/${element.id}?api_token=${process.env.Access_key}&include=batting,batting.catchstump,batting.batsman,batting.bowler,bowling.team,bowling.bowler,scoreboards,scoreboards.team,lineup,batting.batsmanout`) //,balls.catchstump
                             .then(response => {
@@ -145,5 +154,6 @@ const job = new cronJob('*/120 * * * * *', function() {
 
 
 })
+getMatch().then().catch();
 
 job.start();

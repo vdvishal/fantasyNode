@@ -261,15 +261,15 @@ const countPoints = (id) => new Promise((resolve, reject) => {
 
                 lineUp.forEach(player => {
                     let pos = player.position.name;
-                    if (players.players[(parseInt(player['lineup']['team_id'])).toString()][pos][player.id] === undefined) {
-                        players.players[(parseInt(player['lineup']['team_id'])).toString()][player.position.name][player.id] = player
+                    if (players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id] === undefined) {
+                        players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id] = player
                     }
-                    players.players[(parseInt(player['lineup']['team_id'])).toString()][player.position.name][player.id]['points'] = 2
+                    players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id]['points'] = 2
                 })
 
                 batting.forEach(player => {
 
-                    players.players[player['team_id']][player.batsman.position.name][player.batsman.id]['battingScoreCard'] = player;
+                    players.players[player['team_id']][player.batsman.id]['battingScoreCard'] = player;
 
                     let points = player.score * 1 + player.four_x * 1 + player.six_x * 2
                     points += player.score >= 50 ? 8 : 0
@@ -298,32 +298,32 @@ const countPoints = (id) => new Promise((resolve, reject) => {
                         }
                     }
 
-                    players.players[player['team_id']][player.batsman.position.name][player.batsman.id]['points'] += points;
+                    players.players[player['team_id']][player.batsman.id]['points'] += points;
 
                     if (player['team_id'] === localteam_id && player.bowler !== null) {
-                        players.players[visitorteam_id][player.bowler.position.name][player.bowler.id]['points'] += 25;
+                        players.players[visitorteam_id][player.bowler.id]['points'] += 25;
 
                     }
 
                     if (player.catchstump !== null && player['team_id'] === localteam_id) {
-                        players.players[visitorteam_id][player.catchstump.position.name][player.catchstump.id]['points'] += 6;
+                        players.players[visitorteam_id][player.catchstump.id]['points'] += 6;
 
-                        players.players[visitorteam_id][player.catchstump.position.name][player.catchstump.id]['catchStump'] = players.players[visitorteam_id][player.catchstump.position.name][player.catchstump.id]['catchStump'] ?
-                            players.players[visitorteam_id][player.catchstump.position.name][player.catchstump.id]['catchStump'] + 1 : 1
+                        players.players[visitorteam_id][player.catchstump.id]['catchStump'] = players.players[visitorteam_id][player.catchstump.id]['catchStump'] ?
+                            players.players[visitorteam_id][player.catchstump.id]['catchStump'] + 1 : 1
                     }
 
                     if (player['team_id'] === visitorteam_id && player.bowler !== null) {
                         //  
 
-                        players.players[localteam_id][player.bowler.position.name][player.bowler.id]['points'] += 25;
+                        players.players[localteam_id][player.bowler.id]['points'] += 25;
                     }
 
 
                     if (player.catchstump !== null && player['team_id'] === visitorteam_id) {
 
-                        players.players[localteam_id][player.catchstump.position.name][player.catchstump.id]['points'] += 6;
-                        players.players[localteam_id][player.catchstump.position.name][player.catchstump.id]['catchStump'] = players.players[localteam_id][player.catchstump.position.name][player.catchstump.id]['catchStump'] ?
-                            players.players[localteam_id][player.catchstump.position.name][player.catchstump.id]['catchStump'] + 1 : 1;
+                        players.players[localteam_id][player.catchstump.id]['points'] += 6;
+                        players.players[localteam_id][player.catchstump.id]['catchStump'] = players.players[localteam_id][player.catchstump.id]['catchStump'] ?
+                            players.players[localteam_id][player.catchstump.id]['catchStump'] + 1 : 1;
                     }
 
 
@@ -334,7 +334,7 @@ const countPoints = (id) => new Promise((resolve, reject) => {
 
 
 
-                    players.players[player['team_id']][player.bowler.position.name][player.bowler.id]['bowlingScoreCard'] = player;
+                    players.players[player['team_id']][player.bowler.id]['bowlingScoreCard'] = player;
 
 
 
@@ -364,16 +364,18 @@ const countPoints = (id) => new Promise((resolve, reject) => {
 
                     points += eco;
 
-                    players.players[player['team_id']][player.bowler.position.name][player.bowler.id]['points'] += points;
+                    players.players[player['team_id']][player.bowler.id]['points'] += points;
                 })
 
                 if (runOut !== undefined) {
                     runOut.forEach(player => {
 
-                        players.players[player['team_id']][player.position.name][player['player_id']]['runOut'] = player;
+                        players.players[player['team_id']][player['player_id']]['runOut'] = player;
 
-                        players.players[player['team_id']][player.position.name][player['player_id']]['points'] += player.runOut * 6
+                        players.players[player['team_id']][player['player_id']]['points'] += player.runOut * 6
 
+                        players.players[player['team_id']][player['player_id']]['catchStump'] = players.players[player['team_id']][player['player_id']]['catchStump'] ?
+                        players.players[player['team_id']][player['player_id']]['catchStump'] + 1 : 1
 
 
                     })
@@ -386,15 +388,15 @@ const countPoints = (id) => new Promise((resolve, reject) => {
 
                 lineUp.forEach(player => {
                     let pos = player.position.name;
-                    if (players.players[(parseInt(player['lineup']['team_id'])).toString()][pos][player.id] === undefined) {
-                        players.players[(parseInt(player['lineup']['team_id'])).toString()][player.position.name][player.id] = player
+                    if (players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id] === undefined) {
+                        players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id] = player
                     }
-                    players.players[(parseInt(player['lineup']['team_id'])).toString()][player.position.name][player.id]['points'] = 2
+                    players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id]['points'] = 2
                 })
 
                 batting.forEach(player => {
 
-                    players.players[player['team_id']][player.batsman.position.name][player.batsman.id]['battingScoreCard'] = player;
+                    players.players[player['team_id']][player.batsman.id]['battingScoreCard'] = player;
 
                     let points = player.score * 1 + player.four_x * 1 + player.six_x * 2
                     points += player.score >= 50 ? 4 : 0
@@ -423,32 +425,32 @@ const countPoints = (id) => new Promise((resolve, reject) => {
                         }
                     }
 
-                    players.players[player['team_id']][player.batsman.position.name][player.batsman.id]['points'] += points;
+                    players.players[player['team_id']][player.batsman.id]['points'] += points;
 
 
                     if (player['team_id'] === localteam_id && player.bowler !== null) {
-                        players.players[visitorteam_id][player.bowler.position.name][player.bowler.id]['points'] += 25;
+                        players.players[visitorteam_id][player.bowler.id]['points'] += 25;
 
                     }
 
                     if (player.catchstump !== null && player['team_id'] === localteam_id) {
-                        players.players[visitorteam_id][player.catchstump.position.name][player.catchstump.id]['points'] += 6;
+                        players.players[visitorteam_id][player.catchstump.id]['points'] += 6;
 
-                        players.players[visitorteam_id][player.catchstump.position.name][player.catchstump.id]['catchStump'] = players.players[visitorteam_id][player.catchstump.position.name][player.catchstump.id]['catchStump'] ?
-                            players.players[visitorteam_id][player.catchstump.position.name][player.catchstump.id]['catchStump'] + 1 : 1
+                        players.players[visitorteam_id][player.catchstump.id]['catchStump'] = players.players[visitorteam_id][player.catchstump.id]['catchStump'] ?
+                            players.players[visitorteam_id][player.catchstump.id]['catchStump'] + 1 : 1
                     }
 
                     if (player['team_id'] === visitorteam_id && player.bowler !== null) {
                         //  
 
-                        players.players[localteam_id][player.bowler.position.name][player.bowler.id]['points'] += 25;
+                        players.players[localteam_id][player.bowler.id]['points'] += 25;
                     }
 
 
                     if (player.catchstump !== null && player['team_id'] === visitorteam_id) {
-                        players.players[localteam_id][player.catchstump.position.name][player.catchstump.id]['points'] += 6;
-                        players.players[localteam_id][player.catchstump.position.name][player.catchstump.id]['catchStump'] = players.players[localteam_id][player.catchstump.position.name][player.catchstump.id]['catchStump'] ?
-                            players.players[localteam_id][player.catchstump.position.name][player.catchstump.id]['catchStump'] + 1 : 1;
+                        players.players[localteam_id][player.catchstump.id]['points'] += 6;
+                        players.players[localteam_id][player.catchstump.id]['catchStump'] = players.players[localteam_id][player.catchstump.id]['catchStump'] ?
+                            players.players[localteam_id][player.catchstump.id]['catchStump'] + 1 : 1;
                     }
 
 
@@ -461,7 +463,7 @@ const countPoints = (id) => new Promise((resolve, reject) => {
 
 
 
-                    players.players[player['team_id']][player.bowler.position.name][player.bowler.id]['bowlingScoreCard'] = player;
+                    players.players[player['team_id']][player.bowler.id]['bowlingScoreCard'] = player;
 
 
 
@@ -490,15 +492,19 @@ const countPoints = (id) => new Promise((resolve, reject) => {
 
                     points += eco;
 
-                    players.players[player['team_id']][player.bowler.position.name][player.bowler.id]['points'] += points;
+                    players.players[player['team_id']][player.bowler.id]['points'] += points;
                 })
 
                 if (runOut !== undefined) {
                     runOut.forEach(player => {
 
-                        players.players[player['team_id']][player.position.name][player.player_id]['runOut'] = player;
+                        players.players[player['team_id']][player.player_id]['runOut'] = player;
 
-                        players.players[player['team_id']][player.position.name][player.player_id]['points'] += player.runOut * 6
+                        players.players[player['team_id']][player['player_id']]['catchStump'] = players.players[player['team_id']][player['player_id']]['catchStump'] ?
+                        players.players[player['team_id']][player['player_id']]['catchStump'] + 1 : 1
+
+                        
+                        players.players[player['team_id']][player.player_id]['points'] += player.runOut * 6
                     })
                 }
             }
@@ -508,15 +514,15 @@ const countPoints = (id) => new Promise((resolve, reject) => {
 
                 lineUp.forEach(player => {
                     let pos = player.position.name;
-                    if (players.players[(parseInt(player['lineup']['team_id'])).toString()][pos][player.id] === undefined) {
-                        players.players[(parseInt(player['lineup']['team_id'])).toString()][player.position.name][player.id] = player
+                    if (players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id] === undefined) {
+                        players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id] = player
                     }
-                    players.players[(parseInt(player['lineup']['team_id'])).toString()][player.position.name][player.id]['points'] = 2
+                    players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id]['points'] = 2
                 })
 
                 batting.forEach(player => {
 
-                    players.players[player['team_id']][player.batsman.position.name][player.batsman.id]['battingScoreCard'] = player;
+                    players.players[player['team_id']][player.batsman.id]['battingScoreCard'] = player;
 
                     let points = player.score * 1 + player.four_x * 1 + player.six_x * 2
                     points += player.score >= 50 ? 4 : 0
@@ -532,32 +538,32 @@ const countPoints = (id) => new Promise((resolve, reject) => {
 
 
 
-                    players.players[player['team_id']][player.batsman.position.name][player.batsman.id]['points'] += points;
+                    players.players[player['team_id']][player.batsman.id]['points'] += points;
 
 
                     if (player['team_id'] === localteam_id && player.bowler !== null) {
-                        players.players[visitorteam_id][player.bowler.position.name][player.bowler.id]['points'] += 20;
+                        players.players[visitorteam_id][player.bowler.id]['points'] += 20;
 
                     }
 
                     if (player.catchstump !== null && player['team_id'] === localteam_id) {
-                        players.players[visitorteam_id][player.catchstump.position.name][player.catchstump.id]['points'] += 3;
+                        players.players[visitorteam_id][player.catchstump.id]['points'] += 3;
 
-                        players.players[visitorteam_id][player.catchstump.position.name][player.catchstump.id]['catchStump'] = players.players[visitorteam_id][player.catchstump.position.name][player.catchstump.id]['catchStump'] ?
-                            players.players[visitorteam_id][player.catchstump.position.name][player.catchstump.id]['catchStump'] + 1 : 1
+                        players.players[visitorteam_id][player.catchstump.id]['catchStump'] = players.players[visitorteam_id][player.catchstump.id]['catchStump'] ?
+                            players.players[visitorteam_id][player.catchstump.id]['catchStump'] + 1 : 1
                     }
 
                     if (player['team_id'] === visitorteam_id && player.bowler !== null) {
                         //  
 
-                        players.players[localteam_id][player.bowler.position.name][player.bowler.id]['points'] += 20;
+                        players.players[localteam_id][player.bowler.id]['points'] += 20;
                     }
 
 
                     if (player.catchstump !== null && player['team_id'] === visitorteam_id) {
-                        players.players[localteam_id][player.catchstump.position.name][player.catchstump.id]['points'] += 3;
-                        players.players[localteam_id][player.catchstump.position.name][player.catchstump.id]['catchStump'] = players.players[localteam_id][player.catchstump.position.name][player.catchstump.id]['catchStump'] ?
-                            players.players[localteam_id][player.catchstump.position.name][player.catchstump.id]['catchStump'] + 1 : 1;
+                        players.players[localteam_id][player.catchstump.id]['points'] += 3;
+                        players.players[localteam_id][player.catchstump.id]['catchStump'] = players.players[localteam_id][player.catchstump.id]['catchStump'] ?
+                            players.players[localteam_id][player.catchstump.id]['catchStump'] + 1 : 1;
                     }
 
 
@@ -570,7 +576,7 @@ const countPoints = (id) => new Promise((resolve, reject) => {
 
 
 
-                    players.players[player['team_id']][player.bowler.position.name][player.bowler.id]['bowlingScoreCard'] = player;
+                    players.players[player['team_id']][player.bowler.id]['bowlingScoreCard'] = player;
 
 
 
@@ -584,14 +590,19 @@ const countPoints = (id) => new Promise((resolve, reject) => {
 
                     points += eco;
 
-                    players.players[player['team_id']][player.bowler.position.name][player.bowler.id]['points'] += points;
+                    players.players[player['team_id']][player.bowler.id]['points'] += points;
                 })
 
                 if (runOut !== undefined) {
                     runOut.forEach(player => {
-                        players.players[player['team_id']][player.position.name][player.player_id]['runOut'] = player;
+                        players.players[player['team_id']][player.player_id]['runOut'] = player;
 
-                        players.players[player['team_id']][player.position.name][player.player_id]['points'] += player.runOut * 3
+                        players.players[player['team_id']][player.player_id]['points'] += player.runOut * 3
+                 
+
+                        players.players[player['team_id']][player['player_id']]['catchStump'] = players.players[player['team_id']][player['player_id']]['catchStump'] ?
+                        players.players[player['team_id']][player['player_id']]['catchStump'] + 1 : 1
+
                     })
                 }
             }
@@ -822,7 +833,7 @@ const countPoints = (id) => new Promise((resolve, reject) => {
                     }, [
                         {
                             $set: {
-                                "playerPoints": 10,
+                                "playerPoints": value.points,
                             }
                         },
                         {
@@ -1344,7 +1355,9 @@ const countFantasy = (id) => new Promise((resolve, reject) => {
 
     async function updateUnderOver() {
 
-        let fantasyContest = await FantasyContest.find({ matchId: parseInt(id) })
+        let fantasyContest = await FantasyContest.find({ matchId: parseInt(id),status:{
+            $ne:"Discarded"
+        } })
             .lean()
             .exec()
             .then(response => response)
@@ -1354,8 +1367,6 @@ const countFantasy = (id) => new Promise((resolve, reject) => {
 
 
         for (const contest of fantasyContest) {
-
-
             await leader(contest).then(response => response)
         }
 
@@ -1365,6 +1376,44 @@ const countFantasy = (id) => new Promise((resolve, reject) => {
             await dispatchFantasy(contest).then(response => response)
         }
 
+        await FantasyContest.find({ matchId: parseInt(id),status:"Discarded"})
+        .lean()
+        .cursor()
+        .eachAsync(async function (doc, i) {
+            console.log('doc: ', doc);
+
+            await FantasyJoinedUsers.find({ contestId: mongoose.mongo.ObjectID(doc._id.toString()) })
+                .lean()
+                .cursor()
+                .eachAsync(async function (doc2, i) {
+
+                    await User.updateOne({
+                        _id: mongoose.mongo.ObjectID(doc2.userId.toString())
+                    }, {
+                        $inc: {
+                            "wallet.balance": doc.entryFee
+                        }
+                    }).then()
+
+                    let order1 = new Orders({
+                        "amount": doc.entryFee * 100,
+                        "status": "contest_credit",
+                        "matchId": req.body.matchId,
+                        "contestType": 4,
+                        "orderId": "Fantasy11 Refund: Contest Cancelled ",
+                        "notes": {
+                            "userId": doc2.userId.toString()
+                        }
+                    })
+
+                    await order1.save().then()
+
+                }).then()
+
+
+
+        }).then()
+ 
 
 
     }
@@ -2204,6 +2253,7 @@ const dispatchFantasy = (contest) => new Promise((resolve, reject) => {
     winDispatch().then(response => resolve(response)).catch(err => reject(err))
 
 })
+
 
 getMatch().then().catch(err => {
     console.log('err: ', err);

@@ -3,6 +3,8 @@ mongoose.connect(process.env.DB_HOST, { useNewUrlParser: true, useUnifiedTopolog
 
 require('../models/matches');
 require('../models/fantasyPlayer');
+require('../models/appStats');
+
 const redis = require('../libraries/redis/redis');
 const sms = require('../libraries/twilio');
 
@@ -11,6 +13,7 @@ const axios = require('axios')
 const chalk = require('chalk');
 
 let FantasyPlayer = mongoose.model('FantasyPlayer');
+let AppStats = mongoose.model('AppStats');
 
 const instance = axios.create({
     baseURL: process.env.API_URL,
@@ -32,7 +35,7 @@ async function liveUpdate() {
  
     let arr= [];
 
-    console.log(liveMatches.length);
+    console.log('liveMatches.length: ', liveMatches.length);
     
       let liveUpdate = []
       
@@ -102,26 +105,28 @@ async function liveUpdate() {
           console.log(response);
         })
         .catch(err => {
-          console.log(err);
+          console.log('err: livestats', err);
+  
           
         })
     }
 
         
     let liveMatch =  await getMatch().then(response => response)  
+    console.log('liveMatch: ', liveMatch);
 
     if(liveMatch){
-      console.log('liveMatch: ', liveMatch);
-
+ 
     }
 
     
  
-    if(liveMatch.length === 0 ){
-      redis.HMSET('match','live',JSON.stringify(liveUpdate),(err,res) => {
-        console.log('err: ', err);
-        console.log(res);
-      })
+    if(liveMatch && liveMatch.length === 0 ){
+      AppStats.updateOne({},{
+        $set:{
+          live:liveUpdate
+        }
+      },{upsert:true}).then(response => response)  
     }else{
       
       if(liveUpdate.length !== liveMatch.length){
@@ -132,15 +137,19 @@ async function liveUpdate() {
                     {id:matchId},
                     {
                       $set:{
-                        isFinished:true
+                        isFinished:true,
+                        isLive:false,
+                        pending:true,
+                        paid:false,
                       }
                     })
                   .then(response => {
                     console.log(response);
-                    redis.HMSET('match','live',JSON.stringify(liveUpdate),(err,res) => {
-                      console.log('err: ', err);
-                      console.log(res);
-                    })
+                    AppStats.updateOne({},{
+                      $set:{
+                        live:liveUpdate
+                      }
+                    },{upsert:true}).then(response => response)  
                   })
 
 
@@ -207,8 +216,12 @@ job.start();
 liveUpdate().then().catch()
 
 const getMatch = () => new Promise((resolve,reject) => {
-  redis.HGET('match','live',(err,res) => {
-    console.log('err: HGET', err);
-    resolve(JSON.parse(res))
+  AppStats.find({}).lean().then(response => {
+    console.log('response: AppStats', response);
+    
+    resolve(response && response.length > 0 ? response[0].live : [])
+  }).catch(err => {
+    console.log('err: AppStats', err);
+    reject(err)
   })
 })

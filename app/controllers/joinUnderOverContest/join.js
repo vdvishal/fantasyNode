@@ -17,6 +17,13 @@ const post = async (req, res) => {
     let bonus = 0;
     let balance = 0;
 
+    if(req.body.amount === 0 || isNaN(req.body.amount)){
+        return res.status(400).json({message:"Amount cannot be zero"})
+    }
+
+    if(req.body.amount > 500){
+        return res.status(400).json({message:"Amount is capped at 500 for this season"})
+    }
      
     const MatchDetails = await Matches.findOne({id:parseInt(req.body.matchId)}).lean()
     .exec()
@@ -27,9 +34,7 @@ const post = async (req, res) => {
         return res.status(202).json({message:"Match has already begun."})
     }
     
-    if(req.body.amount === 0 || isNaN(req.body.amount)){
-        return res.status(400).json({message:"Amount cannot be zero"})
-    }
+
 
     const userDetails = await Users.findById(req.user.id)
     .select('wallet')

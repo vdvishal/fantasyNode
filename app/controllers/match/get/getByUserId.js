@@ -52,9 +52,9 @@ const getUserId = async (req, res) => {
             isLive:false,
             pending:{$ne:false},
             paid:{$ne:true},
-            starting_at: {
-                $lt: new Date().toISOString()
-            }
+            // starting_at: {
+            //     $lt: new Date().toISOString()
+            // }
         }
     }
 

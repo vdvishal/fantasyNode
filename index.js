@@ -170,9 +170,11 @@ try {
 if (isMainThread) {
     console.log(chalk.blueBright("workers"));
 
-//    new Worker(__dirname + "/app/workers/checkTimer.js");
-//     new Worker(__dirname + "/app/workers/liveUpdate.js");
+    new Worker(__dirname + "/app/workers/checkTimer.js");
+    new Worker(__dirname + "/app/workers/liveUpdate.js");
     new Worker(__dirname + "/app/workers/livestatsupdate.js");
+    // new Worker(__dirname + "/app/workfarm/lineupUpdate.js");
+
   } else {
     // When a message from the parent thread is received, send it back:
     console.log(chalk.blueBright("workers"));
