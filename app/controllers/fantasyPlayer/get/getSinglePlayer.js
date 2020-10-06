@@ -28,21 +28,23 @@ const get = (req, res) => {
           '$project': {
             'players': '$players.v'
           }
-        }, {
-          '$project': {
-            'players': {
-              '$objectToArray': '$players'
-            }
-          }
-        }, {
-          '$project': {
-            'players': '$players.v'
-          }
-        }, {
-          '$unwind': {
-            'path': '$players'
-          }
-        }, {
+       },
+        // {
+        //   '$project': {
+        //     'players': {
+        //       '$objectToArray': '$players'
+        //     }
+        //   }
+        // }, {
+        //   '$project': {
+        //     'players': '$players.v'
+        //   }
+        // }, {
+        //   '$unwind': {
+        //     'path': '$players'
+        //   }
+        // },
+         {
           '$group': {
             '_id': null, 
             'players': {

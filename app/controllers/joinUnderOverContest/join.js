@@ -17,6 +17,10 @@ const post = async (req, res) => {
     let bonus = 0;
     let balance = 0;
 
+    if(Object.keys(dt.selectedTeam).length < 2){
+        return res.status(202).json({message:"Select a minimum of 2"})
+    }
+
      
     const MatchDetails = await Matches.findOne({id:parseInt(req.body.matchId)}).lean()
     .exec()

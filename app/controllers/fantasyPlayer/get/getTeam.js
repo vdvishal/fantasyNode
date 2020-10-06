@@ -14,16 +14,7 @@ const get = (req, res) => {
             localTeam:response.localTeam,
             visitorTeam:response.visitorTeam,
             totalTeams:response.totalTeams,
-            players:{
-                [response.localTeam]:{...response.players[response.localTeam].Allrounder,
-                    ...response.players[response.localTeam].Batsman,
-                    ...response.players[response.localTeam].Wicketkeeper,
-                    ...response.players[response.localTeam].Bowler},
-                [response.visitorTeam]:{...response.players[response.visitorTeam].Allrounder,
-                    ...response.players[response.visitorTeam].Batsman,
-                    ...response.players[response.visitorTeam].Wicketkeeper,
-                    ...response.players[response.visitorTeam].Bowler},
-            }
+            players:response.players
 
         }
         

@@ -7,17 +7,36 @@ const randomize = require('randomatic')
 const { check, validationResult } = require('express-validator'),
 validator = [
     check('name').isString().notEmpty(),
-    check('accNumber').isString().optional(),
-    check('IFSC').isString().optional(),
-    check('vpa').isString().optional(),
+    check('accNumber').isString().notEmpty(),
+    check('IFSC').isString().notEmpty(),
+    check('vpa').isString().notEmpty(),
     check('paytmNumber').isString().optional(),
-    check('address1').isString().optional(),
+    check('address1').isString().notEmpty(),
  ]
 
 
 const beneficiaries = async (req, res) => {
     try {
-        
+    
+    const {
+        name,
+        accNumber,
+        IFSC,
+        vpa,
+        paytmNumber,
+        address1,
+    } = req.body
+
+    if(
+        name.length === 0 ||
+        accNumber.length === 0 || 
+        IFSC.length === 0 || 
+        vpa.length === 0 || 
+        // paytmNumberaccNumber.length === 0 || 
+        address1.length === 0){
+            return res.status(202).json({message:"All fields are mandatory"})
+        }
+
     
     let beneId = randomize('AAAAAAAAAAAAAAAAAAAAAAAAAA');
 

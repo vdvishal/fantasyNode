@@ -121,14 +121,8 @@ const joinCustom = async (req, res) => {
         let response = await FantasyPlayer.findOne({matchId:parseInt(contestData.matchId)}).populate('matchDetail').lean().sort({_id:-1}).then(response => response)
  
         players = {
-            ...response.players[response.localTeam].Allrounder,
-            ...response.players[response.localTeam].Batsman,
-            ...response.players[response.localTeam].Wicketkeeper,
-            ...response.players[response.localTeam].Bowler,
-            ...response.players[response.visitorTeam].Allrounder,
-                    ...response.players[response.visitorTeam].Batsman,
-                    ...response.players[response.visitorTeam].Wicketkeeper,
-                    ...response.players[response.visitorTeam].Bowler,
+            ...response.players[response.localTeam],
+            ...response.players[response.visitorTeam]
             }
 
             if(contestData.contestType === 6 && players[req.body.playerId] === undefined){

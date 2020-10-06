@@ -124,14 +124,8 @@ const custom = async (req, res) => {
         let response = await FantasyPlayer.findOne({matchId:parseInt(req.body.matchId)}).populate('matchDetail').lean().sort({_id:-1}).then(response => response)
  
         players = {
-            ...response.players[response.localTeam].Allrounder,
-            ...response.players[response.localTeam].Batsman,
-            ...response.players[response.localTeam].Wicketkeeper,
-            ...response.players[response.localTeam].Bowler,
-            ...response.players[response.visitorTeam].Allrounder,
-                    ...response.players[response.visitorTeam].Batsman,
-                    ...response.players[response.visitorTeam].Wicketkeeper,
-                    ...response.players[response.visitorTeam].Bowler,
+            ...response.players[response.localTeam],
+            ...response.players[response.visitorTeam]
             }
 
             if(players[req.body.playerId] === undefined){
@@ -139,6 +133,7 @@ const custom = async (req, res) => {
             }
 
         if (req.body.contestType === 5) {
+            console.log('req.body: ', req.body);
             obj = new Contest({
                 contestName: 'Under or Over',
                 contestType: 5,
@@ -149,7 +144,7 @@ const custom = async (req, res) => {
                 typeName: req.body.type === 1 ? 'Runs' : req.body.type === 2 ? "Wickets" : "Fantasy Points",
                 info: {
                     player1: req.body.subType === 1 ? `Under ${req.body.value} points` : `Over ${req.body.value} points`,
-                    player2: req.body.subType === 1 ? `Over ${req.body.value + 1} points` : `Under ${req.body.value + 1} points`,
+                    player2: req.body.subType === 1 ? `Over ${req.body.value + 1} points` : `Under ${req.body.value - 1} points`,
                 },
                 player1: req.body.subType === 1 ? 1 : 2,
                 player2: req.body.subType === 1 ? 2 : 1,

@@ -79,14 +79,12 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 var allowedOrigins = ['http://localhost:3000',
                         'https://*.ngrok.io',
                         'https://test.cashfree.com',
-                        
+                        'http://localhost:3002',
                       'https://fantasyjutsu.com',
                       'https://www.fantasyjutsu.com'];
 
 app.use(cors({
-    origin: (origin,callback) => {
-        console.log(origin);
-        
+    origin: (origin,callback) => {       
         if(!origin) return callback(null, true);
 
         if(allowedOrigins.indexOf(origin) === -1){
@@ -112,10 +110,10 @@ app.use(morgan("dev"))
 
 
  
-app.use(require('express-status-monitor')())
+ 
 //Custom middleware
-Sentry.init({ dsn: 'https://7315e837b57b48999d9654123e111005@o431193.ingest.sentry.io/5381542' });
-app.use(Sentry.Handlers.requestHandler());
+// Sentry.init({ dsn: 'https://7315e837b57b48999d9654123e111005@o431193.ingest.sentry.io/5381542' });
+// app.use(Sentry.Handlers.requestHandler());
 
  
 fs.readdirSync(models).forEach(function (file) {
@@ -150,10 +148,11 @@ redisClient.on('connect', () => {
 
 const cronJob = require('cron').CronJob;
 
-const job = new cronJob('* * 23 * * *', function() {
-    redisClient.HDEL("players",(err,res) => {
-        logger.error(err);
-        logger.info(res);
+const job = new cronJob('*/15 * * * * *', function() {
+    redisClient.FLUSHALL((err,response) =>{
+        console.log('err: ', err);
+        console.log('response: ', response);
+
     })
 })
 

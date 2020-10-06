@@ -13,6 +13,10 @@ const post = async (req, res) => {
 
     let count = await FantasyUsersTeam.count({userId: mongoose.mongo.ObjectId(req.user.id),matchId: parseInt(req.body.matchId)})
             .then(resp => resp)
+    
+            if(count >= 8){
+                return res.status(202).json({message:"You can create max 8 teams per match"})
+            }
 
     await FantasyUsersTeam.updateOne(
         { _id: new mongoose.mongo.ObjectId()}, 
@@ -41,24 +45,24 @@ async function countPercent(data){
 
     Object.entries(teamplayers).forEach(([key,value]) => {
         let cond = {
-            [`players.${value.teamId}.${value.position.name}.${key}.selected`]:1,
-            [`players.${value.teamId}.${value.position.name}.${key}.captainCount`]: 0,
-            [`players.${value.teamId}.${value.position.name}.${key}.vcaptainCount`]: 0
+            [`players.${value.teamId}.${key}.selected`]:1,
+            [`players.${value.teamId}.${key}.captainCount`]: 0,
+            [`players.${value.teamId}.${key}.vcaptainCount`]: 0
         }
 
         if(value.captain === true){
             cond = {
-                [`players.${value.teamId}.${value.position.name}.${key}.selected`]:1,
-                [`players.${value.teamId}.${value.position.name}.${key}.captainCount`]: 1,
-                [`players.${value.teamId}.${value.position.name}.${key}.vcaptainCount`]: 0
+                [`players.${value.teamId}.${key}.selected`]:1,
+                [`players.${value.teamId}.${key}.captainCount`]: 1,
+                [`players.${value.teamId}.${key}.vcaptainCount`]: 0
             }
         }
 
         if(value.viceCaptain === true){
             cond = {
-                [`players.${value.teamId}.${value.position.name}.${key}.selected`]:1,
-                [`players.${value.teamId}.${value.position.name}.${key}.captainCount`]: 0,
-                [`players.${value.teamId}.${value.position.name}.${key}.vcaptainCount`]: 1
+                [`players.${value.teamId}.${key}.selected`]:1,
+                [`players.${value.teamId}.${key}.captainCount`]: 0,
+                [`players.${value.teamId}.${key}.vcaptainCount`]: 1
             }
         }
 

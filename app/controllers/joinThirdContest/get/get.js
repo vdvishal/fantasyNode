@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const JoinThirdContest = mongoose.model('MatchUpContest');
-
 /**
  * 
  * @param {*} req  

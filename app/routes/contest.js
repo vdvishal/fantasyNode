@@ -48,13 +48,13 @@ module.exports.setRouter = (app) => {
     
 // POST --- > join, joinCustom, createCustom
 
-    app.post(`${process.env.BASE_URL}/contest/join`,isAuth,post.join)
+    // app.post(`${process.env.BASE_URL}/contest/join`,isAuth,post.join)
 
     app.post(`${process.env.BASE_URL}/contest/join/underover`,isAuth, joinUnderOverContest)
 
     app.post(`${process.env.BASE_URL}/contest/join/underover/2`,isAuth, joinUnderOverContest2)
 
-    app.post(`${process.env.BASE_URL}/contest/join/vs`,isAuth,post.joinVs)
+    // app.post(`${process.env.BASE_URL}/contest/join/vs`,isAuth,post.joinVs)
 
     app.post(`${process.env.BASE_URL}/contest/join/matchup`,isAuth,joinThirdContest.post.post)
 

@@ -18,6 +18,10 @@ const post = async (req, res) => {
     let bonus = 0;
     let balance = 0;
 
+    if(Object.keys(dt.selectedTeam).length < 3){
+        return res.status(202).json({message:"Select a minimum of 3"})
+    }
+
     if(req.body.amount === 0 || isNaN(req.body.amount)){
         return res.status(400).json({message:"Amount cannot be zero"})
     }
