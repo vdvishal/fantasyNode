@@ -79,7 +79,7 @@ var allowedOrigins = ['http://localhost:3000',
                       'http://localhost:3001',
                       'http://localhost:4200',  
                       'https://fantasyjutsu.com',
-                      'https://www.fantasyjutsu.com'];
+                      'https://admin.fantasyjutsu.com'];
 
 app.use(cors({
     origin: (origin,callback) => {

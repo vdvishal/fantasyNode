@@ -24,6 +24,7 @@ let AppStats = mongoose.model('AppStats');
 
 
 module.exports = (async (lineUpArr, matchId) => {
+    console.log('matchId: lineup', matchId);
     let updatArr = [];
     try {
  
