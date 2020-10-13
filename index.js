@@ -76,6 +76,8 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // app.use(i18n.init);
 var allowedOrigins = ['http://localhost:3000',
+                    'http://localhost:5000',
+
                       'http://localhost:3001',
                       'http://localhost:4200',  
                       'https://fantasyjutsu.com',

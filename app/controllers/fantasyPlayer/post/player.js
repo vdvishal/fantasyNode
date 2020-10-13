@@ -9,7 +9,7 @@ const post = async (req, res) => {
     console.log(req.body);
 
     await FantasyPlayer.updateOne({matchId:req.body.matchId},req.body,{upsert:true}).then(response => {
-        createContest(req.body.matchId)
+        // createContest(req.body.matchId)
     
         res.status(200).json(response);
     })

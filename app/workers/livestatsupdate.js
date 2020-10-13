@@ -139,6 +139,7 @@ async function liveUpdate() {
                       $set:{
                         isFinished:true,
                         isLive:false,
+                        isCounting:true,
                         pending:true,
                         paid:false,
                       }
@@ -150,6 +151,9 @@ async function liveUpdate() {
                         live:liveUpdate
                       }
                     },{upsert:true}).then(response => response)  
+                  }).catch(err => {
+                    console.log('err: sms(6003633574', err);
+
                   })
 
 

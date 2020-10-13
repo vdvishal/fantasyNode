@@ -60,7 +60,7 @@ const reducer = (accumulator, currentValue) => accumulator + currentValue;
 let retry = true;
 
 const getMatch = async (id) => {
-    console.log(chalk.green('count started:'));
+    
 
 
     try {
@@ -77,7 +77,7 @@ const getMatch = async (id) => {
             // isLive: true,isFinished:true
         }).lean().select("id").exec().then(matches => {
 
-            console.log('workerData: ', workerData);
+            
 
             if (matches.length > 0) {
 
@@ -89,7 +89,7 @@ const getMatch = async (id) => {
 
                                     completed.push(id.id);
                                     matchUpdate.push(new Promise((resolve, reject) => {
-                                        Match.updateOne({ id: id.id }, { $set: { ...response.data.data, isLive: false, completed: true } }, { upsert: true })
+                                        Match.updateOne({ id: id.id }, { $set: { ...response.data.data, isLive: false,isCounting:false, completed: true } }, { upsert: true })
                                             .then(response => {
                                                 resolve(true)
                                             }).catch(err => {
@@ -133,11 +133,11 @@ const getMatch = async (id) => {
 
         await Promise.all(matchUpdate).then(response => response)
         // await delay(60000);
-        console.log(chalk.green('matchUpdate done:'));
+        
 
 
         if (completed.length === 0) {
-            console.log(chalk.green('matchUpdate completed: 0'));
+            
 
             retry = true
             return
@@ -149,7 +149,7 @@ const getMatch = async (id) => {
 
             await countPoints(id).then(response => response)
         }
-        console.log(chalk.green('countPoints done:'));
+        
 
         // completed.forEach(id => {
         //     await countPoints(id).then(response => response)
@@ -157,30 +157,30 @@ const getMatch = async (id) => {
         for (const id of completed) {
             await countmatchUp(id).then(response => response)
         }
-        console.log(chalk.green('countmatchUp done:'));
+        
 
         for (const id of completed) {
             await countUnderOver(id).then(response => response)
         }
         
-        console.log(chalk.green('countUnderOver done:'));
+        
 
         for (const id of completed) {
             await countUnderOver2(id).then(response => response)
         }
-        console.log(chalk.green('countUnderOver2 done:'));
+        
 
 
 
         for (const id of completed) {
             await countFantasy(id).then(response => response)
         }
-        console.log(chalk.green('countFantasy done:'));
+        
 
         for (const id of completed) {
             await countCustom(id).then(response => response)
         }
-        console.log(chalk.green('countCustom done:'));
+        
 
         await Match.updateOne({
             id: parseInt(workerData.id)
@@ -188,10 +188,11 @@ const getMatch = async (id) => {
             $set: {
                 pending: false,
                 paid: true,
+                isCounting:false,
             }
         }).then()
 
-        console.log(chalk.green('Match done:'));
+        
 
 
         retry = true
@@ -210,9 +211,10 @@ const getMatch = async (id) => {
 
 
 const countPoints = (id) => new Promise((resolve, reject) => {
-    console.log(chalk.red('countPoints Started:'));
+    
 
     let conTyp3 = []
+    let conTyp3Win = []
     let conTyp1 = []
     let conCustom = []
     let conCustom2 = []
@@ -222,7 +224,7 @@ const countPoints = (id) => new Promise((resolve, reject) => {
     let conTyp1Count = []
     let conTyp3Count = [];
 
-
+    
 
     const serie = async () => {
 
@@ -264,6 +266,8 @@ const countPoints = (id) => new Promise((resolve, reject) => {
                     if (players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id] === undefined) {
                         players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id] = player
                     }
+                    players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id]['catchStump'] = 0
+
                     players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id]['points'] = 2
                 })
 
@@ -282,7 +286,7 @@ const countPoints = (id) => new Promise((resolve, reject) => {
                         }
                     }
 
-                    let rate = (100 * player.score / player.ball).toFixed(2)
+                    let rate =  player.ball === 0 ? 0 : (100 * player.score / player.ball).toFixed(2)
 
                     if (player.batsman.position.id === 1 || player.batsman.position.id === 4 || player.batsman.position.id === 3) {
                         if (player.ball >= 10) {
@@ -305,7 +309,7 @@ const countPoints = (id) => new Promise((resolve, reject) => {
 
                     }
 
-                    if (player.catchstump !== null && player['team_id'] === localteam_id) {
+                    if (player.catchstump !== null && player['team_id'] === localteam_id  && player.bowler !== null) {
                         players.players[visitorteam_id][player.catchstump.id]['points'] += 6;
 
                         players.players[visitorteam_id][player.catchstump.id]['catchStump'] = players.players[visitorteam_id][player.catchstump.id]['catchStump'] ?
@@ -319,7 +323,7 @@ const countPoints = (id) => new Promise((resolve, reject) => {
                     }
 
 
-                    if (player.catchstump !== null && player['team_id'] === visitorteam_id) {
+                    if (player.catchstump !== null && player['team_id'] === visitorteam_id  && player.bowler !== null) {
 
                         players.players[localteam_id][player.catchstump.id]['points'] += 6;
                         players.players[localteam_id][player.catchstump.id]['catchStump'] = players.players[localteam_id][player.catchstump.id]['catchStump'] ?
@@ -369,13 +373,14 @@ const countPoints = (id) => new Promise((resolve, reject) => {
 
                 if (runOut !== undefined) {
                     runOut.forEach(player => {
+                        
 
                         players.players[player['team_id']][player['player_id']]['runOut'] = player;
 
                         players.players[player['team_id']][player['player_id']]['points'] += player.runOut * 6
 
                         players.players[player['team_id']][player['player_id']]['catchStump'] = players.players[player['team_id']][player['player_id']]['catchStump'] ?
-                        players.players[player['team_id']][player['player_id']]['catchStump'] + 1 : 1
+                        players.players[player['team_id']][player['player_id']]['catchStump'] + player.runOut : player.runOut
 
 
                     })
@@ -391,6 +396,8 @@ const countPoints = (id) => new Promise((resolve, reject) => {
                     if (players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id] === undefined) {
                         players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id] = player
                     }
+                    players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id]['catchStump'] = 0
+
                     players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id]['points'] = 2
                 })
 
@@ -517,6 +524,8 @@ const countPoints = (id) => new Promise((resolve, reject) => {
                     if (players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id] === undefined) {
                         players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id] = player
                     }
+                    players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id]['catchStump'] = 0
+
                     players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id]['points'] = 2
                 })
 
@@ -615,10 +624,7 @@ const countPoints = (id) => new Promise((resolve, reject) => {
 
 
             let allPlayers = {
-                ...players.players[players.localTeam].Allrounder, ...players.players[players.visitorTeam].Allrounder,
-                ...players.players[players.localTeam].Batsman, ...players.players[players.visitorTeam].Batsman,
-                ...players.players[players.localTeam].Wicketkeeper, ...players.players[players.visitorTeam].Wicketkeeper,
-                ...players.players[players.localTeam].Bowler, ...players.players[players.visitorTeam].Bowler
+                ...players.players[players.localTeam], ...players.players[players.visitorTeam]
             }
 
 
@@ -631,6 +637,7 @@ const countPoints = (id) => new Promise((resolve, reject) => {
                         {
                             "matchId": parseInt(matchData.id),
                             "contestType": 3,
+                            "player1": parseInt(key),
                             [`players.${key}`]: { $exists: true },
                             "status": { $ne: "Discarded" }
                         },
@@ -638,62 +645,131 @@ const countPoints = (id) => new Promise((resolve, reject) => {
                             {
                                 $set: {
                                     [`players.${key}.points`]: value.points,
+                                    player1Points:value.points
                                 }
                             },
+                            // {
+                            //     $set: {
+                            //         'highestPoint': {
+                            //             $switch: {
+                            //                 branches: [
+                            //                     { case: { $lt: ["$highestPoint", value.points] }, then: value.points },
+                            //                     { case: { $eq: ["$highestPoint", value.points] }, then: value.points },
+                            //                 ],
+                            //                 default: '$highestPoint'
+                            //             }
+                            //         }
+                            //     }
+                            // },
+                            // {
+                            //     $set: {
+                            //         'winner': {
+                            //             $cond: {
+                            //                 if: { $eq: ["$highestPoint", value.points] }, then: parseInt(key),
+                            //                 else: "$winner"
+                            //             }
+                            //         }
+                            //     }
+                            // },
+                             
+                        ]
+                    ).exec().then(response => resolve(response)).catch(err => {
+                        reject(err);
+                    })
+                }))
+
+                conTyp3.push(new Promise((resolve, reject) => {
+                    Contest.updateMany(
+                        {
+                            "matchId": parseInt(matchData.id),
+                            "contestType": 3,
+                            "player2": parseInt(key),
+                            [`players.${key}`]: { $exists: true },
+                            "status": { $ne: "Discarded" }
+                        },
+                        [
                             {
                                 $set: {
-                                    'highestPoint': {
+                                    [`players.${key}.points`]: value.points,
+                                    player2Points:value.points
+                                }
+                            },
+                            // {
+                            //     $set: {
+                            //         'highestPoint': {
+                            //             $switch: {
+                            //                 branches: [
+                            //                     { case: { $lt: ["$highestPoint", value.points] }, then: value.points },
+                            //                     { case: { $eq: ["$highestPoint", value.points] }, then: value.points },
+                            //                 ],
+                            //                 default: '$highestPoint'
+                            //             }
+                            //         }
+                            //     }
+                            // },
+                            // {
+                            //     $set: {
+                            //         'winner': {
+                            //             $cond: {
+                            //                 if: { $eq: ["$highestPoint", value.points] }, then: parseInt(key),
+                            //                 else: "$winner"
+                            //             }
+                            //         }
+                            //     }
+                            // },
+                             
+                        ]
+                    ).exec().then(response => resolve(response)).catch(err => {
+                        reject(err);
+                    })
+                }))
+
+                conTyp3Win.push(new Promise((resolve, reject) => {
+                    Contest.updateMany(
+                        {
+                            "matchId": parseInt(matchData.id),
+                            "contestType": 3,
+                            "status": { $ne: "Discarded" }
+                        },
+                        [
+                            {
+                                $set: {
+                                    winner: {
                                         $switch: {
                                             branches: [
-                                                { case: { $lt: ["$highestPoint", value.points] }, then: value.points },
-                                                { case: { $eq: ["$highestPoint", value.points] }, then: value.points },
+                                                { case: { $gt: ["$player1Points", "$player2Points"] }, then: "$player1" },
+                                                { case: { $gt: ["$player2Points", "$player1Points"] }, then: "$player2" },
                                             ],
-                                            default: '$highestPoint'
+                                            default: "$handicap"
                                         }
                                     }
                                 }
-                            },
-                            {
-                                $set: {
-                                    'winner': {
-                                        $cond: {
-                                            if: { $eq: ["$highestPoint", value.points] }, then: parseInt(key),
-                                            else: "$winner"
-                                        }
-                                    }
-                                }
-                            },
+                            }
 
-                            {
-                                $set: {
-                                    'p2': {
-                                        $cond: {
-                                            if: { $and: [{ $eq: ["$p2", -100] }, { $ne: ["$p1", -100] }] }, then: value.points,
-                                            else: "$p2"
-                                        }
-                                    }
-                                }
-                            },
-                            {
-                                $set: {
-                                    'p1': {
-                                        $cond: {
-                                            if: { $eq: ["$p1", -100] }, then: value.points,
-                                            else: "$p1"
-                                        }
-                                    }
-                                }
-                            },
-                            {
-                                $set: {
-                                    'winner': {
-                                        $cond: {
-                                            if: { $eq: ["$p1", "$p2"] }, then: "$handicap",
-                                            else: "$winner"
-                                        }
-                                    }
-                                }
-                            },
+                            // {
+                            //     $set: {
+                            //         'highestPoint': {
+                            //             $switch: {
+                            //                 branches: [
+                            //                     { case: { $lt: ["$highestPoint", value.points] }, then: value.points },
+                            //                     { case: { $eq: ["$highestPoint", value.points] }, then: value.points },
+                            //                 ],
+                            //                 default: '$highestPoint'
+                            //             }
+                            //         }
+                            //     }
+                            // },
+                            // {
+                            //     $set: {
+                            //         'winner': {
+                            //             $cond: {
+                            //                 if: { $eq: ["$highestPoint", value.points] }, then: parseInt(key),
+                            //                 else: "$winner"
+                            //             }
+                            //         }
+                            //     }
+                            // },
+                             
                         ]
                     ).exec().then(response => resolve(response)).catch(err => {
                         reject(err);
@@ -800,7 +876,7 @@ const countPoints = (id) => new Promise((resolve, reject) => {
                         $set: {
                             "player1Points": value.points,
                         }
-                    }).exec().then(response => resolve(response)).catch(err => {
+                    }).then(response => resolve(response)).catch(err => {
                         reject(err);
                     })
                 }))
@@ -816,7 +892,7 @@ const countPoints = (id) => new Promise((resolve, reject) => {
                         $set: {
                             "player2Points": value.points,
                         }
-                    }).exec().then(response => resolve(response)).catch(err => {
+                    }).then(response => resolve(response)).catch(err => {
                         reject(err);
                     })
                 }))
@@ -933,21 +1009,34 @@ const countPoints = (id) => new Promise((resolve, reject) => {
             })
 
             await Promise.all(conTyp1).then(response => {
+                
 
             })
+            console.log('conTyp1: 1');
             await Promise.all(conTyp3).then(response => {
 
             })
+            console.log('conTyp3: 2');
+
+            await Promise.all(conTyp3Win).then(response => {
+
+            })
+            console.log('conTyp3Win: 3');
+
             await Promise.all(count).then(response => {
 
             })
+            console.log('count: 4');
 
             await Promise.all(conCustom).then(response => {
 
             })
+            console.log('conCustom: 5');
+
             await Promise.all(conCustom2).then(response => {
 
             })
+            console.log('conCustom2: 6');
 
 
 
@@ -973,6 +1062,7 @@ const countPoints = (id) => new Promise((resolve, reject) => {
             ]).exec().then(response => resolve(response)).catch(err => {
                 reject(err);
             })
+            console.log('CustomContest.updateMany: 7');
 
             let ContestType1 = await Contest.find({ matchId: id, contestType: 1 }).lean().exec().then(response => response).catch(err => {
 
@@ -1044,6 +1134,7 @@ const countPoints = (id) => new Promise((resolve, reject) => {
                 }))
 
             }
+            console.log('ContestType1: 8');
 
             for (let index = 0, len = ContestType2.length; index < len; index++) {
                 const contest = ContestType2[index];
@@ -1099,6 +1190,7 @@ const countPoints = (id) => new Promise((resolve, reject) => {
                 }))
 
             }
+            console.log('ContestType2: 9');
 
 
             for (let index = 0, len = ContestType3.length; index < len; index++) {
@@ -1194,20 +1286,23 @@ const countPoints = (id) => new Promise((resolve, reject) => {
 
             }
 
+            console.log('ContestType3: 10');
 
 
             await Promise.all(conTyp1Count).then(resp => {
 
             })
+            console.log('ContestType3: 11');
 
             await Promise.all(conTyp3Count).then(resp => {
-
+                resolve()
             })
+            console.log('ContestType3: 12');
 
-            console.log(chalk.greenBright("Completed"));
+            
 
 
-            resolve()
+            
 
         } catch (error) {
             reject(error)
@@ -1216,14 +1311,14 @@ const countPoints = (id) => new Promise((resolve, reject) => {
 
 
     serie().then(resp => {}).catch(err => {
-        console.log('err: ', err);
+        
         reject(err)});
 
 })
 
 const countmatchUp = (id) => new Promise((resolve, reject) => {
 
-    console.log(chalk.red('countmatchUp Started:'));
+    
 
     async function updateMatchUp() {
 
@@ -1239,7 +1334,7 @@ const countmatchUp = (id) => new Promise((resolve, reject) => {
                     }
                 })
         } catch (error) {
-            console.log('error: countmatchUp', error);
+            
             return error
         }
     }
@@ -1249,7 +1344,7 @@ const countmatchUp = (id) => new Promise((resolve, reject) => {
 })
 
 const countUnderOver = (id) => new Promise((resolve, reject) => {
-    console.log(chalk.red('countUnderOver Started:'));
+    
 
 
     async function updateUnderOver() {
@@ -1274,7 +1369,7 @@ const countUnderOver = (id) => new Promise((resolve, reject) => {
 })
 
 const countUnderOver2 = (id) => new Promise((resolve, reject) => {
-    console.log(chalk.red('countUnderOver2 Started:'));
+    
 
 
     async function updateUnderOver() {
@@ -1308,7 +1403,7 @@ const countUnderOver2 = (id) => new Promise((resolve, reject) => {
 })
 
 const countCustom = (id) => new Promise((resolve, reject) => {
-    console.log(chalk.red('countCustom Started:'));
+    
 
     async function updateUnderOver() {
 
@@ -1351,7 +1446,7 @@ const countCustom = (id) => new Promise((resolve, reject) => {
 
 const countFantasy = (id) => new Promise((resolve, reject) => {
 
-    console.log(chalk.red('countFantasy Started:'));
+    
 
     async function updateUnderOver() {
 
@@ -1380,7 +1475,7 @@ const countFantasy = (id) => new Promise((resolve, reject) => {
         .lean()
         .cursor()
         .eachAsync(async function (doc, i) {
-            console.log('doc: ', doc);
+            
 
             await FantasyJoinedUsers.find({ contestId: mongoose.mongo.ObjectID(doc._id.toString()) })
                 .lean()
@@ -1425,7 +1520,7 @@ const countFantasy = (id) => new Promise((resolve, reject) => {
 const dispatchWinMatchUp = (con) => new Promise((resolve, reject) => {
     let win = true;
 
-    console.log(chalk.yellow('dispatchWinMatchUp Started:'));
+    
 
     if (con.winner === null || con.winner === undefined) {
         resolve("No winner")
@@ -1532,7 +1627,7 @@ const dispatchWinMatchUp = (con) => new Promise((resolve, reject) => {
 
 const dispatchWinUnderOver = (con) => new Promise((resolve, reject) => {
     let win = true;
-    console.log(chalk.yellow('dispatchWinUnderOver Started:'));
+    
 
 
     if (con.winner !== null && con.winner !== undefined) {
@@ -1646,7 +1741,7 @@ const dispatchWinUnderOver = (con) => new Promise((resolve, reject) => {
 
 const dispatchWinUnderOver2 = (con) => new Promise((resolve, reject) => {
     let win = true;
-    console.log(chalk.yellow('dispatchWinUnderOver2 Started:'));
+    
 
 
     if (con.winner !== null && con.winner !== undefined) {
@@ -1759,7 +1854,7 @@ const dispatchWinUnderOver2 = (con) => new Promise((resolve, reject) => {
 })
 
 const dispatchCustom = (con) => new Promise((resolve, reject) => {
-    console.log(chalk.yellow('dispatchCustom Started:'));
+    
 
 
     if (con.open === true) {
@@ -1799,7 +1894,7 @@ const dispatchCustom = (con) => new Promise((resolve, reject) => {
     } else if (con.status === 'Discarded' && con.open === false) {
 
 
-        User.updateMany([{ _id: con.users.player1 }, { _id: con.users.player2 }],
+        User.updateOne({_id: con.users.player1},
             {
                 $inc: {
                     'wallet.balance': con.amount.toFixed(2),
@@ -1807,33 +1902,48 @@ const dispatchCustom = (con) => new Promise((resolve, reject) => {
                     'stats.loss': -con.amount.toFixed(2)
                 }
             }).then(response => {
-                let order1 = {
-                    "amount": con.amount * 100,
-                    "status": "contest_credit",
-                    "matchId": con.matchId,
-                    "contestType": 5,
-                    "orderId": "Custom Duels Refund: Contest Cancelled ",
-                    "notes": {
-                        "userId": (con.users.player1).toString()
-                    }
-                }
+                User.updateOne({_id: con.users.player2},
+                    {
+                        $inc: {
+                            'wallet.balance': con.amount.toFixed(2),
+                            messageCount: 1,
+                            'stats.loss': -con.amount.toFixed(2)
+                        }
+                    }).then(response => {
+                        let order1 = {
+                            "amount": con.amount * 100,
+                            "status": "contest_credit",
+                            "matchId": con.matchId,
+                            "contestType": 5,
+                            "orderId": "Custom Duels Refund: Contest Cancelled ",
+                            "notes": {
+                                "userId": (con.users.player1).toString()
+                            }
+                        }
+        
+                        let order2 = {
+                            "amount": con.amount * 100,
+                            "status": "contest_credit",
+                            "matchId": con.matchId,
+                            "contestType": 5,
+                            "orderId": "Custom Duels Refund: Contest Cancelled ",
+                            "notes": {
+                                "userId": (con.users.player2).toString()
+                            }
+                        }
+        
+                        Orders.insertMany([
+                            order1, order2
+                        ]).then(response => resolve(response))
+        
+                    }).catch(err => reject(err))
 
-                let order2 = {
-                    "amount": con.amount * 100,
-                    "status": "contest_credit",
-                    "matchId": con.matchId,
-                    "contestType": 5,
-                    "orderId": "Custom Duels Refund: Contest Cancelled ",
-                    "notes": {
-                        "userId": (con.users.player2).toString()
-                    }
-                }
 
-                Orders.insertMany([
-                    order1, order2
-                ]).then(response => resolve(response))
 
             }).catch(err => reject(err))
+
+            
+
     } else {
         User.updateOne({
             _id: con.winner
@@ -1876,7 +1986,7 @@ const dispatchCustom = (con) => new Promise((resolve, reject) => {
 })
 
 const dispatchCustomDuel = (con) => new Promise((resolve, reject) => {
-    console.log(chalk.yellow('dispatchCustomDuel Started:'));
+    
 
 
     if (con.open === true) {
@@ -1916,7 +2026,53 @@ const dispatchCustomDuel = (con) => new Promise((resolve, reject) => {
             }).catch(err => reject(err))
     } else if (con.status === 'Discarded' && con.open === false) {
 
-        if (con.notPlaying === con.player1) {
+        if(con.notPlaying1 === con.player1 && con.notPlaying2 === con.player2){
+            User.updateOne({ _id: con.users.player1 },
+                {
+                    $inc: {
+                        'wallet.balance': con.amount.toFixed(2),
+                        'stats.loss': -con.amount.toFixed(2)
+                    }
+                }).then(response => {
+                    User.updateOne({ _id: con.users.player2 },
+                        {
+                            $inc: {
+                                'wallet.balance': con.amount.toFixed(2),
+                                'stats.loss': -con.amount.toFixed(2)
+                            }
+                        }).then(response => {
+                            let order1 = {
+                                "amount": con.amount * 100,
+                                "status": "contest_credit",
+                                "matchId": con.matchId,
+                                "contestType": 6,
+                                "orderId": "Custom Duels Refund: Contest Cancelled ",
+                                "notes": {
+                                    "userId": (con.users.player1).toString()
+                                }
+                            }
+            
+                            let order2 = {
+                                "amount": con.amount * 100,
+                                "status": "contest_credit",
+                                "matchId": con.matchId,
+                                "contestType": 6,
+                                "orderId": "Custom Duels Refund: Contest Cancelled ",
+                                "notes": {
+                                    "userId": ( con.users.player2).toString()
+                                }
+                            } 
+            
+                            Orders.insertMany([
+                                order1,order2
+                            ]).then(response => resolve(response))
+                        })
+
+    
+                }).catch(err => reject(err))
+        }else{
+            
+        if (con.notPlaying1 === con.player1) {
             User.updateOne({ _id: con.users.player2 },
                 {
                     $inc: {
@@ -1947,7 +2103,7 @@ const dispatchCustomDuel = (con) => new Promise((resolve, reject) => {
                 }).catch(err => reject(err))
         }
 
-        if (con.notPlaying === con.player2) {
+        if (con.notPlaying2 === con.player2) {
             User.updateOne({ _id: con.users.player1 },
                 {
                     $inc: {
@@ -1976,7 +2132,9 @@ const dispatchCustomDuel = (con) => new Promise((resolve, reject) => {
                     ]).then(response => resolve(response))
 
                 }).catch(err => reject(err))
+            }
         }
+
 
     }
     else {
@@ -2135,7 +2293,7 @@ const dispatchFantasy = (contest) => new Promise((resolve, reject) => {
     let paidout = 0;
     let prize = contest.prize;
 
-    console.log(chalk.yellow('dispatchFantasy Started:'));
+    
 
 
 
@@ -2256,7 +2414,7 @@ const dispatchFantasy = (contest) => new Promise((resolve, reject) => {
 
 
 getMatch().then().catch(err => {
-    console.log('err: ', err);
+    
 });
 
 

@@ -60,7 +60,6 @@ async function liveCount() {
         let matchArr = await match.find({isLive:true})
                                         .select("-balls")
                                         .lean()
-                                        
                                         .exec()
                                         .then(response => response)
                                         .catch(err => (err))
@@ -474,12 +473,13 @@ const countPoints = (matchData) => new Promise((resolve, reject) => {
                     localTeam:players.localTeam,
                     visitorTeam:players.visitorTeam,
                     players:players
+                    
         
                 }
+                 
+                mqttPayload.players[players.localTeam] = _.orderBy(players.players[players.localTeam],['points'],["desc"])
                 
-                mqttPayload.players[players.localTeam] = _.orderBy(mqttPayload.players[players.localTeam],['points'],["desc"])
-                
-                mqttPayload.players[players.visitorTeam] = _.orderBy(mqttPayload.players[players.visitorTeam],['points'],["desc"])
+                mqttPayload.players[players.visitorTeam] = _.orderBy(players.players[players.visitorTeam],['points'],["desc"])
          
                 mqtt_publish(matchData.id.toString(),JSON.stringify(mqttPayload),{})
 

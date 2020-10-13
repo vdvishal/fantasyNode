@@ -23,15 +23,14 @@ let FantasyJoinedUsers = mongoose.model('FantasyJoinedUsers');
 let AppStats = mongoose.model('AppStats');
 
 
-module.exports = (async (lineUpArr, matchId) => {
+module.exports = async (lineUpArr, matchId) => {
     console.log('matchId: lineup', matchId);
     let updatArr = [];
     try {
  
     let matchDetail = await match.findOne({ id: parseInt(matchId) }).select('-balls').lean().exec().then(response => response)
     
-    let lineUpArr = matchDetail.lineup
-
+ 
     lineUpArr.forEach(player => {
         updatArr.push(new Promise((resolve, reject) => {
             FantasyPlayer.updateOne({
@@ -159,7 +158,7 @@ module.exports = (async (lineUpArr, matchId) => {
                 CustomContest.updateMany(condition4, {
                     $set: {
                         status: "Discarded",
-                        notPlaying:value.id
+                        notPlaying1:value.id
                     }
                 }).then(response => resolve("Updated")).catch(err => reject(err))
             }))
@@ -174,7 +173,7 @@ module.exports = (async (lineUpArr, matchId) => {
                 CustomContest.updateMany(condition5, {
                     $set: {
                         status: "Discarded",
-                        notPlaying:value.id
+                        notPlaying2:value.id
                     }
                 }).then(response => resolve("Updated")).catch(err => reject(err))
             }))
@@ -188,6 +187,115 @@ module.exports = (async (lineUpArr, matchId) => {
                 CustomContest.updateMany(condition7, {
                     $set: {
                         status: "Discarded",
+                    }
+                }).then(response => resolve("Updated")).catch(err => reject(err))
+            }))
+            
+        }
+
+        if (value.isPlaying === true) {
+            let condition = {
+                "matchId": parseInt(matchId),
+                [`players.${value.id}`]: { $exists: true },
+                contestType: 3
+            }
+
+            updateContest.push(new Promise((resolve, reject) => {
+                Contest.updateMany(condition, {
+                    $set: {
+                        status: "live",
+                        notPlaying:00000
+                    }
+                }).then(response => resolve("Updated")).catch(err => reject(err))
+            }))
+
+            let condition2 = {
+                "matchId": parseInt(matchId),
+                "playerInfo.id": parseInt(value.id),
+                contestType: 1
+            }
+
+            let condition2a = {
+                "matchId": parseInt(matchId),
+                "playerInfo.id": parseInt(value.id),
+                contestType: 2
+            }
+
+            updateContest.push(new Promise((resolve, reject) => {
+                Contest.updateMany(condition2a, {
+                    $set: {
+                        status: "live",
+                        notPlaying:00000
+                    }
+                }).then(response => resolve("Updated")).catch(err => reject(err))
+            }))
+             
+
+            updateContest.push(new Promise((resolve, reject) => {
+                Contest.updateMany(condition2, {
+                    $set: {
+                        status: "live",
+                        notPlaying:00000
+                    }
+                }).then(response => resolve("Updated")).catch(err => reject(err))
+            }))
+
+            let condition3 = {
+                "matchId": parseInt(matchId),
+                playerId: parseInt(value.id),
+                contestType: 5
+            }
+
+            
+            updateContest.push(new Promise((resolve, reject) => {
+                CustomContest.updateMany(condition3, {
+                    $set: {
+                        status: "live",
+                        notPlaying:00000
+                    }
+                }).then(response => resolve("Updated")).catch(err => reject(err))
+            }))
+
+            let condition4 = {
+                "matchId": parseInt(matchId),
+                player1: parseInt(value.id),
+                contestType: 6
+            }
+
+            updateContest.push(new Promise((resolve, reject) => {
+                CustomContest.updateMany(condition4, {
+                    $set: {
+                        status: "live",
+                        notPlaying:00000
+                    }
+                }).then(response => resolve("Updated")).catch(err => reject(err))
+            }))
+
+            let condition5 = {
+                "matchId": parseInt(matchId),
+                player2: parseInt(value.id),
+                contestType: 6
+            }
+
+            updateContest.push(new Promise((resolve, reject) => {
+                CustomContest.updateMany(condition5, {
+                    $set: {
+                        status: "live",
+                        notPlaying:00000
+                    }
+                }).then(response => resolve("Updated")).catch(err => reject(err))
+            }))
+
+            let condition7 = {
+                "matchId": parseInt(matchId),
+                open:true
+            }
+
+            updateContest.push(new Promise((resolve, reject) => {
+                CustomContest.updateMany(condition7, {
+                    $set: {
+                        status: "live",
+                        notPlaying:00000
                     }
                 }).then(response => resolve("Updated")).catch(err => reject(err))
             }))
@@ -222,7 +330,7 @@ module.exports = (async (lineUpArr, matchId) => {
         console.log('===============',error)
     }
 
-})()   
+}
 
 
 

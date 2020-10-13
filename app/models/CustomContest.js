@@ -28,6 +28,7 @@ const Contest =  new Schema({
   player2:Number,
   player1Detail: Object,
   player2Detail: Object,
+  notPlaying:Number,
   users:{
     player1:{type:mongoose.Types.ObjectId},
     player2:{type:mongoose.Types.ObjectId},
@@ -36,6 +37,8 @@ const Contest =  new Schema({
     player1:Object,
     player2:Object,
   },
+  player1Points:Number,
+  player2Points:Number
 },{ timestamps:true })
 
 
