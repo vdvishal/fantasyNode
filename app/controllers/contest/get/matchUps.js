@@ -9,7 +9,7 @@ const get = (req, res) => {
 
     redis.on('error',message => {
         console.log('message: ', message);
-        err = true
+        errRedis = true
     })
     if(errRedis){
         console.log('errRedis: ', chalk.redBright(errRedis));

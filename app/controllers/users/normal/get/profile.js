@@ -16,7 +16,7 @@ const moment = require('moment')
     User.findByIdAndUpdate(req.user.id,{$set:{
       lastOnline: moment.now()
     }})
-    .select('email phone fullName userName wallet verifiedKYC stats bankAccountId vpa beneficiaryId refCode messageCount facebookId activated profilePic refLink')
+    .select('email phone fullName userName wallet documentSubmitted verifiedKYC stats bankAccountId vpa beneficiaryId refCode messageCount facebookId activated profilePic refLink')
     .lean().exec().then(response => {         
       
       res.send({message: "User profile",data:{...response}})

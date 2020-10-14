@@ -50,12 +50,12 @@
     "morgan": "^1.9.1",
     "mqtt": "^3.0.0",
     "multer": "^1.4.2",
-     
     "nodemon": "^2.0.2",
     "passport": "^0.4.1",
     "passport-custom": "^1.1.1",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
+    "plivo": "^4.10.0",
     "pm2": "^4.2.3",
     "randomatic": "^3.1.1",
     "razorpay": "^2.0.6",

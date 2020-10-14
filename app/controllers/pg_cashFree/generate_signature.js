@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
  
 const User = mongoose.model('Users');
 const Orders = mongoose.model('Orders');
+const randomize = require('randomatic');
  
 
 const genSign = async (req,res) => {
@@ -29,7 +30,7 @@ const genSign = async (req,res) => {
             appId:process.env.CASHFREE_APP_ID,
             
             // secretKey:process.env.CASHFREE_SECRET,
-            orderId: `order_${moment().unix()}`,
+            orderId: `order_${moment().valueOf()}`,
             orderAmount: parseFloat(req.query.amount),
             "orderCurrency":"INR",
             "orderNote": req.user.id,

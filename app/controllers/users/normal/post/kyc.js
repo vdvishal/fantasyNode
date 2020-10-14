@@ -8,7 +8,11 @@ const kyc = async (req, res) => {
 try {
     
 
-    if(req.body.image === ''){
+    if(req.body.image === '' || req.body.aadharFront === ''  || req.body.aadharBack === '' ){
+        return res.status(202).json({message:"Kyc image required"});
+    }
+
+    if(req.body.id === '' || req.body.aadhar === ''){
         return res.status(202).json({message:"Kyc image required"});
     }
 

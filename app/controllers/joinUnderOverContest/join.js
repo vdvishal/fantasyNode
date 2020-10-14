@@ -17,8 +17,8 @@ const post = async (req, res) => {
     let bonus = 0;
     let balance = 0;
 
-    if(Object.keys(dt.selectedTeam).length < 2){
-        return res.status(202).json({message:"Select a minimum of 2"})
+    if(Object.keys(dt.selectedTeam).length < 3){
+        return res.status(202).json({message:"Select a minimum of 3"})
     }
 
      

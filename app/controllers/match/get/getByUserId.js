@@ -71,7 +71,7 @@ const getUserId = async (req, res) => {
     await Matches.find({
         id:{$in:userDetails.joinedMatch || []},
         ...cond
-    }).skip((parseInt(req.query.page) - 1)*50).limit(50).sort({starting_at:1}).then(response => res.status(200).json({page:Math.ceil(page/50),data:response}))
+    }).skip((parseInt(req.query.page) - 1)*50).limit(50).sort({starting_at:-1}).then(response => res.status(200).json({page:Math.ceil(page/50),data:response}))
     .catch(err => {
         
         res.status(502).json("Error try again later")});

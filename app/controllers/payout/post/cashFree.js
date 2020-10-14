@@ -37,37 +37,37 @@ const payout = async (req,res) => {
         return res.status(202).json({message:"Amount is greater than available widthrawable balance"})
     }
 
-    if(req.body.transferMode === 1){
-        let wdrw = new Withdraw({
-            userId: mongoose.mongo.ObjectID(req.user.id),
-            userDetails:userDetails,
-            amount: req.body.amount
-        }) 
+    // if(req.body.transferMode === 1){
+    //     let wdrw = new Withdraw({
+    //         userId: mongoose.mongo.ObjectID(req.user.id),
+    //         userDetails:userDetails,
+    //         amount: req.body.amount
+    //     }) 
         
-        await wdrw.save().then(response => response).catch()
+    //     await wdrw.save().then(response => response).catch()
 
-        await User.updateOne({_id:mongoose.mongo.ObjectID(req.user.id)},{
-            $inc:{
-                'wallet.balance':-req.body.amount,
-                'wallet.withdrawal':-req.body.amount
-            }
-        }).then(response => {}).catch()
+    //     await User.updateOne({_id:mongoose.mongo.ObjectID(req.user.id)},{
+    //         $inc:{
+    //             'wallet.balance':-req.body.amount,
+    //             'wallet.withdrawal':-req.body.amount
+    //         }
+    //     }).then(response => {}).catch()
 
-        let order = new Orders({
-            "amount" : parseFloat(req.body.amount)*100,
-            "status" : "Withdraw",
-            "matchId": 0,
-            "contestType": 10,
-            "orderId":"WithdrawId: "+ moment().unix(),
-            "notes" : {
-                "userId" : req.user.id
-            }
-          })
+    //     let order = new Orders({
+    //         "amount" : parseFloat(req.body.amount)*100,
+    //         "status" : "Withdraw",
+    //         "matchId": 0,
+    //         "contestType": 10,
+    //         "orderId":"WithdrawId: "+ moment().unix(),
+    //         "notes" : {
+    //             "userId" : req.user.id
+    //         }
+    //       })
 
-          await order.save().then().catch();
+    //       await order.save().then().catch();
 
-          res.status(200).json({message:"Request accepted and processing"})
-    }else{
+    //       res.status(200).json({message:"Request accepted and processing"})
+    // }else{
 
     let token = await axios({
         method:"POST",
@@ -92,7 +92,7 @@ const payout = async (req,res) => {
         },
         data:{
             "beneId": req.body.transferMode === 2 ? userDetails.beneficiaryId : userDetails.beneficiaryId,// userDetails.beneId ,
-            "amount": parseFloat(req.body.amount) - 4,
+            "amount": req.body.transferMode === 1 ? parseFloat(req.body.amount) : parseFloat(req.body.amount) - 4,
             "transferId": moment().valueOf(),
             transferMode:req.body.transferMode === 1 ? "banktransfer" : 
             req.body.transferMode === 2 ? "upi" : 
@@ -112,7 +112,7 @@ const payout = async (req,res) => {
         
     }, 60000);
 
-    let balance = userDetails.wallet.balance - req.body.amount
+    let balance =  userDetails.wallet.balance - req.body.amount
     let withdrawal = userDetails.wallet.withdrawal - req.body.amount
 
  
@@ -176,9 +176,7 @@ const payout = async (req,res) => {
                 
 
 
-                }
-
-                if(response.data.status === 'ERROR'){
+                }else if(response.data.status === 'ERROR'){
                     job.stop();
                     let order = new Orders({
                         "amount" : parseFloat(req.body.amount)*100,
@@ -195,6 +193,8 @@ const payout = async (req,res) => {
                      order.save().then().catch()
                      mqtt.publish('withdraw',JSON.stringify({message:"Withdrawal failed",amount:0}),{})
 
+                }else{
+                    job.stop();
                 }
             })
 
@@ -204,7 +204,7 @@ const payout = async (req,res) => {
     job.start();
 
     res.send(requestTransfer)
-    }
+    // }
 } catch (error) {
     console.log('error: ', error);
     return res.status(202).json({message:"Database Error"})

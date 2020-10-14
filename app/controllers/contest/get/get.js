@@ -31,7 +31,7 @@ const get = async (req, res) => {
     try {
         redis.on('error',message => {
             console.log('message: ', message);
-            err = true
+            errRedis = true
         })
     if(errRedis){
         console.log('errRedis: ', chalk.redBright(errRedis));

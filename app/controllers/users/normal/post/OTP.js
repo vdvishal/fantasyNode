@@ -11,7 +11,10 @@ const
     bcrypt = require('../../../../libraries/bcrypt');
 
 const sendOTP = (req, res) => {
-
+    console.log('req: ', req.body);
+    try {
+        
+    
     if(req.body.type === 1){
     User.findOne({ _id: req.body.verifyId }, 'email').lean().exec()
         .then(user => {
@@ -36,9 +39,10 @@ const sendOTP = (req, res) => {
             // send mail            
         })
     }else if(req.body.type === 2){
-        User.findOne({ "phone.phone": req.body.number,activated:true }, 'email').lean().exec()
+        User.findOne({ "phone.phone": req.body.number,activated:true }).lean().exec()
         .then(user => {
             if (!user) return res.status(204).json({ message: 'The number is not registered. Please register.' });
+            console.log('user: ', user);
 
             const code = randomize('0000')
             const time = moment().unix();
@@ -54,7 +58,10 @@ const sendOTP = (req, res) => {
             }).then(resp => {                
                 sendSms(resp.phone.phone,`Your verification code: ${code}`)
                  res.status(200).json({ message: "OTP sent",data:user._id })
-             })
+             }).catch(err => {
+                 console.log('err: ', err);
+                 
+                res.status(202).json({message:"Database error"})})
 
             // send mail            
         })
@@ -97,6 +104,11 @@ const sendOTP = (req, res) => {
 
             // send mail            
         })
+    }
+
+    } catch (error) {
+        console.log('error: ', error);
+            
     }
 }
 
