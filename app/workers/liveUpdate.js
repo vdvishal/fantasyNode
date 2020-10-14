@@ -73,7 +73,7 @@ async function liveCount() {
         if(matchArr.length > 0){
             for (let index = 0,len = matchArr.length; index < len; index++) {
                 let match = matchArr[index]
-                if(match.isLineupUpdated === false){
+                if(match.isLineupUpdated === true){
                     lineup.push(new Promise((resolve,reject) => {
                         resolve('')                    
                     }))
@@ -271,6 +271,7 @@ const countPoints = (matchData) => new Promise((resolve, reject) => {
                     if(players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id] === undefined){
                         players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id] = player
                     }
+                    players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id]['catchStump'] = 0
                     players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id]['points'] = 2
                 })
 
@@ -382,6 +383,7 @@ const countPoints = (matchData) => new Promise((resolve, reject) => {
                     if(players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id] === undefined){
                         players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id] = player
                     }
+                    players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id]['catchStump'] = 0
                     players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id]['points'] = 2
                 })
 
@@ -485,32 +487,32 @@ const countPoints = (matchData) => new Promise((resolve, reject) => {
 
 
 
-                Object.entries(allPlayers).forEach(([key, value]) => {
-                    count.push(new Promise((resolve, reject) => {
-                        FantasyUsersTeam.updateMany(
-                            {
-                                "matchId": parseInt(matchData.id),
-                                [`players.${key}`]: { $exists: true }
-                            },
-                            [
-                                {
-                                    $set: {
-                                        [`players.${key}.points`]: {
-                                            $switch: {
-                                                branches: [
-                                                    { case: { $eq: [`$players.${key}.captain`, true] }, then: value.points === undefined || value.points === null ? 0 : value.points * 2 },
-                                                    { case: { $eq: [`$players.${key}.viceCaptain`, true] }, then:value.points === undefined || value.points === null ? 0 : value.points * 1.5 },
-                                                ],
-                                                default: value.points === undefined || value.points === null ? 0 : value.points
-                                            }
-                                        }
-                                    }
-                                },
-                            ]
-                        ).then(response => resolve(response))
-                            .catch(err => { console.log(err.message); reject({ message: "500" }) })
-                    }))
-                })
+                // Object.entries(allPlayers).forEach(([key, value]) => {
+                //     count.push(new Promise((resolve, reject) => {
+                //         FantasyUsersTeam.updateMany(
+                //             {
+                //                 "matchId": parseInt(matchData.id),
+                //                 [`players.${key}`]: { $exists: true }
+                //             },
+                //             [
+                //                 {
+                //                     $set: {
+                //                         [`players.${key}.points`]: {
+                //                             $switch: {
+                //                                 branches: [
+                //                                     { case: { $eq: [`$players.${key}.captain`, true] }, then: value.points === undefined || value.points === null ? 0 : value.points * 2 },
+                //                                     { case: { $eq: [`$players.${key}.viceCaptain`, true] }, then:value.points === undefined || value.points === null ? 0 : value.points * 1.5 },
+                //                                 ],
+                //                                 default: value.points === undefined || value.points === null ? 0 : value.points
+                //                             }
+                //                         }
+                //                     }
+                //                 },
+                //             ]
+                //         ).then(response => resolve(response))
+                //             .catch(err => { console.log(err.message); reject({ message: "500" }) })
+                //     }))
+                // })
 
                 console.log(chalk.redBright("Live FantasyUsersTeam update: "));
 

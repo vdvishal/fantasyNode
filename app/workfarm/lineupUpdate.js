@@ -307,18 +307,18 @@ module.exports = async (lineUpArr, matchId) => {
     await Promise.all(updateContest).then(response => ("Updated")) 
 
      // FANTASY CONTEST
-    await FantasyContest.find({
-        isFull:false,
-        matchId:parseInt(matchId),
-    })
-    .lean()
-    .cursor()
-    .eachAsync(async function (doc, i) {
+    // await FantasyContest.find({
+    //     isFull:false,
+    //     matchId:parseInt(matchId),
+    // })
+    // .lean()
+    // .cursor()
+    // .eachAsync(async function (doc, i) {
  
  
-        await refundUser(doc).then(response => response)
+    //     await refundUser(doc).then(response => response)
  
-    }).then(response => ("Updated")) 
+    // }).then(response => ("Updated")) 
 
     await match.updateOne({ id: parseInt(matchId) }, {
         $set: {
