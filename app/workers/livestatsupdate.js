@@ -7,6 +7,7 @@ require('../models/appStats');
 
 const redis = require('../libraries/redis/redis');
 const sms = require('../libraries/twilio');
+const lineupUpdate = require('../workFarm/lineupUpdate')
 
 const match = mongoose.model('Matches');
 const axios = require('axios')
@@ -69,7 +70,7 @@ async function liveUpdate() {
         "follow_on": matchDetail.follow_on,
         "last_period": matchDetail.last_period,
         "league_id": matchDetail.league_id,
-        "lineup" : matchDetail.lineup,
+        "lineup": matchDetail.lineup,
         "live": matchDetail.live,
         "localteam_dl_data": matchDetail.localteam_dl_data,
         "localteam_id": matchDetail.localteam_id,
@@ -99,11 +100,13 @@ async function liveUpdate() {
       await match.updateOne(
         { id: matchDetail.id },
         {
-          $set: update
+          $set: update,
+          $inc:{
+            isLineupUpdateCount:1
+          }
         })
         .then(response => {
-          console.log(response);
-        })
+         })
         .catch(err => {
           console.log('err: livestats', err);
 
@@ -115,14 +118,8 @@ async function liveUpdate() {
     let liveMatch = await getMatch().then(response => response)
     console.log('liveMatch: ', liveMatch);
 
-    if (liveMatch) {
-
-    }
-
-
-
     if (liveMatch && liveMatch.length === 0) {
-      AppStats.updateOne({}, {
+      await AppStats.updateOne({}, {
         $set: {
           live: liveUpdate
         }
@@ -132,12 +129,10 @@ async function liveUpdate() {
       if (liveUpdate.length !== liveMatch.length) {
         liveMatch.forEach(matchId => {
           if (liveUpdate.indexOf(matchId) < 0) {
-            sms(6003633574, `Update and dispatch match: ${matchId}`)
             instance.get(`/fixtures/${id.id}?api_token=${process.env.Access_key}&include=batting,batting.catchstump,batting.batsman,batting.bowler,bowling.team,bowling.bowler,scoreboards,scoreboards.team,lineup,batting.batsmanout`) //,balls.catchstump
               .then(response => {
                 let matchDetail = response.data.data
                 let update = {
-
                   "isLive": false,
                   "type": matchDetail.type,
                   "scoreboards": matchDetail.scoreboards,
@@ -150,14 +145,13 @@ async function liveUpdate() {
                   "balls": matchDetail.balls,
                   "batting": matchDetail.batting,
                   "bowling": matchDetail.bowling,
-
                   "draw_noresult": matchDetail.draw_noresult,
                   "elected": matchDetail.elected,
                   "first_umpire_id": matchDetail.first_umpire_id,
                   "follow_on": matchDetail.follow_on,
                   "last_period": matchDetail.last_period,
                   "league_id": matchDetail.league_id,
-                  // "lineup" : matchDetail.lineup,
+                  "lineup": matchDetail.lineup,
                   "live": matchDetail.live,
                   "localteam_dl_data": matchDetail.localteam_dl_data,
                   "localteam_id": matchDetail.localteam_id,
@@ -183,6 +177,7 @@ async function liveUpdate() {
                   "weather_report": matchDetail.weather_report,
                   "winner_team_id": matchDetail.winner_team_id,
                 }
+                sms(6003633574, `Update and dispatch match: ${matchDetail.visitorteam.code} vs ${matchDetail.localteam.code}`)
 
                 match.updateOne(
                   { id: matchId },
@@ -197,7 +192,6 @@ async function liveUpdate() {
                     }
                   })
                   .then(response => {
-                    console.log(response);
                     AppStats.updateOne({}, {
                       $set: {
                         live: liveUpdate
@@ -218,34 +212,6 @@ async function liveUpdate() {
 
 
 
-
-    // if(liveUpdate.sort().toString() === liveIdArr.sort().toString()){
-    //   liveIdArr = liveUpdate
-    // }else{
-
-    //   for (const id of liveIdArr) {
-    //     if(liveUpdate.indexOf(id) < 0){
-    //       await match.updateOne(
-    //         {id:id},
-    //         {
-    //           $set:{
-    //             isFinished:true
-    //           }
-    //         })
-    //       .then(response => {
-    //         console.log(response);
-    //         liveIdArr = liveUpdate
-    //       })
-    //       .catch(err => {
-    //         console.log(err);
-
-    //       }) 
-    //     }
-    //   }
-
-
-
-    // }
 
 
 

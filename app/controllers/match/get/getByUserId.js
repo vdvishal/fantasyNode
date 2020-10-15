@@ -50,11 +50,11 @@ const getUserId = async (req, res) => {
     if(req.query.type==="4"){
         cond = {
             isLive:false,
-            pending:{$ne:false},
-            paid:{$ne:true},
-            // starting_at: {
-            //     $lt: new Date().toISOString()
-            // }
+            pending:false,
+            paid:true,
+            starting_at: {
+                $lt: new Date().toISOString()
+            }
         }
     }
 
@@ -65,7 +65,7 @@ const getUserId = async (req, res) => {
     
      Matches.find({
         ...cond
-    }).sort({starting_at:1}).then(response => res.status(200).json({data:response}))
+    }).sort({starting_at:-1}).then(response => res.status(200).json({data:response}))
     .catch(err => {
         
         res.status(502).json("Error try again later")});

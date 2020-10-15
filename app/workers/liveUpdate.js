@@ -73,14 +73,18 @@ async function liveCount() {
         if(matchArr.length > 0){
             for (let index = 0,len = matchArr.length; index < len; index++) {
                 let match = matchArr[index]
-                if(match.isLineupUpdated === true){
+                if(match.isLineupUpdated === true && match.isLineupUpdateCount > 40){
                     lineup.push(new Promise((resolve,reject) => {
                         resolve('')                    
                     }))
                 }else{
                     console.log(chalk.greenBright("Lineup update"));
 
-                    if(match.lineup && match.lineup.length > 0){
+                    if(match.lineup && match.lineup.length > 0 && match.isLineupUpdateCount > 20){
+                        lineup.push(new Promise((resolve,reject) => {
+                            lineupUpdate(match.lineup,match.id).then(response => resolve(response)).catch(err => reject(err))
+                        }))
+                    }else if(match.lineup && match.lineup.length > 0 && match.isLineupUpdateCount > 20){
                         lineup.push(new Promise((resolve,reject) => {
                             lineupUpdate(match.lineup,match.id).then(response => resolve(response)).catch(err => reject(err))
                         }))
@@ -93,9 +97,7 @@ async function liveCount() {
                 }
 
                 count.push(countPoints(match))
-                // leaderBoardUp.push(new Promise((resolve,reject) => {
-                //     leaderBoard(match.id).then(response => resolve(response)).catch(er => reject(er))
-                // }))
+ 
             }
         
             await Promise.all(lineup).then(response => response)
@@ -103,15 +105,15 @@ async function liveCount() {
             // await Promise.all(count).then(response => response)
 
 
-            for (let index = 0,len = matchArr.length; index < len; index++) {
-                let match = matchArr[index]
-                leaderBoardUp.push(new Promise((resolve,reject) => {
-                    leaderBoard(match.id).then(response => resolve(response)).catch(er => reject(er))
-                }))
-            }
+            // for (let index = 0,len = matchArr.length; index < len; index++) {
+            //     let match = matchArr[index]
+            //     leaderBoardUp.push(new Promise((resolve,reject) => {
+            //         leaderBoard(match.id).then(response => resolve(response)).catch(er => reject(er))
+            //     }))
+            // }
 
  
-            await Promise.all(leaderBoardUp).then(response => response)
+            // await Promise.all(leaderBoardUp).then(response => response)
 
             console.log(chalk.redBright("Live COUNTING FINISHED"));
 

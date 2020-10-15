@@ -152,21 +152,21 @@ const cronJob = require('cron').CronJob;
 
 // job.start();
 
-try {
-    const redisClient = require('./app/libraries/redis/redis');
+// try {
+//     const redisClient = require('./app/libraries/redis/redis');
 
-    redisClient.on('error',  (error) => {
-        log(`${chalk.greenBright(logSymbols.error)} ${chalk.red(error)}`);
+//     redisClient.on('error',  (error) => {
+//         log(`${chalk.greenBright(logSymbols.error)} ${chalk.red(error)}`);
     
-    })
+//     })
     
-    redisClient.on('connect', () => {
-        log(`${chalk.greenBright(logSymbols.success)} Redis connected`);
-    })
-} catch (error) {
-    console.log('error: ', error);
+//     redisClient.on('connect', () => {
+//         log(`${chalk.greenBright(logSymbols.success)} Redis connected`);
+//     })
+// } catch (error) {
+//     console.log('error: ', error);
     
-}
+// }
 
 
 if (isMainThread) {
