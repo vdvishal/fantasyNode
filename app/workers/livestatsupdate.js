@@ -4,10 +4,9 @@ mongoose.connect(process.env.DB_HOST, { useNewUrlParser: true, useUnifiedTopolog
 require('../models/matches');
 require('../models/fantasyPlayer');
 require('../models/appStats');
-
-const redis = require('../libraries/redis/redis');
+ 
 const sms = require('../libraries/twilio');
-const lineupUpdate = require('../workFarm/lineupUpdate')
+ 
 
 const match = mongoose.model('Matches');
 const axios = require('axios')
