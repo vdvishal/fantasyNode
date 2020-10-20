@@ -23,18 +23,21 @@ const getUserId = async (req, res) => {
     if(req.query.type === undefined || req.query.type === ''){
         res.status(400).json("Type is missing")
     }
-    
+    console.log('req.query: ', req.query);
     if(req.query.type==="1"){
+        
         cond = {
             starting_at: {
                 $gt: new Date().toISOString()
-            }
+            },
+            gameType:parseInt(req.query.gameType)
         }
     }
 
     if(req.query.type==="2"){
         cond = {
-            isLive:true
+            isLive:true,
+            gameType:parseInt(req.query.gameType)
         }
     }
 
@@ -43,18 +46,20 @@ const getUserId = async (req, res) => {
             isLive:false,
             starting_at: {
                 $lt: new Date().toISOString()
-            }
+            },
+            gameType:parseInt(req.query.gameType)
         }
     }
 
     if(req.query.type==="4"){
         cond = {
-            isLive:false,
-            pending:false,
-            paid:true,
-            starting_at: {
-                $lt: new Date().toISOString()
-            }
+            isCounting:true,
+            // pending:true,
+            // paid:false,
+            // starting_at: {
+            //     $lt: new Date().toISOString()
+            // },
+            // gameType:parseInt(req.query.gameType)
         }
     }
 

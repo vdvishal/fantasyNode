@@ -70,6 +70,7 @@ const getMatch = async (id) => {
         let matchArr = [];
         let matchUpdate = [];
         let completed = [];
+        let matchId = workerData.id
 
         await Match.find({
             id: parseInt(workerData.id)
@@ -145,42 +146,45 @@ const getMatch = async (id) => {
 
 
 
-        for (const id of completed) {
+        // for (const id of completed) {
 
-            await countPoints(id).then(response => response)
-        }
+        //     await countPoints(matchId).then(response => response)
+        // }
         
+        await countPoints(matchId).then(response => response)
 
-        // completed.forEach(id => {
-        //     await countPoints(id).then(response => response)
-        // })
-        for (const id of completed) {
-            await countmatchUp(id).then(response => response)
-        }
+        console.log('countPoints: 1');
+
+        // for (const id of completed) {
+        //     await countmatchUp(id).then(response => response)
+        // }
+        await countmatchUp(matchId).then(response => response)
+
+        console.log('countmatchUp: 1');
+
+        // for (const id of completed) {
+        //     await countUnderOver(id).then(response => response)
+        // }
         
+        await countUnderOver(matchId).then(response => response)
+        console.log('countUnderOver: 1');
 
-        for (const id of completed) {
-            await countUnderOver(id).then(response => response)
-        }
+
+        // for (const id of completed) {
+        //     await countUnderOver2(id).then(response => response)
+        // }
+
+        await countUnderOver2(matchId).then(response => response)
+
+        console.log('countUnderOver2: 1');
+
+
+        // for (const id of completed) {
+        //     await countCustom(id).then(response => response)
+        // }
         
-        
-
-        for (const id of completed) {
-            await countUnderOver2(id).then(response => response)
-        }
-        
-
-
-
-        for (const id of completed) {
-            await countFantasy(id).then(response => response)
-        }
-        
-
-        for (const id of completed) {
-            await countCustom(id).then(response => response)
-        }
-        
+        await countCustom(matchId).then(response => response)
+        console.log('countCustom: 1');
 
         await Match.updateOne({
             id: parseInt(workerData.id)
@@ -191,6 +195,7 @@ const getMatch = async (id) => {
                 isCounting:false,
             }
         }).then()
+        console.log('updateOne: 1');
 
         
 
@@ -1059,20 +1064,25 @@ const countPoints = (id) => new Promise((resolve, reject) => {
                         }
                     }
                 }
-            ]).exec().then(response => resolve(response)).catch(err => {
+            ]).exec().then(response => response).catch(err => {
+                console.log('err: 1068', err);
                 reject(err);
             })
             console.log('CustomContest.updateMany: 7');
 
             let ContestType1 = await Contest.find({ matchId: id, contestType: 1 }).lean().exec().then(response => response).catch(err => {
+                console.log('err: 1074', err);
 
+                reject(err);
             })
 
             let ContestType2 = await Contest.find({ matchId: id, contestType: 2 }).lean().exec().then(response => response).catch(err => {
+                console.log('err: 1080', err);
 
             })
 
             let ContestType3 = await Contest.find({ matchId: id, contestType: 3 }).lean().exec().then(response => response).catch(err => {
+                console.log('err: 1085', err);
 
             })
 
@@ -1350,7 +1360,7 @@ const countUnderOver = (id) => new Promise((resolve, reject) => {
     async function updateUnderOver() {
 
 
-        await UnderOverContest.find({ matchId: id, aban: { $ne: true } })
+        await UnderOverContest.find({ matchId: id })
             .lean()
             .cursor()
             .eachAsync(async function (doc, i) {
@@ -1626,10 +1636,8 @@ const dispatchWinMatchUp = (con) => new Promise((resolve, reject) => {
 
 
 const dispatchWinUnderOver = (con) => new Promise((resolve, reject) => {
+   
     let win = true;
-    
-
-
     if (con.winner !== null && con.winner !== undefined) {
         let length = 0;
         let tax = 1

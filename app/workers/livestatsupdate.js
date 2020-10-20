@@ -128,9 +128,12 @@ async function liveUpdate() {
       if (liveUpdate.length !== liveMatch.length) {
         liveMatch.forEach(matchId => {
           if (liveUpdate.indexOf(matchId) < 0) {
-            instance.get(`/fixtures/${id.id}?api_token=${process.env.Access_key}&include=batting,batting.catchstump,batting.batsman,batting.bowler,bowling.team,bowling.bowler,scoreboards,scoreboards.team,lineup,batting.batsmanout`) //,balls.catchstump
+            instance.get(`/fixtures/${matchId}?api_token=${process.env.Access_key}&include=batting,batting.catchstump,batting.batsman,batting.bowler,bowling.team,bowling.bowler,lineup,batting.batsmanout,balls,balls.catchstump,scoreboards,league,season,localteam,visitorteam`) //,balls.catchstump
               .then(response => {
+                
                 let matchDetail = response.data.data
+                // console.log('matchDetail: ', matchDetail);
+
                 let update = {
                   "isLive": false,
                   "type": matchDetail.type,
@@ -176,7 +179,10 @@ async function liveUpdate() {
                   "weather_report": matchDetail.weather_report,
                   "winner_team_id": matchDetail.winner_team_id,
                 }
+                // console.log('matchDetail.visitorteam: ', matchDetail.visitorteam);
+                
                 sms(6003633574, `Update and dispatch match: ${matchDetail.visitorteam.code} vs ${matchDetail.localteam.code}`)
+                
 
                 match.updateOne(
                   { id: matchId },
@@ -195,14 +201,18 @@ async function liveUpdate() {
                       $set: {
                         live: liveUpdate
                       }
-                    }, { upsert: true }).then(response => resolve(true))
+                    }, { upsert: true }).then(response => {
+                      console.log('response: ', response);
+                    })
+                    
                   }).catch(err => {
                     console.log('err: sms(6003633574', err);
 
                   })
 
               }).catch(err => {
-                reject(err);
+                console.log('err: ', err);
+ 
               })
           }
         })
