@@ -4,7 +4,9 @@ const UnderOverContest = mongoose.model('UnderOverContest');
 const UnderOverContest2 = mongoose.model('UnderOverContestType2');
 
 const MatchUpContest = mongoose.model('MatchUpContest');
-const FantasyJoinedUsers = mongoose.model('FantasyJoinedUsers');
+// const FantasyJoinedUsers = mongoose.model('FantasyJoinedUsers');
+const FantayPlayers = mongoose.model('FantasyPlayer');
+
 const Matches = mongoose.model('Matches');
 
 /**
@@ -333,53 +335,6 @@ const getUserId = async (req, res) => {
     ).exec()
         .then(response => response)
 
-    let con3 = await FantasyJoinedUsers.aggregate([
-        {
-            $match: { userId: mongoose.mongo.ObjectID(req.user.id), matchId: parseInt(req.params.matchId) }
-        },
-        {
-            "$limit": 100
-        },
-        {
-            $lookup: {
-                from: 'fantasyusersteams',
-                localField: 'teamId',
-                foreignField: '_id',
-                as: 'team'
-            }
-        },
-        {
-            $project: {
-
-                matchId: 1,
-                contestId: 1,
-                teamId: 1,
-                userId: 1,
-                team: { $arrayElemAt: ["$team", 0] },
-            }
-        },
-        {
-            $group: {
-                _id: "$contestId",
-                entries: { $push: "$$ROOT" },
-            }
-        },
-        {
-            $lookup: {
-                from: 'fantasycontests',
-                localField: '_id',
-                foreignField: '_id',
-                as: 'contestDetails'
-            }
-        },
-        {
-            $project: {
-                entries: 1,
-                contestDetails: { $arrayElemAt: ["$contestDetails", 0] },
-            }
-        },
-    ]).allowDiskUse(true).exec()
-        .then(response => response)
 
     let con4 = await Contest.find({
         matchId: parseInt(req.params.matchId),
@@ -393,8 +348,92 @@ const getUserId = async (req, res) => {
         ]
     }).sort({ amount: -1 }).then(response => response)
 
+    // let players = await FantayPlayers.aggregate([
+    //     {
+    //       '$match': {
+    //         'matchId': parseInt(req.params.matchId)
+    //       }
+    //     }, {
+    //       '$project': {
+    //         'teams': {
+    //           '$objectToArray': '$players'
+    //         }
+    //       }
+    //     }, {
+    //       '$project': {
+    //         'players': '$teams.v'
+    //       }
+    //     }, {
+    //       '$unwind': {
+    //         'path': '$players'
+    //       }
+    //     }, {
+    //       '$group': {
+    //         '_id': null, 
+    //         'players': {
+    //           '$mergeObjects': '$players'
+    //         }
+    //       }
+    //     }
+    //   ]).then(response => response ? response[0].players : []);
 
-    res.status(200).json({ underOver: con1, underOver2: con5, comboMatch: con2, fantasy: con3, custom: con4 })
+    // Object.entries(players).forEach(player => {
+    //     con1.forEach(contest => {
+    //         contest.contest
+    //     })
+    // })
+
+    res.status(200).json({ underOver: con1, underOver2: con5, comboMatch: con2, fantasy: [], custom: con4 })
 }
 
 module.exports = getUserId
+
+
+
+// let con3 = await FantasyJoinedUsers.aggregate([
+//     {
+//         $match: { userId: mongoose.mongo.ObjectID(req.user.id), matchId: parseInt(req.params.matchId) }
+//     },
+//     {
+//         "$limit": 100
+//     },
+//     {
+//         $lookup: {
+//             from: 'fantasyusersteams',
+//             localField: 'teamId',
+//             foreignField: '_id',
+//             as: 'team'
+//         }
+//     },
+//     {
+//         $project: {
+
+//             matchId: 1,
+//             contestId: 1,
+//             teamId: 1,
+//             userId: 1,
+//             team: { $arrayElemAt: ["$team", 0] },
+//         }
+//     },
+//     {
+//         $group: {
+//             _id: "$contestId",
+//             entries: { $push: "$$ROOT" },
+//         }
+//     },
+//     {
+//         $lookup: {
+//             from: 'fantasycontests',
+//             localField: '_id',
+//             foreignField: '_id',
+//             as: 'contestDetails'
+//         }
+//     },
+//     {
+//         $project: {
+//             entries: 1,
+//             contestDetails: { $arrayElemAt: ["$contestDetails", 0] },
+//         }
+//     },
+// ]).allowDiskUse(true).exec()
+//     .then(response => response)
