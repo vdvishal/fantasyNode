@@ -5,7 +5,7 @@ const _ = require('lodash');
 const redis = require('../../../libraries/redis/redis')
 
 const get = (req, res) => {
-    let errRedis = false;
+    let errRedis = true;
 
     redis.on('error',message => {
         console.log('message: ', message);

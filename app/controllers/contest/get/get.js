@@ -16,7 +16,7 @@ const redis = require('../../../libraries/redis/redis')
 
 
 const get = async (req, res) => {
-    let errRedis = false;
+    let errRedis = true;
     // await Contest.find({matchId:parseInt(req.params.matchId),contestType:1})
     //     .sort({"playerInfo.fullname":1})
     //     .lean()
