@@ -73,18 +73,14 @@ async function liveCount() {
         if(matchArr.length > 0){
             for (let index = 0,len = matchArr.length; index < len; index++) {
                 let match = matchArr[index]
-                if(match.isLineupUpdated === true && match.isLineupUpdateCount > 40){
+                if(match.isLineupUpdated === true){
                     lineup.push(new Promise((resolve,reject) => {
                         resolve('')                    
                     }))
                 }else{
                     console.log(chalk.greenBright("Lineup update"));
 
-                    if(match.lineup && match.lineup.length > 0 && match.isLineupUpdateCount > 20){
-                        lineup.push(new Promise((resolve,reject) => {
-                            lineupUpdate(match.lineup,match.id).then(response => resolve(response)).catch(err => reject(err))
-                        }))
-                    }else if(match.lineup && match.lineup.length > 0 && match.isLineupUpdateCount > 20){
+                    if(match.lineup && match.lineup.length >= 22){
                         lineup.push(new Promise((resolve,reject) => {
                             lineupUpdate(match.lineup,match.id).then(response => resolve(response)).catch(err => reject(err))
                         }))
@@ -206,7 +202,7 @@ const countPoints = (matchData) => new Promise((resolve, reject) => {
                         }
         
                         if (player.catchstump !== null && player['team_id'] === localteam_id) {
-                            players.players[visitorteam_id][player.catchstump.id]['points'] += 12;
+                            players.players[visitorteam_id][player.catchstump.id]['points'] += 6;
         
                             players.players[visitorteam_id][player.catchstump.id]['catchStump'] =  players.players[visitorteam_id][player.catchstump.id]['catchStump'] ?
                                                                                     players.players[visitorteam_id][player.catchstump.id]['catchStump'] +  1 : 1
@@ -220,7 +216,7 @@ const countPoints = (matchData) => new Promise((resolve, reject) => {
         
         
                         if (player.catchstump !== null && player['team_id'] === visitorteam_id) {
-                            players.players[localteam_id][player.catchstump.id]['points'] += 12;
+                            players.players[localteam_id][player.catchstump.id]['points'] += 6;
                             players.players[localteam_id][player.catchstump.id]['catchStump'] = players.players[localteam_id][player.catchstump.id]['catchStump'] ?
                                                                                 players.players[localteam_id][player.catchstump.id]['catchStump'] +  1 : 1;
                         }
@@ -316,7 +312,7 @@ const countPoints = (matchData) => new Promise((resolve, reject) => {
                     }
     
                     if (player.catchstump !== null && player['team_id'] === localteam_id) {
-                        players.players[visitorteam_id][player.catchstump.id]['points'] += 12;
+                        players.players[visitorteam_id][player.catchstump.id]['points'] += 6;
     
                         players.players[visitorteam_id][player.catchstump.id]['catchStump'] =  players.players[visitorteam_id][player.catchstump.id]['catchStump'] ?
                                                                                 players.players[visitorteam_id][player.catchstump.id]['catchStump'] +  1 : 1
@@ -330,7 +326,7 @@ const countPoints = (matchData) => new Promise((resolve, reject) => {
     
     
                     if (player.catchstump !== null && player['team_id'] === visitorteam_id) {
-                        players.players[localteam_id][player.catchstump.id]['points'] += 12;
+                        players.players[localteam_id][player.catchstump.id]['points'] += 6;
                         players.players[localteam_id][player.catchstump.id]['catchStump'] = players.players[localteam_id][player.catchstump.id]['catchStump'] ?
                                                                             players.players[visitorteam_id][player.catchstump.id]['catchStump'] +  1 : 1;
                     }
@@ -416,7 +412,7 @@ const countPoints = (matchData) => new Promise((resolve, reject) => {
                     }
     
                     if (player.catchstump !== null && player['team_id'] === localteam_id) {
-                        players.players[visitorteam_id][player.catchstump.id]['points'] += 12;
+                        players.players[visitorteam_id][player.catchstump.id]['points'] += 6;
     
                         players.players[visitorteam_id][player.catchstump.id]['catchStump'] =  players.players[visitorteam_id][player.catchstump.id]['catchStump'] ?
                                                                                 players.players[visitorteam_id][player.catchstump.id]['catchStump'] +  1 : 1
@@ -430,7 +426,7 @@ const countPoints = (matchData) => new Promise((resolve, reject) => {
     
     
                     if (player.catchstump !== null && player['team_id'] === visitorteam_id) {
-                        players.players[localteam_id][player.catchstump.id]['points'] += 12;
+                        players.players[localteam_id][player.catchstump.id]['points'] += 6;
                         players.players[localteam_id][player.catchstump.id]['catchStump'] = players.players[localteam_id][player.catchstump.id]['catchStump'] ?
                                                                             players.players[visitorteam_id][player.catchstump.id]['catchStump'] +  1 : 1;
                     }
@@ -466,9 +462,9 @@ const countPoints = (matchData) => new Promise((resolve, reject) => {
 
             FantasyPlayer.updateOne({ matchId: parseInt(matchData.id) }, players).then(response => {
  
-                let allPlayers = {
-                    ...players.players[players.localTeam], ...players.players[players.visitorTeam]
-                }
+                // let allPlayers = {
+                //     ...players.players[players.localTeam], ...players.players[players.visitorTeam]
+                // }
                 let count = [];
 
                 let mqttPayload = {
