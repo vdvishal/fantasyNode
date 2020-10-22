@@ -89,7 +89,7 @@ module.exports = async (lineUpArr, matchId) => {
 
          Object.entries(allPlayer).forEach(([key, value]) => {
 
-            if(lineupId.indexOf(value.id) < 0){
+            if(lineupId.indexOf(value.id) < 0 && lineupId.length === 22){
                 let condition = {
                     "matchId": parseInt(matchId),
                     [`players.${value.id}`]: { $exists: true },
