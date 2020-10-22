@@ -32,23 +32,23 @@ var mqtt_options = {
 
 
 
-var client  = mqtt.connect(process.env.MQTT_IP_WS,mqtt_options)
+// var client  = mqtt.connect(process.env.MQTT_IP_WS,mqtt_options)
 
-console.log(process.env.MQTT_IP_WS);
+// console.log(process.env.MQTT_IP_WS);
 
-client.on('connect', function () {
-    console.log("Connected: MQTT ");
- })
-client.on("error", function (error) {
-    console.log("ERROR: ", error);
-});
-client.on('offline', function () {
-    console.log("offline");
-});
+// client.on('connect', function () {
+//     console.log("Connected: MQTT ");
+//  })
+// client.on("error", function (error) {
+//     console.log("ERROR: ", error);
+// });
+// client.on('offline', function () {
+//     console.log("offline");
+// });
 
-client.on('reconnect', function () {
-    console.log("reconnect");
-});
+// client.on('reconnect', function () {
+//     console.log("reconnect");
+// });
 
  
 async function liveCount() {

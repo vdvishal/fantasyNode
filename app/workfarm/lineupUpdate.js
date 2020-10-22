@@ -27,6 +27,7 @@ module.exports = async (lineUpArr, matchId) => {
     console.log('matchId: lineup', matchId);
     let updatArr = [];
     let lineupId = []
+    
     try {
  
     //let matchDetail = await match.findOne({ id: parseInt(matchId) }).select('-balls').lean().exec().then(response => response)
@@ -34,7 +35,7 @@ module.exports = async (lineUpArr, matchId) => {
     lineUpArr.forEach(player => {
         lineupId.push(player.id)
     })
- 
+    console.log('lineupId: ', lineupId);
     lineUpArr.forEach(player => {
         updatArr.push(new Promise((resolve, reject) => {
             FantasyPlayer.updateOne({
@@ -86,7 +87,7 @@ module.exports = async (lineUpArr, matchId) => {
     }
 
     let updateContest = [];
-
+  
          Object.entries(allPlayer).forEach(([key, value]) => {
 
             if(lineupId.indexOf(value.id) < 0 && lineupId.length === 22){

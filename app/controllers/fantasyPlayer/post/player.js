@@ -2,11 +2,29 @@ const mongoose = require('mongoose');
 const FantasyPlayer = mongoose.model('FantasyPlayer');
 const ContestTemplate = require('../../../Templates/contest')
 const Contest = mongoose.model('FantasyContest');
+const TeamImage = mongoose.model('TeamImage');
+
 // const redis = require('../../../library/redis/redis');
 const moment = require('moment')
 
 const post = async (req, res) => {
     console.log(req.body);
+
+    let image1 = await TeamImage.findOne({
+        teamId:req.body.localTeam
+    }).then(response => response ? response.link : '')
+
+    let image2 = await TeamImage.findOne({
+        teamId:req.body.visitorTeam
+    }).then(response => response ? response.link : '')
+
+    Object.entries(req.body.players[req.body.localTeam]).forEach(([key, value]) => {
+        req.body.players[req.body.localTeam.toString()][key].teamDetails.image_path = image1
+    })
+
+    Object.entries(req.body.players[req.body.visitorTeam]).forEach(([key, value]) => {
+        req.body.players[req.body.visitorTeam.toString()][key].teamDetails.image_path = image2
+    })
 
     await FantasyPlayer.updateOne({matchId:req.body.matchId},req.body,{upsert:true}).then(response => {
         // createContest(req.body.matchId)
