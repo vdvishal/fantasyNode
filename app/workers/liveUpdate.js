@@ -73,23 +73,10 @@ async function liveCount() {
         if(matchArr.length > 0){
             for (let index = 0,len = matchArr.length; index < len; index++) {
                 let match = matchArr[index]
-                if(match.isLineupUpdated === true){
+                if(match.lineup && match.lineup.length >= 22){
                     lineup.push(new Promise((resolve,reject) => {
-                        resolve('')                    
+                        lineupUpdate(match.lineup,match.id).then(response => resolve(response)).catch(err => reject(err))
                     }))
-                }else{
-                    console.log(chalk.greenBright("Lineup update"));
-
-                    if(match.lineup && match.lineup.length >= 22){
-                        lineup.push(new Promise((resolve,reject) => {
-                            lineupUpdate(match.lineup,match.id).then(response => resolve(response)).catch(err => reject(err))
-                        }))
-                    }else{
-                        lineup.push(new Promise((resolve,reject) => {
-                            resolve('')                    
-                        }))
-                    }
-
                 }
 
                 count.push(countPoints(match))
@@ -98,7 +85,7 @@ async function liveCount() {
         
             await Promise.all(lineup).then(response => response)
         
-            // await Promise.all(count).then(response => response)
+          await Promise.all(count).then(response => response)
 
 
             // for (let index = 0,len = matchArr.length; index < len; index++) {
@@ -514,8 +501,7 @@ const countPoints = (matchData) => new Promise((resolve, reject) => {
 
                 console.log(chalk.redBright("Live FantasyUsersTeam update: "));
 
-                Promise.all(count).then(response => resolve("response"))
-                .catch(err => { console.log(err.message); reject(err) })
+                resolve("response")
 
             }).catch(err => reject(err));
 
@@ -534,7 +520,7 @@ const countPoints = (matchData) => new Promise((resolve, reject) => {
 
 const cronJob = require('cron').CronJob;
 
-const job = new cronJob('*/60 * * * * *', function() {
+const job = new cronJob('*/120 * * * * *', function() {
     console.log(`${chalk.cyanBright("liveUpdate started")}`)
     
     liveCount().then().catch();

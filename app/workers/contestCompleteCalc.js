@@ -272,6 +272,7 @@ const countPoints = (id) => new Promise((resolve, reject) => {
                         players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id] = player
                     }
                     players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id]['catchStump'] = 0
+                    players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id]['runOut'] = 0
 
                     players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id]['points'] = 2
                 })
@@ -377,10 +378,11 @@ const countPoints = (id) => new Promise((resolve, reject) => {
                 })
 
                 if (runOut !== undefined) {
+                    let rn = []
                     runOut.forEach(player => {
-                        
+ 
 
-                        players.players[player['team_id']][player['player_id']]['runOut'] = player;
+                        players.players[player['team_id']][player['player_id']]['runOut'] = players.players[player['team_id']][player['player_id']]['runOut'] + 1;
 
                         players.players[player['team_id']][player['player_id']]['points'] += player.runOut * 6
 
@@ -402,6 +404,7 @@ const countPoints = (id) => new Promise((resolve, reject) => {
                         players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id] = player
                     }
                     players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id]['catchStump'] = 0
+                    players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id]['runOut'] = 0
 
                     players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id]['points'] = 2
                 })
@@ -508,9 +511,11 @@ const countPoints = (id) => new Promise((resolve, reject) => {
                 })
 
                 if (runOut !== undefined) {
+ 
                     runOut.forEach(player => {
+ 
 
-                        players.players[player['team_id']][player.player_id]['runOut'] = player;
+                        players.players[player['team_id']][player['player_id']]['runOut'] = players.players[player['team_id']][player['player_id']]['runOut'] + 1;
 
                         players.players[player['team_id']][player['player_id']]['catchStump'] = players.players[player['team_id']][player['player_id']]['catchStump'] ?
                         players.players[player['team_id']][player['player_id']]['catchStump'] + 1 : 1
@@ -530,6 +535,8 @@ const countPoints = (id) => new Promise((resolve, reject) => {
                         players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id] = player
                     }
                     players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id]['catchStump'] = 0
+ 
+                    players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id]['runOut'] = 0
 
                     players.players[(parseInt(player['lineup']['team_id'])).toString()][player.id]['points'] = 2
                 })
@@ -609,7 +616,9 @@ const countPoints = (id) => new Promise((resolve, reject) => {
 
                 if (runOut !== undefined) {
                     runOut.forEach(player => {
-                        players.players[player['team_id']][player.player_id]['runOut'] = player;
+ 
+
+                        players.players[player['team_id']][player['player_id']]['runOut'] = players.players[player['team_id']][player['player_id']]['runOut'] + 1;
 
                         players.players[player['team_id']][player.player_id]['points'] += player.runOut * 3
                  
