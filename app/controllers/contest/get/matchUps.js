@@ -12,7 +12,7 @@ const get = (req, res) => {
         errRedis = true
     })
     if(errRedis){
-        console.log('errRedis: ', chalk.redBright(errRedis));
+        console.log('errRedis: ', errRedis);
 
         Contest.find({matchId:parseInt(req.params.matchId),contestType:3})
         .exec()

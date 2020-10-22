@@ -170,7 +170,7 @@ const sendVerifyCode = (phone,email) => {
           active: true
       }
   }}).then(response => {
-      sendSms(code,`Your verification code: ${code}`);
+      sendSms(phone.countryCode+phone.phone,`Your verification code: ${code}`);
       SmsLog.updateOne({_id:new mongoose.mongo.ObjectId},{
           to: phone.phone,
           countryCode: phone.countryCode || "+91",

@@ -53,7 +53,6 @@ const getUserId = async (req, res) => {
                 as: 'contest'
             }
         },
-        {$sort: {"contest.playerInfo.fullname":1}}, 
         {
             $group: {
                 _id: "$_id",
@@ -153,7 +152,6 @@ const getUserId = async (req, res) => {
                 as: 'contest'
             }
         },
-        {$sort: {"contest.playerInfo.fullname":1}}, 
         {
             $group: {
                 _id: "$_id",
