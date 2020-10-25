@@ -109,27 +109,16 @@ server.on('listening', onListening);
  
  
 
-redisClient.on('error',  (error) => {
-    log(`${chalk.greenBright(logSymbols.error)} ${chalk.red(error)}`);
+// redisClient.on('error',  (error) => {
+//     log(`${chalk.greenBright(logSymbols.error)} ${chalk.red(error)}`);
 
-})
+// })
 
-redisClient.on('connect', () => {
-    log(`${chalk.greenBright(logSymbols.success)} Redis connected`);
-})
+// redisClient.on('connect', () => {
+//     log(`${chalk.greenBright(logSymbols.success)} Redis connected`);
+// })
 
-const cronJob = require('cron').CronJob;
-
-const job = new cronJob('*/15 * * * * *', function() {
-    redisClient.FLUSHALL((err,response) =>{
-        console.log('err: ', err);
-        console.log('response: ', response);
-
-    })
-})
-
-job.start();
-
+ 
 
 
 /**
