@@ -20,9 +20,9 @@ let FantasyPlayer = mongoose.model('FantasyPlayer');
 
 let FantasyUsersTeam = mongoose.model('FantasyUsersTeam');
 
-const lineupUpdate = require('../workFarm/lineupUpdate')
+const lineupUpdate = require('../workfarm/lineupUpdate')
 
-const leaderBoard = require('../workFarm/leaderBoard')
+const leaderBoard = require('../workfarm/leaderBoard')
 
 var mqtt_options = {
     clientId: MqttClientId,

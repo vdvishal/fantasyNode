@@ -17,7 +17,7 @@ var storage = multer.diskStorage(
 );
 
 let upload = multer({ storage: storage });
-let baseUrl = `${process.env.BASE_URL}/image`;
+let baseUrl = `/api/v1/image`;
 
 
 module.exports.setRouter = (app) => {
