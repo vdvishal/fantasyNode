@@ -3,7 +3,7 @@ const Contest = mongoose.model('CustomContest');
 const Orders = mongoose.model('Orders');
 const Users = mongoose.model('Users');
 const FantasyPlayer = mongoose.model('FantasyPlayer');
-var client = require('../../../libraries/mqtt')
+// var client = require('../../../libraries/mqtt')
  const { check, validationResult } = require('express-validator')
 const
     validator = [
@@ -174,7 +174,7 @@ const joinCustom = async (req, res) => {
             return res.status(202).json({ message: "Contest full, Join another contest" })
         }
 
-        mqtt_publish(contestData.matchId+"reload",`${contestData.contestType}`,{qos:1})
+        // mqtt_publish(contestData.matchId+"reload",`${contestData.contestType}`,{qos:1})
 
 
         let order1 = {

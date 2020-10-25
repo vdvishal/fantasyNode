@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Contest = mongoose.model('CustomContest');
 const Users = mongoose.model('Users');
 const FantasyPlayer = mongoose.model('FantasyPlayer');
-var client = require('../../../libraries/mqtt')
+// var client = require('../../../libraries/mqtt')
 
 const Orders = mongoose.model('Orders');
 
@@ -61,12 +61,11 @@ const custom = async (req, res) => {
         }
 
         const userDetails = await Users.findById(req.user.id)
-            .select('userName profilePic wallet')
-            .lean()
+             .lean()
             .exec()
             .then(response => response)
 
-            if(userDetails.stats && userDetails.stats.waggered > 100){
+            if(userDetails.stats && userDetails.stats.bonus > 50){
                 if(req.body.amount*0.5 <= userDetails.wallet.bonus){
                     if(userDetails.wallet.balance >= req.body.amount - req.body.amount*0.5){
                         bonus = req.body.amount*0.5;
@@ -207,7 +206,7 @@ const custom = async (req, res) => {
             }
         }
 
-        client.publish(req.body.matchId+'reload',`${req.body.contestType}`,{qos:1})
+        // client.publish(req.body.matchId+'reload',`${req.body.contestType}`,{qos:1})
  
 
         Orders.insertMany([
@@ -221,6 +220,7 @@ const custom = async (req, res) => {
             $inc: {
                 "wallet.balance": -parseFloat(balance),
                 "wallet.bonus": -parseFloat(bonus),
+                "stats.bonus":parseFloat(bonus),
                 "stats.waggered":parseFloat(req.body.amount),
                 "stats.loss":parseFloat(req.body.amount)
             }

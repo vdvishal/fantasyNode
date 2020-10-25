@@ -6,7 +6,7 @@ const mongoose = require('mongoose'),
     Orders = mongoose.model('Orders'),
     Withdraw = mongoose.model('Withdraw'),
     User = mongoose.model('Users');
-    const mqtt = require('../../../libraries/mqtt')
+    // const mqtt = require('../../../libraries/mqtt')
     const cronJob = require('cron').CronJob;
 
 
@@ -92,7 +92,7 @@ const payout = async (req,res) => {
         },
         data:{
             "beneId": req.body.transferMode === 2 ? userDetails.beneficiaryId : userDetails.beneficiaryId,// userDetails.beneId ,
-            "amount": req.body.transferMode === 1 ? parseFloat(req.body.amount) : parseFloat(req.body.amount) - 4,
+            "amount": req.body.transferMode === 1 ? parseFloat(req.body.amount) : parseFloat(req.body.amount),// - 4,
             "transferId": moment().valueOf(),
             transferMode:req.body.transferMode === 1 ? "banktransfer" : 
             req.body.transferMode === 2 ? "upi" : 
@@ -115,6 +115,15 @@ const payout = async (req,res) => {
     let balance =  userDetails.wallet.balance - req.body.amount
     let withdrawal = userDetails.wallet.withdrawal - req.body.amount
 
+    await User.updateOne({_id:mongoose.mongo.ObjectId(req.user.id)},{
+        $inc:{
+        'wallet.balance': balance >= 0 ? -1*req.body.amount : -userDetails.wallet.balance,
+        'wallet.withdrawal': withdrawal >= 0 ? -1*req.body.amount : -userDetails.wallet.withdrawal,
+            
+           }
+     }).lean().then(response => {
+        
+    });
  
     console.log('requestTransfer: ', requestTransfer);
 
@@ -132,15 +141,7 @@ const payout = async (req,res) => {
                 if(response.data.subCode === '200'){
                     if (response.data.data.transfer.status === 'SUCCESS') {
                         job.stop();
-                        User.updateOne({_id:mongoose.mongo.ObjectId(req.user.id)},{
-                            $inc:{
-                           'wallet.balance': balance >= 0 ? -1*req.body.amount : -userDetails.wallet.balance,
-                           'wallet.withdrawal': withdrawal >= 0 ? -1*req.body.amount : -userDetails.wallet.withdrawal,
-                           messageCount:1
-                               }
-                         }).lean().then(response => {
-                            job.stop();
-                      });
+
     
                       let order = new Orders({
                         "amount" : parseFloat(req.body.amount)*100,
@@ -155,7 +156,7 @@ const payout = async (req,res) => {
     
                       order.save().then().catch();
 
-                      mqtt.publish(`withdraw_${req.user.id}`,JSON.stringify({message:"Withdrawal Successfull",amount:balance >= 0 ? balance : 0}),{})
+                    //   mqtt.publish(`withdraw_${req.user.id}`,JSON.stringify({message:"Withdrawal Successfull",amount:balance >= 0 ? balance : 0}),{})
                     }else{
                         job.stop();
                         let order = new Orders({
@@ -168,9 +169,18 @@ const payout = async (req,res) => {
                                 "userId" : req.user.id
                             }
                           })
+                          User.updateOne({_id:mongoose.mongo.ObjectId(req.user.id)},{
+                            $inc:{
+                           'wallet.balance': balance >= 0 ? 1*req.body.amount : userDetails.wallet.balance,
+                           'wallet.withdrawal': withdrawal >= 0 ? 1*req.body.amount : userDetails.wallet.withdrawal,
+                            
+                               }
+                         }).lean().then(response => {
+                            
+                        });
         
                          order.save().then().catch();
-                         mqtt.publish('withdraw',JSON.stringify({message:"Withdrawal failed",amount:0}),{})
+                        //  mqtt.publish('withdraw',JSON.stringify({message:"Withdrawal failed",amount:0}),{})
 
                     }
                 
@@ -178,6 +188,15 @@ const payout = async (req,res) => {
 
                 }else if(response.data.status === 'ERROR'){
                     job.stop();
+                    User.updateOne({_id:mongoose.mongo.ObjectId(req.user.id)},{
+                        $inc:{
+                       'wallet.balance': balance >= 0 ? 1*req.body.amount : userDetails.wallet.balance,
+                       'wallet.withdrawal': withdrawal >= 0 ? 1*req.body.amount : userDetails.wallet.withdrawal,
+                        
+                           }
+                     }).lean().then(response => {
+                        
+                    });
                     let order = new Orders({
                         "amount" : parseFloat(req.body.amount)*100,
                         "status" : "Withdrawal Failed",
@@ -188,13 +207,22 @@ const payout = async (req,res) => {
                             "userId" : req.user.id
                         }
                       })
-                      mqtt.publish(`withdraw_${req.user.id}`,JSON.stringify({message:"Withdrawal failed",amount:userDetails.wallet.balance}),{})
+                    //   mqtt.publish(`withdraw_${req.user.id}`,JSON.stringify({message:"Withdrawal failed",amount:userDetails.wallet.balance}),{})
 
                      order.save().then().catch()
-                     mqtt.publish('withdraw',JSON.stringify({message:"Withdrawal failed",amount:0}),{})
+                    //  mqtt.publish('withdraw',JSON.stringify({message:"Withdrawal failed",amount:0}),{})
 
                 }else{
                     job.stop();
+                    User.updateOne({_id:mongoose.mongo.ObjectId(req.user.id)},{
+                        $inc:{
+                       'wallet.balance': balance >= 0 ? 1*req.body.amount : userDetails.wallet.balance,
+                       'wallet.withdrawal': withdrawal >= 0 ? 1*req.body.amount : userDetails.wallet.withdrawal,
+                        
+                           }
+                     }).lean().then(response => {
+                        
+                    });
                 }
             })
 

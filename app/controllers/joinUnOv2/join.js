@@ -35,8 +35,7 @@ const post = async (req, res) => {
     }
 
     const userDetails = await Users.findById(req.user.id)
-    .select('wallet')
-    .lean()
+     .lean()
     .exec()
     .then(response => response)
     .catch(err => res.status(502).json("Error try again later"));
@@ -126,6 +125,7 @@ const post = async (req, res) => {
         $inc:{
             "wallet.balance":-parseFloat(balance),
             "wallet.bonus":-parseFloat(bonus),
+            "stats.bonus":parseFloat(bonus),
             "stats.waggered":parseFloat(req.body.amount),
             "stats.loss":parseFloat(req.body.amount)
         }

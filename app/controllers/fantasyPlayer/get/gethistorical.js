@@ -1,14 +1,14 @@
 const mongoose = require('mongoose');
 const FantasyPlayer = mongoose.model('FantasyPlayer');
 const _ = require('lodash');
-const redis = require('../../../libraries/redis/redis');
+// const redis = require('../../../libraries/redis/redis');
 
 const get = (req, res) => {
  
-    redis.HMGET("players",`${req.params.playerId}`,async (err,response) => {
-        if(response !== null && response !== undefined && response[0] !== null){
-            return res.send(JSON.parse(response))
-        }else{
+    // redis.HMGET("players",`${req.params.playerId}`,async (err,response) => {
+    //     if(response !== null && response !== undefined && response[0] !== null){
+    //         return res.send(JSON.parse(response))
+    //     }else{
                   
             const aggT20 = [
                 {
@@ -447,17 +447,17 @@ const get = (req, res) => {
             let Test = await FantasyPlayer.aggregate(aggTest).then(response => response)
             let T10 = await FantasyPlayer.aggregate(aggT10).then(response => response)
 
-            redis.HMSET("players",req.params.playerId,JSON.stringify({
-                T20:t20[0],ODI:ODI[0],Test:Test[0],T10:T10[0],
-            }),(err,res) => {
+            // redis.HMSET("players",req.params.playerId,JSON.stringify({
+            //     T20:t20[0],ODI:ODI[0],Test:Test[0],T10:T10[0],
+            // }),(err,res) => {
                 
-            })
+            // })
 
             res.send({
                 T20:t20[0],ODI:ODI[0],Test:Test[0],T10:T10[0],
             })
-        }
-    })
+    //     }
+    // })
 }   
 
 

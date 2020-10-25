@@ -4,12 +4,11 @@ const AppStats = mongoose.model('AppStats');
 const _ = require('lodash');
 const chalk = require('chalk');
 
-const redis = require('../../../libraries/redis/redis')
+// const redis = require('../../../libraries/redis/redis')
 
 /**
  * 
  * @param {*} req
- *                _id,team:- 1 - more / 0 - less, amount:- 100              
  *  
  * @param {*} res 
  */
@@ -17,22 +16,8 @@ const redis = require('../../../libraries/redis/redis')
 
 const get = async (req, res) => {
     let errRedis = true;
-    // await Contest.find({matchId:parseInt(req.params.matchId),contestType:1})
-    //     .sort({"playerInfo.fullname":1})
-    //     .lean()
-    //     .then(arr2 =>res.status(200).json({data:[{_id:1,contest:arr2}]}))
-    //     .catch(err => err)
-
-    // await Contest.find({matchId:parseInt(req.params.matchId),contestType:2})
-    //     .sort({"playerInfo.fullname":1})
-    //     .lean()
-    //     .then(arr2 =>res.status(200).json({data:[{_id:1,contest:arr2}]}))
-    //     .catch(err => err)
     try {
-        redis.on('error',message => {
-            console.log('message: ', message);
-            errRedis = true
-        })
+ 
     if(errRedis){
         console.log('errRedis: ', chalk.redBright(errRedis));
 

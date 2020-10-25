@@ -44,7 +44,7 @@ const post = async (req, res) => {
  
 
 
-    if(userDetails.stats && userDetails.stats.waggered > 100){
+    if(userDetails.stats && userDetails.stats.bonus > 100){
         if(req.body.amount*0.5 <= userDetails.wallet.bonus){
             if(userDetails.wallet.balance >= req.body.amount - req.body.amount*0.5){
                 bonus = req.body.amount*0.5;
@@ -127,6 +127,7 @@ const post = async (req, res) => {
         $inc:{
             "wallet.balance":-parseFloat(balance),
             "wallet.bonus":-parseFloat(bonus),
+            "stats.bonus":parseFloat(bonus),
             "stats.waggered":parseFloat(req.body.amount),
             "stats.loss":parseFloat(req.body.amount)
         }

@@ -19,7 +19,7 @@ const Orders = mongoose.model('Orders');
     txTime,
     signature } = req.body
  
-      res.redirect(`http://localhost:3000/success?orderId=${orderId}&orderAmount=${orderAmount}&referenceId=${referenceId}&txStatus=${txStatus}&paymentMode=${paymentMode}&txMsg=${txMsg}&txTime=${txTime}`);
+      res.redirect(`https://fantasyjutsu.com/success?orderId=${orderId}&orderAmount=${orderAmount}&referenceId=${referenceId}&txStatus=${txStatus}&paymentMode=${paymentMode}&txMsg=${txMsg}&txTime=${txTime}`);
  
     
   }

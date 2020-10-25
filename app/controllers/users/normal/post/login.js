@@ -1,4 +1,3 @@
-const redis = require('../../../../libraries/redis/redis');
 const mongoose = require('mongoose'),
   jwt = require('jsonwebtoken'),
   sendSms = require('../../../../libraries/twilio'),

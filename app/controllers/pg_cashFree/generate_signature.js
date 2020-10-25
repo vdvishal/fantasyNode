@@ -19,7 +19,7 @@ const genSign = async (req,res) => {
            return res.status(202).json({message:"Amount must be valid"})
         }
 
-        if(parseFloat(req.query.amount) < 10 ){
+        if(parseFloat(req.query.amount) < 0 ){
             return res.status(202).json({message:"Minimum deposit is ₹10"})
          }
 
@@ -37,8 +37,8 @@ const genSign = async (req,res) => {
             "customerName":userDetail.fullName.length === 0 ? "New User" : userDetail.fullName,
             "customerEmail":userDetail.email,
             "customerPhone":userDetail.phone.phone,
-            "returnUrl":"https://7f48b19dad0e.ngrok.io/api/v1/redirect",
-            "notifyUrl": "https://7f48b19dad0e.ngrok.io/api/v1/webhook" //"https://api.fantasyjutsu.com/api/v1/webhook",
+            "returnUrl":"https://38922025e545.ngrok.io/api/v1/redirect",
+            "notifyUrl": "https://38922025e545.ngrok.io/api/v1/webhook" //"https://api.fantasyjutsu.com/api/v1/webhook",
         }
  
         let signatureData = ''
@@ -90,7 +90,7 @@ const genSign = async (req,res) => {
          })
     await orderObj.save().then(resp=> {}) 
  
-    res.status(200).json({...postData,sign,postUrl:"https://test.cashfree.com/billpay/checkout/post/submit"})
+    res.status(200).json({...postData,sign,postUrl:"https://www.cashfree.com/checkout/post/submit"})
 
 
     } catch (error) {

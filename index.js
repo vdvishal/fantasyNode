@@ -1,10 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
-var swaggerUi = require('swagger-ui-express'),
-    swaggerDocument = require('./swagger.json');
+// var swaggerUi = require('swagger-ui-express'),
+//     swaggerDocument = require('./swagger.json');
 require('dotenv').config({ path: './.env' })
 
-const Sentry = require('@sentry/node');
+// const Sentry = require('@sentry/node');
 const statusMonitor = require('express-status-monitor')();
 
  
@@ -16,7 +16,7 @@ const redisClient = require('./app/libraries/redis/redis');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const morgan = require('morgan')
-const i18n = require("i18n");
+// const i18n = require("i18n");
 const chalk = require('chalk');
 const logSymbols = require('log-symbols');
 
@@ -27,25 +27,20 @@ const path = require('path');
 
 const cluster = require('cluster');
 const http = require('http');
-const numCPUs = require('os').cpus().length;
-const cors = require('cors');
-const fork = require('child_process').fork;
+// const numCPUs = require('os').cpus().length;
+// const cors = require('cors');
+// const fork = require('child_process').fork;
 
 
 
 
 
-const mqtt = require('./app/libraries/mqtt')
+// const mqtt = require('./app/libraries/mqtt')
  
 
 
 const log = console.log;
-
-// const options = {
-//     directory: './i18n', // <--- use here. Specify translations files path.
-//     locales: ["en","es"],
-//     autoReload: true,
-// }
+ 
 const models = './app/models';
 const routes = './app/routes';
 
@@ -59,42 +54,28 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
-
-
- 
-// app.use(session({
-//     secret: 'secret',
-//     // create new redis store.
-//     store: new redisStore({ host: process.env.REDIS_IP, port: 6379, client: redisClient,ttl :  260}),
-//     cookie: { secure: false }, 
-//     saveUninitialized: false,
-//     resave: false
-// }));
-
-// i18n.configure(options);
+// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // app.use(i18n.init);
-var allowedOrigins = ['http://localhost:3000',
-                        'https://*.ngrok.io',
-                        'https://test.cashfree.com',
-                        'http://localhost:3001',
-                      'https://fantasyjutsu.com',
-                      'https://www.fantasyjutsu.com'];
+// var allowedOrigins = ['http://localhost:3000',
+//                         'https://*.ngrok.io',
+//                         'https://*.cashfree.com',
+//                         'http://localhost:3001',
+//                       'https://fantasyjutsu.com',
+//                       'https://www.fantasyjutsu.com'];
 
-app.use(cors({
-    origin: (origin,callback) => {       
-        if(!origin) return callback(null, true);
+// app.use(cors({
+//     origin: (origin,callback) => {       
+//         if(!origin) return callback(null, true);
 
-        if(allowedOrigins.indexOf(origin) === -1){
-            var msg = 'The CORS policy for this site does not ' +
-                      'allow access from the specified Origin.';
-            return callback(new Error(msg), false);
-        }
-        return callback(null, true);
-    }
-}))
+//         if(allowedOrigins.indexOf(origin) === -1){
+//             var msg = 'The CORS policy for this site does not ' +
+//                       'allow access from the specified Origin.';
+//             return callback(new Error(msg), false);
+//         }
+//         return callback(null, true);
+//     }
+// }))
 
 
 app.all('*', function (req, res, next) {
@@ -105,16 +86,7 @@ app.all('*', function (req, res, next) {
     next();
 });
 
-app.use(morgan("dev"))
-
-
-
- 
- 
-//Custom middleware
-// Sentry.init({ dsn: 'https://7315e837b57b48999d9654123e111005@o431193.ingest.sentry.io/5381542' });
-// app.use(Sentry.Handlers.requestHandler());
-
+app.use(morgan("common"))
  
 fs.readdirSync(models).forEach(function (file) {
     if (~file.indexOf('.js')) require(models + '/' + file)
@@ -159,7 +131,6 @@ const job = new cronJob('*/15 * * * * *', function() {
 job.start();
 
 
-// mqtt.publish("/globalStats","connecte",{},{})
 
 /**
  * Event listener for HTTP server "error" event.

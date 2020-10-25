@@ -2,15 +2,15 @@ const mongoose = require('mongoose');
 const Contest = mongoose.model('Contest');
 const AppStats = mongoose.model('AppStats');
 const _ = require('lodash');
-const redis = require('../../../libraries/redis/redis')
+// const redis = require('../../../libraries/redis/redis')
 
 const get = (req, res) => {
     let errRedis = true;
 
-    redis.on('error',message => {
-        console.log('message: ', message);
-        errRedis = true
-    })
+    // redis.on('error',message => {
+    //     console.log('message: ', message);
+    //     errRedis = true
+    // })
     if(errRedis){
         console.log('errRedis: ', errRedis);
 
