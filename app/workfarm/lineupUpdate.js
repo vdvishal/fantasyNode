@@ -89,16 +89,33 @@ module.exports = async (lineUpArr, matchId) => {
     let updateContest = [];
   
          Object.entries(allPlayer).forEach(([key, value]) => {
-
+ 
             if(lineupId.indexOf(value.id) < 0 && lineupId.length === 22){
                 let condition = {
                     "matchId": parseInt(matchId),
-                    [`players.${value.id}`]: { $exists: true },
+                    // [`players.${value.id}`]: { $exists: true },
+                    player1:value.id,
                     contestType: 3
                 }
     
                 updateContest.push(new Promise((resolve, reject) => {
                     Contest.updateMany(condition, {
+                        $set: {
+                            status: "Discarded",
+                            notPlaying:value.id
+                        }
+                    }).then(response => resolve("Updated")).catch(err => reject(err))
+                }))
+
+                let condition1a = {
+                    "matchId": parseInt(matchId),
+                    // [`players.${value.id}`]: { $exists: true },
+                    player2:value.id,
+                    contestType: 3
+                }
+    
+                updateContest.push(new Promise((resolve, reject) => {
+                    Contest.updateMany(condition1a, {
                         $set: {
                             status: "Discarded",
                             notPlaying:value.id
@@ -217,11 +234,11 @@ module.exports = async (lineUpArr, matchId) => {
  
     // }).then(response => ("Updated")) 
 
-    await match.updateOne({ id: parseInt(matchId) }, {
-        $set: {
-            isLineupUpdated: true,
-        }
-    }).then(response => ("Updated")).catch(err => console.log(err))
+    // await match.updateOne({ id: parseInt(matchId) }, {
+    //     $set: {
+    //         isLineupUpdated: true,
+    //     }
+    // }).then(response => ("Updated")).catch(err => console.log(err))
 }
     catch (error) {
         console.log('===============',error)

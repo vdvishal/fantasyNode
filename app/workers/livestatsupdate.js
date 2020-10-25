@@ -115,6 +115,12 @@ async function liveUpdate() {
 
     let liveMatch = await getMatch().then(response => response)
     console.log('liveMatch: ', liveMatch);
+    let matchList = [];
+    
+    liveUpdate = liveUpdate.sort()
+    liveMatch = liveMatch.sort()
+    let l1 = JSON.stringify(liveUpdate)
+    let l2 = JSON.stringify(liveMatch)
 
     if (liveMatch && liveMatch.length === 0) {
       await AppStats.updateOne({}, {
@@ -124,17 +130,18 @@ async function liveUpdate() {
       }, { upsert: true }).then(response => response)
     } else {
 
-      if (liveUpdate.length !== liveMatch.length) {
+      if (l1 !== l2) {
         liveMatch.forEach(matchId => {
           if (liveUpdate.indexOf(matchId) < 0) {
-            instance.get(`/fixtures/${matchId}?api_token=${process.env.Access_key}&include=batting,batting.catchstump,batting.batsman,batting.bowler,bowling.team,bowling.bowler,lineup,batting.batsmanout,balls,balls.catchstump,scoreboards,league,season,localteam,visitorteam`) //,balls.catchstump
+            matchList.push(new Promise((resolve,reject) => {
+              instance.get(`/fixtures/${matchId}?api_token=${process.env.Access_key}&include=batting,batting.catchstump,batting.batsman,batting.bowler,bowling.team,bowling.bowler,lineup,batting.batsmanout,balls,balls.catchstump,scoreboards,league,season,localteam,visitorteam`) //,balls.catchstump
               .then(response => {
                 
                 let matchDetail = response.data.data
                 // console.log('matchDetail: ', matchDetail);
 
                 let update = {
-                  "isLive": false,
+                   
                   "type": matchDetail.type,
                   "scoreboards": matchDetail.scoreboards,
                   "league": matchDetail.league,
@@ -194,28 +201,37 @@ async function liveUpdate() {
                     }
                   })
                   .then(response => {
-                    AppStats.updateOne({}, {
-                      $set: {
-                        live: liveUpdate
-                      }
-                    }, { upsert: true }).then(response => {
-                      console.log('response: ', response);
-                    })
-                    
+                    resolve()
                   }).catch(err => {
                     console.log('err: sms(6003633574', err);
-
+                    reject()
                   })
 
               }).catch(err => {
                 console.log('err: ', err);
- 
+                reject()
               })
+            }))
           }
         })
       }
     }
 
+    
+    await Promise.all(matchList).then(response => {}).catch(err => {
+      console.log('err: ', err);
+    })
+
+    await AppStats.updateOne({}, {
+      $set: {
+        live: liveUpdate
+      }
+    }, { upsert: true }).then(response => {
+      console.log('response: ', response);
+      
+    });
+
+    
 
 
 

@@ -532,9 +532,9 @@ function mqtt_publish(topic, message, options) {
         
     console.log(chalk.bgGrey("Stats mqtt_publish: "));
 
-    client.publish(topic, message, { qos: (options.qos) ? options.qos : 0 },(err,res) => {
+    // client.publish(topic, message, { qos: (options.qos) ? options.qos : 0 },(err,res) => {
  
-    })
+    // })
 }
 
 job.start();
