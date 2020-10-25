@@ -13,7 +13,7 @@ try {
     }
 
     if(req.body.id === '' || req.body.aadhar === ''){
-        return res.status(202).json({message:"Kyc image required"});
+        return res.status(202).json({message:"Pan card/Aadhar Card is required"});
     }
 
     const  UserD = User.findById(req.user.id).select('verifiedKYC').lean().then(response => response) 
