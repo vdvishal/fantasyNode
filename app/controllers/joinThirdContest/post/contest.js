@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const MatchUpContest = mongoose.model('MatchUpContest');
-const Users = mongoose.model('Users');
+const Users = mongoose.model('Admin');
 const Orders = mongoose.model('Orders');
 const Matches = mongoose.model('Matches');
 const moment = require('moment');

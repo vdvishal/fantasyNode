@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
  
-const User = mongoose.model('Users');
+const User = mongoose.model('Admin');
 const OtherUserStats = mongoose.model('OtherUserStats');
 
  

@@ -3,7 +3,7 @@ const mongoose = require('mongoose'),
   sendSms = require('../../../../libraries/twilio'),
   hash = require('../../../../libraries/bcrypt/index'),
   randomize = require('randomatic'),
-  User = mongoose.model('Users'),
+  User = mongoose.model('Admin'),
   moment = require('moment'),
   { check, validationResult } = require('express-validator');
 

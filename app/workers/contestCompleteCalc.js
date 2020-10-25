@@ -47,7 +47,7 @@ let FantasyJoinedUsers = mongoose.model('FantasyJoinedUsers');
 let CustomContest = mongoose.model('CustomContest');
 
 
-let User = mongoose.model('Users');
+let User = mongoose.model('Admin');
 let Orders = mongoose.model('Orders');
 let Notification = mongoose.model('Notification');
 

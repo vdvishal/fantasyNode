@@ -1,7 +1,7 @@
 'use strict'
 const mongoose = require('mongoose'),
     moment = require('moment'),
-    user = mongoose.model('Users'),
+    user = mongoose.model('Admin'),
     SmsLog = mongoose.model('SmsLog'),
     hash = require('../../../../libraries/bcrypt'),
     i18n = require('i18n'),

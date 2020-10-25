@@ -15,7 +15,7 @@ const mongoose = require('mongoose');
 
 module.exports = new JwtStrategy({
   jwtFromRequest:  ExtractJwt.fromAuthHeaderWithScheme('JWT'),
-  secretOrKey:'secret'
+  secretOrKey:'secretadminuser123'
 }, (jwt_payload, done) => {
   try {
     //Pass the user details to the next middleware

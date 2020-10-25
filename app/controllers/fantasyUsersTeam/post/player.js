@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const FantasyUsersTeam = mongoose.model('FantasyUsersTeam');
-const Users = mongoose.model('Users');
+const Users = mongoose.model('Admin');
 const FantasyPlayer = mongoose.model('FantasyPlayer');
 
 const post = async (req, res) => {

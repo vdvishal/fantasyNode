@@ -7,7 +7,7 @@ let MatchUpContest = mongoose.model('MatchUpContest');
 let UnderOverContest = mongoose.model('UnderOverContest');
 let UnderOverContest2 = mongoose.model('UnderOverContestType2');
 
-let Users = mongoose.model('Users');
+let Users = mongoose.model('Admin');
 let CustomContest = mongoose.model('CustomContest');
 let FantasyJoinedUsers = mongoose.model('FantasyJoinedUsers');
 let Orders = mongoose.model('Orders');

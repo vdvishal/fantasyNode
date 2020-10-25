@@ -16,9 +16,9 @@ const basicAuth = require('express-basic-auth')
 module.exports.setRouter = (app) => {
     let baseUrl = `${process.env.BASE_URL}/users`;
     
-    app.post(`${baseUrl}/signup`,basicAuth({
-        users: { 'app': 'qwewqinasdoinoinacino' }
-    }), signUp.validator,signUp.signUp);
+    // app.post(`${baseUrl}/signup`,basicAuth({
+    //     users: { 'app': 'qwewqinasdoinoinacino' }
+    // }), signUp.validator,signUp.signUp);
  
     app.post(`${baseUrl}/login`,basicAuth({
         users: { 'app': 'qwewqinasdoinoinacino' }

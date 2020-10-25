@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
  
 const Matches = mongoose.model('Matches');
-const Users = mongoose.model('Users');
+const Users = mongoose.model('Admin');
 
 
 const _ = require('lodash')

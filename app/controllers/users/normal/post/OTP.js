@@ -1,6 +1,6 @@
 const
     mongoose = require('mongoose'),
-    User = mongoose.model('Users'),
+    User = mongoose.model('Admin'),
     Orders = mongoose.model('Orders'),
     Appconfig = mongoose.model('Appconfigs'),
     randomize = require('randomatic'),

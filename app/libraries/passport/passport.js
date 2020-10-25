@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 
 const hash = require('../bcrypt/index');
 
-const User = mongoose.model('Users');
+const User = mongoose.model('Admin');
 
 
 module.exports = new LocalStrategy((email, password, done) => {
