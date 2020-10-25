@@ -3,7 +3,7 @@ const FantasyPlayer = mongoose.model('FantasyPlayer');
 const _ = require('lodash');
 // const redis = require('../../../libraries/redis/redis');
 
-const get = (req, res) => {
+const get = async (req, res) => {
  
     // redis.HMGET("players",`${req.params.playerId}`,async (err,response) => {
     //     if(response !== null && response !== undefined && response[0] !== null){
