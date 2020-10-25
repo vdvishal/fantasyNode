@@ -10,7 +10,7 @@ const statusMonitor = require('express-status-monitor')();
  
 const helmet = require('helmet')
 
-const redisClient = require('./app/libraries/redis/redis');
+// const redisClient = require('./app/libraries/redis/redis');
  
 
 const cookieParser = require('cookie-parser');
