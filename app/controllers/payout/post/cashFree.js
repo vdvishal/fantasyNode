@@ -127,7 +127,7 @@ const payout = async (req,res) => {
  
     console.log('requestTransfer: ', requestTransfer);
 
-    const job = new cronJob('*/30 * * * * *', function() {
+    const job = new cronJob('*/45 * * * * *', function() {
         
         axios({
             method:"GET",
@@ -139,7 +139,7 @@ const payout = async (req,res) => {
             }).then(response => {
                 console.log('response: ', response.data);
                 if(response.data.subCode === '200'){
-                    if (response.data.data.transfer.status === 'SUCCESS') {
+ 
                         job.stop();
 
     
@@ -155,34 +155,7 @@ const payout = async (req,res) => {
                       })
     
                       order.save().then().catch();
-
-                    //   mqtt.publish(`withdraw_${req.user.id}`,JSON.stringify({message:"Withdrawal Successfull",amount:balance >= 0 ? balance : 0}),{})
-                    }else{
-                        job.stop();
-                        let order = new Orders({
-                            "amount" : parseFloat(req.body.amount)*100,
-                            "status" : "Withdrawal Failed",
-                            "matchId": 0,
-                            "contestType": 10,
-                            "orderId":"Withdrawal failed refId: " + requestTransfer.data.referenceId,
-                            "notes" : {
-                                "userId" : req.user.id
-                            }
-                          })
-                          User.updateOne({_id:mongoose.mongo.ObjectId(req.user.id)},{
-                            $inc:{
-                           'wallet.balance': balance >= 0 ? 1*req.body.amount : userDetails.wallet.balance,
-                           'wallet.withdrawal': withdrawal >= 0 ? 1*req.body.amount : userDetails.wallet.withdrawal,
-                            
-                               }
-                         }).lean().then(response => {
-                            
-                        });
-        
-                         order.save().then().catch();
-                        //  mqtt.publish('withdraw',JSON.stringify({message:"Withdrawal failed",amount:0}),{})
-
-                    }
+ 
                 
 
 
@@ -212,17 +185,6 @@ const payout = async (req,res) => {
                      order.save().then().catch()
                     //  mqtt.publish('withdraw',JSON.stringify({message:"Withdrawal failed",amount:0}),{})
 
-                }else{
-                    job.stop();
-                    User.updateOne({_id:mongoose.mongo.ObjectId(req.user.id)},{
-                        $inc:{
-                       'wallet.balance': balance >= 0 ? 1*req.body.amount : userDetails.wallet.balance,
-                       'wallet.withdrawal': withdrawal >= 0 ? 1*req.body.amount : userDetails.wallet.withdrawal,
-                        
-                           }
-                     }).lean().then(response => {
-                        
-                    });
                 }
             })
 

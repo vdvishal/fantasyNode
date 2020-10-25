@@ -148,7 +148,12 @@ const login = async (req, res) => {
         User.updateOne({_id:user._id},{$set:{refToken:refToken}}).then().catch()
        
         res.status(200)
-        res.send({ message: "Login success", token, refToken: refToken })
+        res.send({ message: "Login success", token, refToken: refToken,data: {
+          profilePic:user.profilePic,
+          messageCount:user.messageCount,
+          wallet:user.wallet,
+          _id:user._id
+        }})
       });
       break;
   }
