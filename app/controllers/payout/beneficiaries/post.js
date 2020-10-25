@@ -44,7 +44,7 @@ const beneficiaries = async (req, res) => {
 
     let token = await axios({
         method:"POST",
-        url:"https://payout-gamma.cashfree.com/payout/v1/authorize",
+        url:"https://payout-api.cashfree.com/payout/v1/authorize",
         headers:{
             "X-Client-Id":process.env.CASHFREE_PAYOUT_APP_ID,
             
@@ -58,7 +58,7 @@ const beneficiaries = async (req, res) => {
 
     let requestTransfer = await axios({
         method:"POST",
-        url:"https://payout-gamma.cashfree.com/payout/v1/addBeneficiary", //requestAsyncTransfer",
+        url:"https://payout-api.cashfree.com/payout/v1/addBeneficiary", //requestAsyncTransfer",
         headers:{
             Authorization:`Bearer ${token.data.token}`,
             "Content-Type":"application/json"

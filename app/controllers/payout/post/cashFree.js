@@ -71,7 +71,7 @@ const payout = async (req,res) => {
 
     let token = await axios({
         method:"POST",
-        url:"https://payout-gamma.cashfree.com/payout/v1/authorize",
+        url:"https://payout-api.cashfree.com/payout/v1/authorize",
         headers:{
             "X-Client-Id":process.env.CASHFREE_PAYOUT_APP_ID,
             
@@ -85,7 +85,7 @@ const payout = async (req,res) => {
 
     let requestTransfer = await axios({
         method:"POST",
-        url:"https://payout-gamma.cashfree.com/payout/v1/requestAsyncTransfer",
+        url:"https://payout-api.cashfree.com/payout/v1/requestAsyncTransfer",
         headers:{
             Authorization:`Bearer ${token.data.token}`,
             "Content-Type":"application/json"
@@ -131,7 +131,7 @@ const payout = async (req,res) => {
         
         axios({
             method:"GET",
-            url:`https://payout-gamma.cashfree.com/payout/v1/getTransferStatus?referenceId=${requestTransfer.data.referenceId}`,
+            url:`https://payout-api.cashfree.com/payout/v1/getTransferStatus?referenceId=${requestTransfer.data.referenceId}`,
             headers:{
                 Authorization:`Bearer ${token.data.token}`,
                 "Content-Type":"application/json"
