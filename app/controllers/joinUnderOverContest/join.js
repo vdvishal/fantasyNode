@@ -44,7 +44,7 @@ const post = async (req, res) => {
  
 
 
-    if(userDetails.stats && userDetails.stats.bonus > 100){
+    if(userDetails.stats && userDetails.stats.bonus > 50){
         if(req.body.amount*0.5 <= userDetails.wallet.bonus){
             if(userDetails.wallet.balance >= req.body.amount - req.body.amount*0.5){
                 bonus = req.body.amount*0.5;

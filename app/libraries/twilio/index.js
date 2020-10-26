@@ -28,7 +28,7 @@ module.exports = sendSms = (number, message) => {
 
       clientPlivo.messages.create(
         phonePLIVO,
-        process.env.PRODUCTION == true ? number : '+916003633574',
+        number,
         message
       ).then(function (message_created) {
         console.log(message_created)

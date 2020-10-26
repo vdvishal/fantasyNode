@@ -64,7 +64,7 @@ const joinCustom = async (req, res) => {
         }
 
 
-        if(userDetails.stats && userDetails.stats.waggered > 100){
+        if(userDetails.stats && userDetails.stats.waggered > 50){
             if(contestData.amount*0.5 <= userDetails.wallet.bonus){
                 if(userDetails.wallet.balance >= contestData.amount - contestData.amount*0.5){
                     bonus = contestData.amount*0.5;
