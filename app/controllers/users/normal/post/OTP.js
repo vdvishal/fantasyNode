@@ -32,7 +32,7 @@ const sendOTP = (req, res) => {
                     }
                 }
             }).then(resp => {                
-                sendSms("+91"+resp.phone.phone,`Your verification code: ${code}`)
+                sendSms("+91"+resp.phone.phone,`Your Fantasyjutsu verification code: ${code}`)
                  res.status(200).json({ message: "OTP sent" })
              })
 
@@ -56,7 +56,7 @@ const sendOTP = (req, res) => {
                     }
                 }
             }).then(resp => {                
-                sendSms("+91"+resp.phone.phone,`Your verification code: ${code}`)
+                sendSms("+91"+resp.phone.phone,`Your Fantasyjutsu verification code: ${code}`)
                  res.status(200).json({ message: "OTP sent",data:user._id })
              }).catch(err => {
                  console.log('err: ', err);
@@ -94,7 +94,7 @@ const sendOTP = (req, res) => {
                             }
                         }
                     }).then(resp => {                
-                        sendSms("+91"+resp.phone.phone,`Your verification code: ${code}`)
+                        sendSms("+91"+resp.phone.phone,`Your Fantasyjutsu verification code: ${code}`)
                          res.status(200).json({ message: "OTP sent",userId:user._id,new:true })
                      })
                      
