@@ -45,7 +45,7 @@ module.exports.setRouter = (app) => {
     // POST --- > join, joinCustom, createCustom
 
 
-    app.post(`${process.env.BASE_URL}/contest/count`, isAuth, post.count);
+    app.post(`${process.env.BASE_URL}/contest/count`, post.count);
 
     app.post(`${process.env.BASE_URL}/contest`, post.create);
 

@@ -47,7 +47,7 @@ let FantasyJoinedUsers = mongoose.model('FantasyJoinedUsers');
 let CustomContest = mongoose.model('CustomContest');
 
 
-let User = mongoose.model('Admin');
+let User = mongoose.model('Users');
 let Orders = mongoose.model('Orders');
 let Notification = mongoose.model('Notification');
 
@@ -1546,6 +1546,7 @@ const dispatchWinMatchUp = (con) => new Promise((resolve, reject) => {
     } else {
         let length = 0;
         let tax = 1
+
         Object.entries(con.winner).forEach(([key, value]) => {
             if (value === 0) {
                 win = false
@@ -1555,6 +1556,7 @@ const dispatchWinMatchUp = (con) => new Promise((resolve, reject) => {
             }
         })
         if (win === true && length >= 1) {
+            console.log('con: ', mongoose.mongo.ObjectID((con.userId).toString()));
 
             let payout = Object.keys(con.winner).length;
             payout = payoutArr[length - 1];
@@ -1563,7 +1565,7 @@ const dispatchWinMatchUp = (con) => new Promise((resolve, reject) => {
                 tax = 0.7
             }
 
-            User.updateOne({ _id: mongoose.mongo.ObjectID(con.userId) },
+            User.updateOne({ _id: mongoose.mongo.ObjectID((con.userId).toString()), },
                 {
                     $inc: {
                         'wallet.balance': (payout * con.amount * tax).toFixed(2),
@@ -1573,6 +1575,7 @@ const dispatchWinMatchUp = (con) => new Promise((resolve, reject) => {
                         'stats.loss': -con.amount
                     }
                 }).then(response => {
+                    console.log('response: ', response);
                     let order = new Orders({
                         "amount": payout * tax * con.amount * 100,
                         "status": "contest_credit",

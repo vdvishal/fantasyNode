@@ -46,4 +46,4 @@ const user =  new Schema({
     KYC:{}
 },{ strict: false,timestamps:true })
 
-mongoose.model('Admin', user);
+mongoose.model('Users', user);

@@ -40,7 +40,7 @@ let UnderOverContest = mongoose.model('UnderOverContest');
 let FantasyJoinedUsers = mongoose.model('FantasyJoinedUsers');
 
 
-let User = mongoose.model('Admin');
+// let User = mongoose.model('Admin');
 let Orders = mongoose.model('Orders');
 
 

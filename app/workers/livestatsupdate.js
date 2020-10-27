@@ -51,9 +51,12 @@ async function liveUpdate() {
       let update = {
 
         "isLive": true,
+        isFinished: false,
+        isCounting: false,
         "type": matchDetail.type,
         "scoreboards": matchDetail.scoreboards,
         "league": matchDetail.league,
+ 
  
         "season": matchDetail.season,
         "starting_at": matchDetail.starting_at,
