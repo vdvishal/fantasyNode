@@ -1570,7 +1570,7 @@ const dispatchWinMatchUp = (con) => new Promise((resolve, reject) => {
                     $inc: {
                         'wallet.balance': (payout * con.amount * tax).toFixed(2),
                         messageCount: 1,
-                        "wallet.withdrawal": con.amount,
+                        "wallet.withdrawal": (payout * con.amount * tax).toFixed(2),
                         'stats.profit': (payout * con.amount * tax).toFixed(2),
                         'stats.loss': -con.amount
                     }
@@ -1680,6 +1680,7 @@ const dispatchWinUnderOver = (con) => new Promise((resolve, reject) => {
                     $inc: {
                         'wallet.balance': (payout * con.amount * tax).toFixed(2),
                         messageCount: 1,
+                        "wallet.withdrawal": (payout * con.amount * tax).toFixed(2),
                         'stats.profit': (payout * con.amount * tax).toFixed(2),
                         'stats.loss': -con.amount
                     }
@@ -1722,7 +1723,6 @@ const dispatchWinUnderOver = (con) => new Promise((resolve, reject) => {
                     $inc: {
                         'wallet.balance': con.amount,
                         messageCount: 1,
-                        "wallet.withdrawal": con.amount,
                         'stats.loss': -con.amount
                     }
                 }).then(response => {
@@ -1794,6 +1794,7 @@ const dispatchWinUnderOver2 = (con) => new Promise((resolve, reject) => {
                     $inc: {
                         'wallet.balance': (payout * con.amount * tax).toFixed(2),
                         messageCount: 1,
+                        "wallet.withdrawal": (payout * con.amount * tax).toFixed(2),
                         'stats.profit': (payout * con.amount * tax).toFixed(2),
                         'stats.loss': -con.amount
                     }
@@ -1836,8 +1837,7 @@ const dispatchWinUnderOver2 = (con) => new Promise((resolve, reject) => {
                     $inc: {
                         'wallet.balance': con.amount.toFixed(2),
                         messageCount: 1,
-                        "wallet.withdrawal": con.amount.toFixed(2),
-                        'stats.loss': -con.amount.toFixed(2)
+                         'stats.loss': -con.amount.toFixed(2)
                     }
                 }).then(response => {
                     let order = new Orders({
