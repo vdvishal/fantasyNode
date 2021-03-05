@@ -26,5 +26,5 @@ module.exports.setRouter = (app) => {
     // app.post(`${baseUrl}/upload`,upload.single('image'),isAuth,image)
     
     
-    app.post(`${baseUrl}/admin/upload`,upload.single('image'),image)
+    // app.post(`${baseUrl}/admin/upload`,upload.single('image'),image)
 }
