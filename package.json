@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start":"node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -65,5 +66,8 @@
     "uniqid": "^5.2.0",
     "winston": "^3.2.1",
     "worker-farm": "^1.7.0"
+  },
+  "engines": {
+    "node": "12.16.1"
   }
 }
